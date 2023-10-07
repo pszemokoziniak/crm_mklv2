@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\BranzaController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EditController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
@@ -140,3 +143,70 @@ Route::get('reports', [ReportsController::class, 'index'])
 Route::get('/img/{path}', [ImagesController::class, 'show'])
     ->where('path', '.*')
     ->name('image');
+
+// Clients
+
+Route::get('clients', [ClientController::class, 'index'])
+    ->name('clients')
+    ->middleware('auth');
+
+Route::get('clients/create', [ClientController::class, 'create'])
+    ->name('clients.create')
+    ->middleware('auth');
+
+Route::post('clients', [ClientController::class, 'store'])
+    ->name('clients.store')
+    ->middleware('auth');
+
+Route::get('clients/{contact}/edit', [ClientController::class, 'edit'])
+    ->name('clients.edit')
+    ->middleware('auth');
+
+Route::put('clients/{contact}', [ClientController::class, 'update'])
+    ->name('clients.update')
+    ->middleware('auth');
+
+Route::delete('clients/{contact}', [ClientController::class, 'destroy'])
+    ->name('clients.destroy')
+    ->middleware('auth');
+
+Route::put('clients/{contact}/restore', [ClientController::class, 'restore'])
+    ->name('clients.restore')
+    ->middleware('auth');
+
+
+// Branza
+
+Route::get('branza', [BranzaController::class, 'index'])
+    ->name('branza')
+    ->middleware('auth');
+
+Route::get('branza/create', [BranzaController::class, 'create'])
+    ->name('branza.create')
+    ->middleware('auth');
+
+Route::post('branza', [BranzaController::class, 'store'])
+    ->name('branza.store')
+    ->middleware('auth');
+
+Route::get('branza/{contact}/edit', [BranzaController::class, 'edit'])
+    ->name('branza.edit')
+    ->middleware('auth');
+
+Route::put('branza/{contact}', [BranzaController::class, 'update'])
+    ->name('branza.update')
+    ->middleware('auth');
+
+Route::delete('branza/{contact}', [BranzaController::class, 'destroy'])
+    ->name('branza.destroy')
+    ->middleware('auth');
+
+Route::put('branza/{contact}/restore', [BranzaController::class, 'restore'])
+    ->name('branza.restore')
+    ->middleware('auth');
+
+// Edit
+
+Route::get('edit', [EditController::class, 'index'])
+    ->name('edit')
+    ->middleware('auth');

@@ -1,15 +1,8 @@
 <template>
   <div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/">
-        <icon name="dashboard" class="mr-2 w-4 h-4" :class="isUrl('') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Home</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/clients">
-        <icon name="office" class="mr-2 w-4 h-4" :class="isUrl('clients') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('clients') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Klienci</div>
+      <Link class="group flex items-center py-3" href="/branza">
+        <div :class="isUrl('branza') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Branża</div>
       </Link>
     </div>
     <div class="mb-4">
@@ -55,9 +48,9 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/edit">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('edit') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('edit') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Edit</div>
+      <Link class="group flex items-center py-3" href="/reports">
+        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Edit</div>
       </Link>
     </div>
     <div class="mb-4">
