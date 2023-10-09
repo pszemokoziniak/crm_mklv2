@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Branza;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class BranzaController extends Controller
@@ -30,65 +28,37 @@ class BranzaController extends Controller
         return Redirect::route('branza')->with('success', 'Branza dodana.');
     }
 
-    public function edit(Contact $contact)
+    public function edit(Branza $branza)
     {
-        return Inertia::render('Contacts/Edit', [
-            'contact' => [
-                'id' => $contact->id,
-                'first_name' => $contact->first_name,
-                'last_name' => $contact->last_name,
-                'organization_id' => $contact->organization_id,
-                'email' => $contact->email,
-                'phone' => $contact->phone,
-                'address' => $contact->address,
-                'city' => $contact->city,
-                'region' => $contact->region,
-                'country' => $contact->country,
-                'postal_code' => $contact->postal_code,
-                'deleted_at' => $contact->deleted_at,
+        return Inertia::render('Branza/Edit', [
+            'branza' => [
+                'id' => $branza->id,
+                'name' => $branza->name,
+                'deleted_at' => $branza->deleted_at,
             ],
-            'organizations' => Auth::user()->account->organizations()
-                ->orderBy('name')
-                ->get()
-                ->map
-                ->only('id', 'name'),
         ]);
     }
 
-    public function update(Contact $contact)
+    public function update(Request $request)
     {
-        $contact->update(
-            Request::validate([
-                'first_name' => ['required', 'max:50'],
-                'last_name' => ['required', 'max:50'],
-                'organization_id' => [
-                    'nullable',
-                    Rule::exists('organizations', 'id')->where(fn ($query) => $query->where('account_id', Auth::user()->account_id)),
-                ],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
+        Branza::find($request->id)->update(
+            ['name' => $request->name]
         );
 
-        return Redirect::back()->with('success', 'Contact updated.');
+        return Redirect::back()->with('success', 'Poprawione.');
     }
 
-    public function destroy(Contact $contact)
+    public function destroy(Branza $branza)
     {
-        $contact->delete();
+        $branza->delete();
 
-        return Redirect::back()->with('success', 'Contact deleted.');
+        return Redirect::route('branza')->with('success', 'Usunięte.');
     }
 
-    public function restore(Contact $contact)
+    public function restore(Branza $branza)
     {
-        $contact->restore();
+        $branza->restore();
 
-        return Redirect::back()->with('success', 'Contact restored.');
+        return Redirect::back()->with('success', 'Przywrócono.');
     }
 }

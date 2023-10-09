@@ -189,19 +189,19 @@ Route::post('branza', [BranzaController::class, 'store'])
     ->name('branza.store')
     ->middleware('auth');
 
-Route::get('branza/{contact}/edit', [BranzaController::class, 'edit'])
+Route::get('branza/{branza}/edit', [BranzaController::class, 'edit'])
     ->name('branza.edit')
     ->middleware('auth');
 
-Route::put('branza/{contact}', [BranzaController::class, 'update'])
+Route::post('branza/{branza}', [BranzaController::class, 'update'])
     ->name('branza.update')
     ->middleware('auth');
 
-Route::delete('branza/{contact}', [BranzaController::class, 'destroy'])
+Route::delete('branza/{branza}', [BranzaController::class, 'destroy'])
     ->name('branza.destroy')
     ->middleware('auth');
 
-Route::put('branza/{contact}/restore', [BranzaController::class, 'restore'])
+Route::put('branza/{branza}/restore', [BranzaController::class, 'restore'])
     ->name('branza.restore')
     ->middleware('auth');
 
