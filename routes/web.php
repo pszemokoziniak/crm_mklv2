@@ -7,9 +7,12 @@ use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EditController;
 use App\Http\Controllers\ImagesController;
+use App\Http\Controllers\KrajController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ZakresController;
+use App\Http\Controllers\ZapytaniaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -158,22 +161,51 @@ Route::post('clients', [ClientController::class, 'store'])
     ->name('clients.store')
     ->middleware('auth');
 
-Route::get('clients/{contact}/edit', [ClientController::class, 'edit'])
+Route::get('clients/{client}/edit', [ClientController::class, 'edit'])
     ->name('clients.edit')
     ->middleware('auth');
 
-Route::put('clients/{contact}', [ClientController::class, 'update'])
+Route::put('clients/{client}', [ClientController::class, 'update'])
     ->name('clients.update')
     ->middleware('auth');
 
-Route::delete('clients/{contact}', [ClientController::class, 'destroy'])
+Route::delete('clients/{client}', [ClientController::class, 'destroy'])
     ->name('clients.destroy')
     ->middleware('auth');
 
-Route::put('clients/{contact}/restore', [ClientController::class, 'restore'])
+Route::put('clients/{client}/restore', [ClientController::class, 'restore'])
     ->name('clients.restore')
     ->middleware('auth');
 
+// Zapytania
+
+Route::get('zapytania', [ZapytaniaController::class, 'index'])
+    ->name('zapytania')
+    ->middleware('auth');
+
+Route::get('zapytania/create', [ZapytaniaController::class, 'create'])
+    ->name('zapytania.create')
+    ->middleware('auth');
+
+Route::post('zapytania', [ZapytaniaController::class, 'store'])
+    ->name('zapytania.store')
+    ->middleware('auth');
+
+Route::get('zapytania/{zapytania}/edit', [ZapytaniaController::class, 'edit'])
+    ->name('zapytania.edit')
+    ->middleware('auth');
+
+Route::put('zapytania/{zapytania}', [ZapytaniaController::class, 'update'])
+    ->name('zapytania.update')
+    ->middleware('auth');
+
+Route::delete('zapytania/{zapytania}', [ZapytaniaController::class, 'destroy'])
+    ->name('zapytania.destroy')
+    ->middleware('auth');
+
+Route::put('zapytania/{zapytania}/restore', [ZapytaniaController::class, 'restore'])
+    ->name('zapytania.restore')
+    ->middleware('auth');
 
 // Branza
 
@@ -203,6 +235,66 @@ Route::delete('branza/{branza}', [BranzaController::class, 'destroy'])
 
 Route::put('branza/{branza}/restore', [BranzaController::class, 'restore'])
     ->name('branza.restore')
+    ->middleware('auth');
+
+// Zakres
+
+Route::get('zakres', [ZakresController::class, 'index'])
+    ->name('zakres')
+    ->middleware('auth');
+
+Route::get('zakres/create', [ZakresController::class, 'create'])
+    ->name('zakres.create')
+    ->middleware('auth');
+
+Route::post('zakres', [ZakresController::class, 'store'])
+    ->name('zakres.store')
+    ->middleware('auth');
+
+Route::get('zakres/{zakres}/edit', [ZakresController::class, 'edit'])
+    ->name('zakres.edit')
+    ->middleware('auth');
+
+Route::post('zakres/{zakres}', [ZakresController::class, 'update'])
+    ->name('zakres.update')
+    ->middleware('auth');
+
+Route::delete('zakres/{zakres}', [ZakresController::class, 'destroy'])
+    ->name('zakres.destroy')
+    ->middleware('auth');
+
+Route::put('zakres/{zakres}/restore', [ZakresController::class, 'restore'])
+    ->name('zakres.restore')
+    ->middleware('auth');
+
+// Kraj
+
+Route::get('kraj', [KrajController::class, 'index'])
+    ->name('kraj')
+    ->middleware('auth');
+
+Route::get('kraj/create', [KrajController::class, 'create'])
+    ->name('kraj.create')
+    ->middleware('auth');
+
+Route::post('kraj', [KrajController::class, 'store'])
+    ->name('kraj.store')
+    ->middleware('auth');
+
+Route::get('kraj/{kraj}/edit', [KrajController::class, 'edit'])
+    ->name('kraj.edit')
+    ->middleware('auth');
+
+Route::post('kraj/{kraj}', [KrajController::class, 'update'])
+    ->name('kraj.update')
+    ->middleware('auth');
+
+Route::delete('kraj/{kraj}', [KrajController::class, 'destroy'])
+    ->name('kraj.destroy')
+    ->middleware('auth');
+
+Route::put('kraj/{kraj}/restore', [KrajController::class, 'restore'])
+    ->name('kraj.restore')
     ->middleware('auth');
 
 // Edit

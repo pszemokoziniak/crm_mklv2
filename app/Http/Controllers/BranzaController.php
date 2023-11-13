@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EditRequest;
 use App\Models\Branza;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -21,7 +22,7 @@ class BranzaController extends Controller
         return Inertia::render('Branza/Create');
     }
 
-    public function store(Request $request)
+    public function store(EditRequest $request)
     {
         Branza::create($request->all());
 
@@ -39,7 +40,7 @@ class BranzaController extends Controller
         ]);
     }
 
-    public function update(Request $request)
+    public function update(EditRequest $request)
     {
         Branza::find($request->id)->update(
             ['name' => $request->name]

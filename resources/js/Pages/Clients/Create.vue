@@ -8,25 +8,24 @@
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.name" :error="form.errors.name" class="pb-8 pr-6 w-full lg:w-1/2" label="Firma" />
+          <text-input v-model="form.nazwa" :error="form.errors.nazwa" class="pb-8 pr-6 w-full lg:w-1/2" label="Firma" />
           <text-input v-model="form.ulica" :error="form.errors.ulica" class="pb-8 pr-6 w-full lg:w-1/2" label="Ulica" />
-          <select-input v-model="form.organization_id" :error="form.errors.organization_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Organization">
-            <option :value="null" />
-            <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
-          </select-input>
           <text-input v-model="form.miasto" :error="form.errors.miasto" class="pb-8 pr-6 w-full lg:w-1/2" label="Miasto" />
-          <text-input v-model="form.kraj" :error="form.errors.kraj" class="pb-8 pr-6 w-full lg:w-1/2" label="Kraj" />
+          <select-input v-model="form.kraj_id" :error="form.errors.kraj_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Kraj">
+            <option :value="null" />
+            <option v-for="item in kraj" :key="item.id" :value="item.id">{{ item.name }}</option>
+          </select-input>
+<!--          <text-input v-model="form.kraj" :error="form.errors.kraj" class="pb-8 pr-6 w-full lg:w-1/2" label="Kraj" />-->
           <text-input v-model="form.www" :error="form.errors.www" class="pb-8 pr-6 w-full lg:w-1/2" label="WWW" />
           <text-input v-model="form.linkedin" :error="form.errors.linkedin" class="pb-8 pr-6 w-full lg:w-1/2" label="LinkedIn" />
-<!--          <text-input v-model="form.branza" :error="form.errors.branza" class="pb-8 pr-6 w-full lg:w-1/2" label="Branża" />-->
-          <select-input v-model="form.branza" :error="form.errors.branza" class="pb-8 pr-6 w-full lg:w-1/2" label="Branża">
+          <select-input v-model="form.branza_id" :error="form.errors.branza_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Branża">
             <option :value="null" />
-<!--            <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>-->
+            <option v-for="item in branza" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
           <text-area v-model="form.message" :error="form.errors.message" class="pb-8 pr-6 w-full lg:w-full" label="Informacje" />
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Create Contact</loading-button>
+          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Zapisz</loading-button>
         </div>
       </form>
     </div>
@@ -34,7 +33,7 @@
 </template>
 
 <script>
-import { Head, Link } from '@inertiajs/inertia-vue3'
+import { Head, Link} from '@inertiajs/inertia-vue3'
 import Layout from '@/Shared/Layout'
 import TextInput from '@/Shared/TextInput'
 import TextArea from '@/Shared/TextareaInput.vue'
@@ -52,21 +51,22 @@ export default {
   },
   layout: Layout,
   props: {
-    organizations: Array,
+    branza: Array,
+    kraj: Array,
   },
   remember: 'form',
   data() {
     return {
       form: this.$inertia.form({
-        name: '',
+        nazwa: '',
         ulica: '',
-        organization_id: null,
         miasto: '',
-        kraj: '',
+        kraj_id: '',
         www: '',
         linkedin: '',
-        branza: '',
+        branza_id: null,
         message: '',
+        user_id: this.$page.props.auth.user.id,
       }),
     }
   },

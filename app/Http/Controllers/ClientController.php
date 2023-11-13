@@ -2,6 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ClientRequest;
+use App\Http\Requests\ContactStoreRequest;
+use App\Models\Branza;
+use App\Models\Client;
+use App\Models\Kraj;
+use App\Models\User;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -14,19 +21,25 @@ class ClientController extends Controller
     {
         return Inertia::render('Clients/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'contacts' => Auth::user()->account->contacts()
-                ->with('organization')
-                ->orderByName()
+            'clients' => Client::with('branza')
+                ->with('user')
+                ->with('kraj')
+//                ->orderByName()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn ($contact) => [
-                    'id' => $contact->id,
-                    'name' => $contact->name,
-                    'phone' => $contact->phone,
-                    'city' => $contact->city,
-                    'deleted_at' => $contact->deleted_at,
-                    'organization' => $contact->organization ? $contact->organization->only('name') : null,
+                ->through(fn ($client) => [
+                    'id' => $client->id,
+                    'nazwa' => $client->nazwa,
+                    'ulica' => $client->ulica,
+                    'miasto' => $client->miasto,
+                    'kraj' => $client->kraj ? $client->kraj : null,
+                    'www' => $client->www,
+                    'linkedIn' => $client->linkedIn,
+                    'branza' => $client->branza ? $client->branza : null,
+                    'user' => $client->user ? $client->user : null,
+                    'user_id' => $client->user_id,
+                    'created_at' => date($client->created_at)
                 ]),
         ]);
     }
@@ -34,96 +47,59 @@ class ClientController extends Controller
     public function create()
     {
         return Inertia::render('Clients/Create', [
-            'organizations' => Auth::user()->account
-                ->organizations()
-                ->orderBy('name')
-                ->get()
-                ->map
-                ->only('id', 'name'),
+            'branza' => Branza::get()->map->only('id', 'name'),
+            'kraj' => Kraj::get()->map->only('id', 'name', 'waluta'),
         ]);
     }
 
-    public function store()
+    public function store(ClientRequest $request)
     {
-        Auth::user()->account->contacts()->create(
-            Request::validate([
-                'first_name' => ['required', 'max:50'],
-                'last_name' => ['required', 'max:50'],
-                'organization_id' => ['nullable', Rule::exists('organizations', 'id')->where(function ($query) {
-                    $query->where('account_id', Auth::user()->account_id);
-                })],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
-        );
+        Client::create($request->all());
 
-        return Redirect::route('contacts')->with('success', 'Contact created.');
+        return Redirect::route('clients')->with('success', 'Zapisano.');
     }
 
-    public function edit(Contact $contact)
+    public function edit(Client $client)
     {
-        return Inertia::render('Contacts/Edit', [
-            'contact' => [
-                'id' => $contact->id,
-                'first_name' => $contact->first_name,
-                'last_name' => $contact->last_name,
-                'organization_id' => $contact->organization_id,
-                'email' => $contact->email,
-                'phone' => $contact->phone,
-                'address' => $contact->address,
-                'city' => $contact->city,
-                'region' => $contact->region,
-                'country' => $contact->country,
-                'postal_code' => $contact->postal_code,
-                'deleted_at' => $contact->deleted_at,
+        return Inertia::render('Clients/Edit', [
+            'client' => [
+                'id' => $client->id,
+                'nazwa' => $client->nazwa,
+                'ulica' => $client->ulica,
+                'miasto' => $client->miasto,
+                'www' => $client->www,
+                'linkedIn' => $client->linkedIn,
+                'waluta' => $client->waluta,
+                'message' => $client->message,
+                'branza_id' => $client->branza_id,
+                'kraj_id' => $client->kraj_id,
+                'user_id' => $client->user_id,
+                'deleted_at' => $client->deleted_at,
             ],
-            'organizations' => Auth::user()->account->organizations()
-                ->orderBy('name')
-                ->get()
-                ->map
-                ->only('id', 'name'),
+            'branza' => Branza::get(),
+            'kraj' => Kraj::get(),
+            'user' => User::get(),
         ]);
     }
 
-    public function update(Contact $contact)
+    public function update(Client $client, ContactStoreRequest $request)
     {
-        $contact->update(
-            Request::validate([
-                'first_name' => ['required', 'max:50'],
-                'last_name' => ['required', 'max:50'],
-                'organization_id' => [
-                    'nullable',
-                    Rule::exists('organizations', 'id')->where(fn ($query) => $query->where('account_id', Auth::user()->account_id)),
-                ],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
-        );
+        $client->update($request->all());
 
-        return Redirect::back()->with('success', 'Contact updated.');
+        return Redirect::back()->with('success', 'Klient poprawiony.');
     }
 
-    public function destroy(Contact $contact)
+    public function destroy(Client $client)
     {
-        $contact->delete();
+        $client->delete();
 
-        return Redirect::back()->with('success', 'Contact deleted.');
+        return Redirect::back()->with('success', 'Klient usunięty.');
     }
 
-    public function restore(Contact $contact)
+    public function restore(Client $client)
     {
-        $contact->restore();
+        $client->restore();
 
-        return Redirect::back()->with('success', 'Contact restored.');
+        return Redirect::back()->with('success', 'Klient przywrócony');
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Branza extends Model
+class Kraj extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -14,5 +14,9 @@ class Branza extends Model
     public function clients()
     {
         return $this->hasMany(Client::class);
+    }
+    public function zapytania()
+    {
+        return $this->hasMany(Zapytania::class);
     }
 }

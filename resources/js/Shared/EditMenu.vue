@@ -6,15 +6,14 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/contacts">
-        <icon name="users" class="mr-2 w-4 h-4" :class="isUrl('contacts') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('contacts') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Zapytania</div>
+      <Link class="group flex items-center py-3" href="/kraj">
+        <div :class="isUrl('kraj') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Kraj</div>
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/reports">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Oferty</div>
+      <Link class="group flex items-center py-3" href="/zakres">
+        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('zakres') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('zakres') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Zakres</div>
       </Link>
     </div>
     <div class="mb-4">
