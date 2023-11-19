@@ -8,11 +8,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EditController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\KrajController;
+use App\Http\Controllers\OfertaController;
+use App\Http\Controllers\OfertaStatusController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ZakresController;
 use App\Http\Controllers\ZapytaniaController;
+use App\Models\OfertaStatus;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -207,6 +210,36 @@ Route::put('zapytania/{zapytania}/restore', [ZapytaniaController::class, 'restor
     ->name('zapytania.restore')
     ->middleware('auth');
 
+// Oferta
+
+Route::get('oferta', [OfertaController::class, 'index'])
+    ->name('oferta')
+    ->middleware('auth');
+
+Route::get('oferta/create', [OfertaController::class, 'create'])
+    ->name('oferta.create')
+    ->middleware('auth');
+
+Route::post('oferta', [OfertaController::class, 'store'])
+    ->name('oferta.store')
+    ->middleware('auth');
+
+Route::get('oferta/{oferta}/edit', [OfertaController::class, 'edit'])
+    ->name('oferta.edit')
+    ->middleware('auth');
+
+Route::put('oferta/{oferta}', [OfertaController::class, 'update'])
+    ->name('oferta.update')
+    ->middleware('auth');
+
+Route::delete('oferta/{oferta}', [OfertaController::class, 'destroy'])
+    ->name('oferta.destroy')
+    ->middleware('auth');
+
+Route::put('oferta/{oferta}/restore', [OfertaController::class, 'restore'])
+    ->name('oferta.restore')
+    ->middleware('auth');
+
 // Branza
 
 Route::get('branza', [BranzaController::class, 'index'])
@@ -265,6 +298,36 @@ Route::delete('zakres/{zakres}', [ZakresController::class, 'destroy'])
 
 Route::put('zakres/{zakres}/restore', [ZakresController::class, 'restore'])
     ->name('zakres.restore')
+    ->middleware('auth');
+
+// Status Oferta
+
+Route::get('ofertastatus', [OfertaStatusController::class, 'index'])
+    ->name('ofertastatus')
+    ->middleware('auth');
+
+Route::get('ofertastatus/create', [OfertaStatusController::class, 'create'])
+    ->name('ofertastatus.create')
+    ->middleware('auth');
+
+Route::post('ofertastatus', [OfertaStatusController::class, 'store'])
+    ->name('ofertastatus.store')
+    ->middleware('auth');
+
+Route::get('ofertastatus/{ofertastatus}/edit', [OfertaStatusController::class, 'edit'])
+    ->name('ofertastatus.edit')
+    ->middleware('auth');
+
+Route::post('ofertastatus/{ofertastatus}', [OfertaStatusController::class, 'update'])
+    ->name('ofertastatus.update')
+    ->middleware('auth');
+
+Route::delete('ofertastatus/{ofertastatus}', [OfertaStatusController::class, 'destroy'])
+    ->name('ofertastatus.destroy')
+    ->middleware('auth');
+
+Route::put('ofertastatus/{ofertastatus}/restore', [OfertaStatusController::class, 'restore'])
+    ->name('ofertastatus.restore')
     ->middleware('auth');
 
 // Kraj

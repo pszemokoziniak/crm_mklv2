@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ClientRequest;
-use App\Http\Requests\ContactStoreRequest;
+use App\Http\Requests\OfertaStoreRequest;
 use App\Http\Requests\ZapytaniaStoreRequest;
 use App\Models\Branza;
 use App\Models\Client;
 use App\Models\Kraj;
+use App\Models\Oferta;
+use App\Models\OfertaStatus;
 use App\Models\User;
 use App\Models\Zakres;
 use App\Models\Zapytania;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
-class ZapytaniaController extends Controller
+class OfertaController extends Controller
 {
     public function index()
     {
@@ -49,19 +50,20 @@ class ZapytaniaController extends Controller
     public function create()
     {
 
-        return Inertia::render('Zapytania/Create', [
-            'zakres' => Zakres::get()->map->only('id', 'name'),
-            'kraj' => Kraj::get()->map->only('id', 'name', 'waluta'),
-            'users' => User::get()->map->only('id', 'first_name', 'last_name'),
+        return Inertia::render('Oferta/Create', [
+            'zapytanie' => Zapytania::get()->map->only('id', 'nazwa_projektu'),
+            'typs' => ['Klient oferuje', 'Klient na kontrakt'],
             'clients' => Client::get()->map->only('id', 'nazwa'),
-            'id_zapyt' => (Zapytania::count()+1).'/'.Carbon::now()->format('Y'),
+            'users' => User::get()->map->only('id', 'first_name', 'last_name'),
+            'statuses' => OfertaStatus::get()->map->only('id', 'name'),
+            'krajs' => Kraj::get()->map->only('id', 'waluta'),
         ]);
     }
-    public function store(ZapytaniaStoreRequest $request)
+    public function store(OfertaStoreRequest $request)
     {
-        Zapytania::create($request->all());
+        Oferta::create($request->all());
 
-        return Redirect::route('zapytania')->with('success', 'Zapisano.');
+        return Redirect::route('oferta')->with('success', 'Zapisano.');
     }
 
     public function edit(Zapytania $zapytania)

@@ -26,8 +26,11 @@ class ContactStoreRequest extends FormRequest
         return [
             'nazwa' => ['required', 'max:50'],
             'ulica' => ['required', 'max:50'],
-            'miasto' => ['required', 'max:50'],
-            'www' => ['required', 'max:50'],
+            'linkedIn' => ['nullable', 'max:50'],
+            'message' => ['required', 'max:10000'],
+            'user_id' => ['required', 'max:36'],
+            'kraj_id' => ['required', 'max:36'],
+            'branza_id' => ['required', 'max:36'],
         ];
     }
     public function messages() {

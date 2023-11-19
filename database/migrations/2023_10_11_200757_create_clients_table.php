@@ -14,16 +14,16 @@ class CreateClientsTable extends Migration
     public function up()
     {
         Schema::create('clients', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('nazwa', 200);
             $table->string('ulica', 200)->nullable();
             $table->string('miasto', 200)->nullable();
             $table->string('www', 200)->nullable();
             $table->string('linkedIn', 200)->nullable();
             $table->text('message')->nullable();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('kraj_id')->constrained()->onDelete('cascade');
-            $table->foreignId('branza_id')->constrained()->onDelete('cascade');
+            $table->uuid('user_id')->nullable(false);
+            $table->uuid('kraj_id')->nullable(false);
+            $table->uuid('branza_id')->nullable(false);
             $table->softDeletes();
             $table->timestamps();
         });

@@ -84,7 +84,7 @@ class ClientController extends Controller
 
     public function update(Client $client, ContactStoreRequest $request)
     {
-        $client->update($request->all());
+        $client->update($request->validated());
 
         return Redirect::back()->with('success', 'Klient poprawiony.');
     }

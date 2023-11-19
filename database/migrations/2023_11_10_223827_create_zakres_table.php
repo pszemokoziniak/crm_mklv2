@@ -14,7 +14,7 @@ class CreateZakresTable extends Migration
     public function up()
     {
         Schema::create('zakres', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name', 200);
             $table->softDeletes();
             $table->timestamps();

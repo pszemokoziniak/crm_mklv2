@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Zapytania extends Model
+class Oferta extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -17,23 +17,10 @@ class Zapytania extends Model
     {
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
     }
-    public function zakres(): BelongsTo
+    public function ofertastatus(): BelongsTo
     {
-        return $this->belongsTo(Zakres::class);
+        return $this->belongsTo(OfertaStatus::class);
     }
-    public function kraj(): BelongsTo
-    {
-        return $this->belongsTo(Kraj::class);
-    }
-    public function client(): BelongsTo
-    {
-        return $this->belongsTo(Client::class);
-    }
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function scopeOrderByCreatedAt($query)
     {
         $query->orderBy('created_at');
