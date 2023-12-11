@@ -34,6 +34,11 @@ class Zapytania extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function oferta()
+    {
+        return $this->belongsTo(Oferta::class, 'id', 'zapytania_id');
+    }
+
     public function scopeOrderByCreatedAt($query)
     {
         $query->orderBy('created_at');

@@ -21,6 +21,10 @@ class Oferta extends Model
     {
         return $this->belongsTo(OfertaStatus::class);
     }
+    public function zapytania()
+    {
+        return $this->hasMany(Zapytania::class);
+    }
     public function scopeOrderByCreatedAt($query)
     {
         $query->orderBy('created_at');
