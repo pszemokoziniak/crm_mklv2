@@ -13,6 +13,7 @@ use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\OfertaStatusController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\StatsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ZakresController;
 use App\Http\Controllers\ZapytaniaController;
@@ -149,6 +150,12 @@ Route::get('reports', [ReportsController::class, 'index'])
 
 Route::get('calendar', [CalendarController::class, 'index'])
     ->name('calendar')
+    ->middleware('auth');
+
+// Statystyki
+
+Route::get('stats', [StatsController::class, 'index'])
+    ->name('stats')
     ->middleware('auth');
 
 // Images
