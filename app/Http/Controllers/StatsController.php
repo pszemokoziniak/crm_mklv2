@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Oferta;
 use App\Models\Zapytania;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -21,18 +22,17 @@ class StatsController extends Controller
         $start = array_values(Request::all('start'))[0]?array_values(Request::all('start'))[0]:$start;
         $end = array_values(Request::all('end'))[0]?array_values(Request::all('end'))[0]:$end;
 
-        $start = new Carbon($start);
-
-        $this->increaseClients($start);
+        $this->clientZapytania();
 
         return Inertia::render('Stats/Index',[
             'start' => $start,
             'end' => $end,
             'filters' => Request::all('start', 'end'),
             'clientNumber' => $this->clientNumber(),
-            'clientNumberByNumber' => $this->clientNumberByName($start, $end),
+            'clientNumberByUser' => $this->clientNumberByUser($start, $end),
             'clientActive' => $this->clientActive(),
-            'increaseClients' => $this->increaseClients($start),
+            'increaseClients' => $this->increaseClients($start, $end),
+            'clientBranza' => $this->clientBranza($start, $end),
         ]);
 
     }
@@ -40,7 +40,7 @@ class StatsController extends Controller
     {
         return Client::count();
     }
-    public function clientNumberByName($start, $end)
+    public function clientNumberByUser($start, $end)
     {
         return Client::select(DB::raw('users.id, users.last_name, users.first_name, COUNT(*) AS count'))
             ->join('users', 'users.id', '=', 'clients.user_id')
@@ -56,10 +56,16 @@ class StatsController extends Controller
         $nonActiveClient = (int) $this->clientNumber() - $activeClient;
         return [$activeClient, $nonActiveClient];
     }
-    public function increaseClients(Carbon $start)
+    public function increaseClients($start, $end)
     {
+        $start = Carbon::parse($start);
+        $end = Carbon::parse($end);
+
+        $start = array_values(Request::all('start'))[0]?Carbon::parse(array_values(Request::all('start'))[0]):Carbon::parse($start);
+        $end = array_values(Request::all('end'))[0]?Carbon::parse(array_values(Request::all('end'))[0]):Carbon::parse($end);
+
         $start->setDay(1);
-        foreach (CarbonPeriod::create($start, '1 month', Carbon::today()) as $month) {
+        foreach (CarbonPeriod::create($start, '1 month', $end) as $month) {
             $months[] = $month->format('m-Y');
         }
 
@@ -73,6 +79,31 @@ class StatsController extends Controller
             $countMonth[] = $count;
         }
         return [$months, $countMonth];
+    }
+    public function clientBranza($start, $end)
+    {
+        $clientBranza = Client::select(DB::raw('branzas.id, branzas.name, COUNT(*) AS count'))
+            ->join('branzas', 'branzas.id', '=', 'clients.branza_id')
+            ->where('clients.created_at', '>=', $start)
+            ->where('clients.created_at', '<=', $end)
+            ->groupBy('branzas.id', 'branzas.name')
+            ->orderBy('count', 'DESC')
+            ->get();
+
+        foreach($clientBranza as $item) {
+            $name[] = $item->name;
+            $count[] = $item->count;
+        }
+        return [$name, $count];
+    }
+    public function clientZapytania()
+    {
+        $data = Oferta::select(DB::raw('clients.id, clients.nazwa, SUM(ofertas.kwotaPLN) AS count'))
+            ->join('clients', 'clients.id', '=', 'ofertas.client_id')
+            ->groupBy('clients.id', 'clients.nazwa')
+            ->get();
+
+        dd($data);
     }
 
 }

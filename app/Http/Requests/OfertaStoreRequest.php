@@ -33,6 +33,7 @@ class OfertaStoreRequest extends FormRequest
             'data_kontakt' => ['required', 'max:50'],
             'oferta_status_id' => ['required'],
             'opis' => ['required'],
+            'user_id' => ['required'],
         ];
     }
 

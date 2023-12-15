@@ -23,7 +23,7 @@
           <text-input v-model="form.kwota" :error="form.errors.kwota" type="number" class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
           <select-input v-model="form.waluta" :error="form.errors.waluta" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
             <option :value="null" />
-            <option v-for="item in krajs" :key="item.id" :value="item.id">{{ item.waluta }}</option>
+            <option v-for="item in krajs" :key="item.id" :value="item.waluta">{{ item.waluta }}</option>
           </select-input>
           <text-input v-model="form.data_kontakt" :error="form.errors.data_kontakt" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
           <select-input v-model="form.oferta_status_id" :error="form.errors.oferta_status_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Status">

@@ -7,6 +7,7 @@ use App\Http\Requests\ZapytaniaStoreRequest;
 use App\Models\Branza;
 use App\Models\Client;
 use App\Models\Kraj;
+use App\Models\Kursy;
 use App\Models\Oferta;
 use App\Models\OfertaStatus;
 use App\Models\User;
@@ -22,27 +23,29 @@ class OfertaController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Zapytania/Index', [
+        return Inertia::render('Oferta/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'zapytanias' => Zapytania::with('client')
+            'ofertas' => Oferta::with('client')
                 ->with('user')
                 ->with('kraj')
-                ->with('zakres')
+                ->with('zapytania')
+                ->with('status')
                 ->OrderByCreatedAt()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn ($zapytania) => [
-                    'id' => $zapytania->id,
-                    'id_zapyt' => $zapytania->id_zapyt,
-                    'nazwa_projektu' => $zapytania->nazwa_projektu,
-                    'client' => $zapytania->client ? $zapytania->client : null,
-                    'kwota' => $zapytania->kwota,
-                    'kraj' => $zapytania->kraj ? $zapytania->kraj : null,
-                    'zakres' => $zapytania->zakres ? $zapytania->zakres : null,
-                    'user' => $zapytania->user ? $zapytania->user : null,
-                    'deleted_at' => $zapytania->deleted_at,
-                    'created_at' => date($zapytania->created_at)
+                ->through(fn ($oferta) => [
+                    'id' => $oferta->id,
+                    'typ' => $oferta->typ,
+                    'client' => $oferta->client ? $oferta->client : null,
+                    'zapytania' => $oferta->zapytania ? $oferta->zapytania : null,
+                    'kwota' => $oferta->kwota,
+                    'waluta' => $oferta->waluta,
+                    'kraj' => Kraj::where('id', $oferta->zapytania->kraj_id)->first(),
+                    'status' => $oferta->status ? $oferta->status : null,
+                    'user' => $oferta->user ? $oferta->user : null,
+                    'deleted_at' => $oferta->deleted_at,
+                    'created_at' => date($oferta->created_at)
                 ])
         ]);
     }
@@ -61,60 +64,78 @@ class OfertaController extends Controller
     }
     public function store(OfertaStoreRequest $request)
     {
-        Oferta::create($request->all());
+        (int) $kwotaPLN = $request->kwota * $this->exchangeRate($request->kwota, $request->waluta);
+        Oferta::create([
+            'zapytania_id' => $request->zapytania_id,
+            'typ' => $request->typ,
+            'client_id' => $request->client_id,
+            'data_wyslania' => $request->data_wyslania,
+            'kwota' => $request->kwota,
+            'waluta' => $request->waluta,
+            'kurs' => $request->kurs,
+            'kwotaPLN' => $kwotaPLN,
+            'data_kontakt' => $request->data_kontakt,
+            'oferta_status_id' => $request->oferta_status_id,
+            'opis' => $request->opis,
+            'user_id' => $request->user_id,
+        ]);
 
         return Redirect::route('oferta')->with('success', 'Zapisano.');
     }
 
-    public function edit(Zapytania $zapytania)
+    public function edit(Oferta $oferta)
     {
-        return Inertia::render('Zapytania/Edit', [
-            'zapytania' => [
-                'id' => $zapytania->id,
-                'id_zapyt' => $zapytania->id_zapyt,
-                'user_otrzymal_id' => $zapytania->user_otrzymal_id,
-                'data_otrzymania' => $zapytania->data_otrzymania,
-                'data_zlozenia' => $zapytania->data_zlozenia,
-                'client_id' => $zapytania->client_id,
-                'nazwa_projektu' => $zapytania->nazwa_projektu,
-                'miejscowosc' => $zapytania->miejscowosc,
-                'kraj_id' => $zapytania->kraj_id,
-                'zakres_id' => $zapytania->zakres_id,
-                'user_opracowuje_id' => $zapytania->user_opracowuje_id,
-                'start' => $zapytania->start,
-                'end' => $zapytania->end,
-                'kwota' => $zapytania->kwota,
-                'waluta' => $zapytania->waluta,
-                'opis' => $zapytania->opis,
-                'user_id' => $zapytania->user_id,
-                'deleted_at' => $zapytania->deleted_at,
+        return Inertia::render('Oferta/Edit', [
+            'oferta' => [
+                'id' => $oferta->id,
+                'zapytania_id' => $oferta->zapytania_id,
+                'typ' => $oferta->typ,
+                'client_id' => $oferta->client_id,
+                'data_wyslania' => $oferta->data_wyslania,
+                'kwota' => $oferta->kwota,
+                'waluta' => $oferta->waluta,
+                'data_kontakt' => $oferta->data_kontakt,
+                'oferta_status_id' => $oferta->oferta_status_id,
+                'opis' => $oferta->opis,
+                'user_id' => $oferta->user_id,
+                'deleted_at' => $oferta->deleted_at,
             ],
             'branzas' => Branza::get(),
             'krajs' => Kraj::get(),
             'users' => User::get(),
             'zakres' => Zakres::get(),
             'clients' => Client::get(),
+            'zapytanie' => Zapytania::get()->map->only('id', 'nazwa_projektu'),
+            'statuses' => OfertaStatus::get()->map->only('id', 'name'),
+
         ]);
     }
 
-    public function update(Zapytania $zapytania, ZapytaniaStoreRequest $request)
+    public function update(Oferta $oferta, OfertaStoreRequest $request)
     {
-        $zapytania->update($request->all());
+        $oferta->update($request->all());
 
-        return Redirect::back()->with('success', 'Zapytanie poprawione.');
+        return Redirect::back()->with('success', 'Oferta poprawiona.');
     }
 
-    public function destroy(Zapytania $zapytania)
+    public function destroy(Oferta $oferta)
     {
-        $zapytania->delete();
+        $oferta->delete();
 
-        return Redirect::back()->with('success', 'Zapytanie usunięte.');
+        return Redirect::back()->with('success', 'Oferta usunięta.');
     }
 
-    public function restore(Zapytania $zapytania)
+    public function restore(Oferta $oferta)
     {
-        $zapytania->restore();
+        $oferta->restore();
 
-        return Redirect::back()->with('success', 'Zapytanie przywrócone');
+        return Redirect::back()->with('success', 'Oferta przywrócona');
+    }
+    public function exchangeRate($amount, $currency)
+    {
+        $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
+        $kwotaPLN = ($amount * $currency['kurs']);
+
+        return (float) $kwotaPLN;
     }
 }

@@ -23,7 +23,23 @@ class Oferta extends Model
     }
     public function zapytania()
     {
-        return $this->hasMany(Zapytania::class);
+        return $this->belongsTo(Zapytania::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function kraj()
+    {
+        return $this->belongsTo(Kraj::class);
+    }
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
+    public function status()
+    {
+        return $this->belongsTo(OfertaStatus::class, 'oferta_status_id', 'id');
     }
     public function scopeOrderByCreatedAt($query)
     {
@@ -32,15 +48,15 @@ class Oferta extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('nazwa_projektu', 'like', '%'.$search.'%')
-                ->orWhereHas('zakres', function ($query) use ($search) {
-                    $query->where('name', 'like', '%'.$search.'%');
-                })
-                ->orWhereHas('kraj', function ($query) use ($search) {
-                    $query->where('name', 'like', '%'.$search.'%');
-                })
+            $query->where('typ', 'like', '%'.$search.'%')
                 ->orWhereHas('client', function ($query) use ($search) {
                     $query->where('nazwa', 'like', '%'.$search.'%');
+                })
+                ->orWhereHas('zapytania', function ($query) use ($search) {
+                    $query->where('nazwa_projektu', 'like', '%'.$search.'%');
+                })
+                ->orWhereHas('status', function ($query) use ($search) {
+                    $query->where('name', 'like', '%'.$search.'%');
                 })
                 ->orWhereHas('user', function ($query) use ($search) {
                     $query->where('first_name', 'like', '%'.$search.'%')
