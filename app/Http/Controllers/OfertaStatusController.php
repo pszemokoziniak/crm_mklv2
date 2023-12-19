@@ -47,7 +47,7 @@ class OfertaStatusController extends Controller
             ['name' => $request->name]
         );
 
-        return Redirect::back()->with('success', 'Poprawiono.');
+        return Redirect::route('ofertastatus')->with('success', 'Poprawiono.');
     }
 
     public function destroy(OfertaStatus $ofertastatus)

@@ -15,7 +15,15 @@
       <active-client :clientActive="clientActive"/>
       <increase-client :increaseClients="increaseClients"/>
       <client-branza :clientBranza="clientBranza"/>
-
+      <clients-zapytania-sum-amount :clientZapytaniaSumAmount="clientZapytaniaSumAmount"/>
+      <clients-oferty-sum-amount :clientOfertaSumAmount="clientOfertaSumAmount"/>
+      <h2 class="flex items-center text-3xl font-extrabold dark:text-white p-1">Zapytania</h2>
+      <hr>
+      <p class="p-1 text-2xl"> Ilość zapytań: {{ quantityZapytania[0] }} Wartość zapytań: {{ quantityZapytania[1] }} </p>
+      <zapytania-oferta-sum-amount :zapytaniaOfertySumAmount="zapytaniaOfertySumAmount"/>
+      <zapytania-branze :zapytaniaBranze="zapytaniaBranze" />
+      <zapytania-zakres :zapytaniaZakres="zapytaniaZakres"/>
+      <zapytania-users :zapytaniaUsers="zapytaniaUsers"/>
     </div>
   </div>
 </template>
@@ -32,7 +40,13 @@ import SearchFilter from '@/Shared/SearchFilter'
 import UsersAddClients from "@/Pages/Stats/UsersAddClients.vue";
 import ActiveClient from "@/Pages/Stats/ActiveClient.vue";
 import IncreaseClient from "@/Pages/Stats/IncreaseClient.vue";
+import ZapytaniaOfertaSumAmount from "@/Pages/Stats/ZapytaniaOfertySumAmount.vue";
 import ClientBranza from "@/Pages/Stats/ClientBranza.vue";
+import ClientsZapytaniaSumAmount from "@/Pages/Stats/ClientsZapytaniaSumAmount.vue";
+import ClientsOfertySumAmount from "@/Pages/Stats/ClientsOfertaSumAmount.vue";
+import ZapytaniaBranze from "@/Pages/Stats/ZapytaniaBranze.vue";
+import ZapytaniaZakres from "@/Pages/Stats/ZapytaniaZakres.vue";
+import ZapytaniaUsers from "@/Pages/Stats/ZapytaniaUsers.vue";
 import TextInput from "@/Shared/TextInput.vue";
 
 export default {
@@ -47,6 +61,12 @@ export default {
     SearchFilter,
     IncreaseClient,
     ClientBranza,
+    ClientsZapytaniaSumAmount,
+    ClientsOfertySumAmount,
+    ZapytaniaOfertaSumAmount,
+    ZapytaniaBranze,
+    ZapytaniaZakres,
+    ZapytaniaUsers,
   },
   layout: Layout,
   props: {
@@ -55,8 +75,15 @@ export default {
     clientActive: Array,
     increaseClients: Array,
     clientBranza: Array,
+    clientZapytaniaSumAmount: Array,
+    clientOfertaSumAmount: Array,
+    zapytaniaOfertySumAmount: Array,
+    zapytaniaBranze: Array,
+    zapytaniaZakres: Array,
+    zapytaniaUsers: Array,
     start: Date,
     end: Date,
+    quantityZapytania: Array,
     // filters: Object,
     // zapytanias: Object,
   },

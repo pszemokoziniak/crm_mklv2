@@ -54,17 +54,17 @@ class KursyController extends Controller
         return Redirect::back()->with('success', 'Poprawiono.');
     }
 
-    public function destroy(Kraj $kraj)
-    {
-        $kraj->delete();
-
-        return Redirect::route('branza')->with('success', 'Usunięte.');
-    }
-
-    public function restore(Kraj $kraj)
-    {
-        $kraj->restore();
-
-        return Redirect::back()->with('success', 'Przywrócono.');
-    }
+//    public function destroy(Kraj $kraj)
+//    {
+//        $kraj->delete();
+//
+//        return Redirect::route('branza')->with('success', 'Usunięte.');
+//    }
+//
+//    public function restore(Kraj $kraj)
+//    {
+//        $kraj->restore();
+//
+//        return Redirect::back()->with('success', 'Przywrócono.');
+//    }
 }

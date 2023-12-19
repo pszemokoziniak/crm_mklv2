@@ -49,14 +49,14 @@ class KrajController extends Controller
 //            ['waluta' => $request->waluta],
         );
 
-        return Redirect::back()->with('success', 'Poprawione.');
+        return Redirect::route('kraj')->with('success', 'Poprawione.');
     }
 
     public function destroy(Kraj $kraj)
     {
         $kraj->delete();
 
-        return Redirect::route('branza')->with('success', 'Usunięte.');
+        return Redirect::route('kraj')->with('success', 'Usunięte.');
     }
 
     public function restore(Kraj $kraj)

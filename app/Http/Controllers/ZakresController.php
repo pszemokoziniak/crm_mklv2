@@ -46,7 +46,7 @@ class ZakresController extends Controller
             ['name' => $request->name]
         );
 
-        return Redirect::back()->with('success', 'Poprawiono.');
+        return Redirect::route('zakres')->with('success', 'Poprawiono.');
     }
 
     public function destroy(Zakres $zakres)

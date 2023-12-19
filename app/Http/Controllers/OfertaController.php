@@ -49,7 +49,6 @@ class OfertaController extends Controller
                 ])
         ]);
     }
-
     public function create()
     {
 
@@ -64,21 +63,22 @@ class OfertaController extends Controller
     }
     public function store(OfertaStoreRequest $request)
     {
-        (int) $kwotaPLN = $request->kwota * $this->exchangeRate($request->kwota, $request->waluta);
-        Oferta::create([
-            'zapytania_id' => $request->zapytania_id,
-            'typ' => $request->typ,
-            'client_id' => $request->client_id,
-            'data_wyslania' => $request->data_wyslania,
-            'kwota' => $request->kwota,
-            'waluta' => $request->waluta,
-            'kurs' => $request->kurs,
-            'kwotaPLN' => $kwotaPLN,
-            'data_kontakt' => $request->data_kontakt,
-            'oferta_status_id' => $request->oferta_status_id,
-            'opis' => $request->opis,
-            'user_id' => $request->user_id,
-        ]);
+        (int) $kwotaPLN = (int) $request->kwota * (float) $this->exchangeRate($request->waluta);
+        (float) $kurs = $this->exchangeRate($request->waluta);
+            $data = new Oferta();
+            $data->zapytania_id = $request->zapytania_id;
+            $data->typ = $request->typ;
+            $data->client_id = $request->client_id;
+            $data->data_wyslania = $request->data_wyslania;
+            $data->kwota = $request->kwota;
+            $data->waluta = $request->waluta;
+            $data->kurs = $kurs;
+            $data->kwotaPLN = $kwotaPLN;
+            $data->data_kontakt = $request->data_kontakt;
+            $data->oferta_status_id = $request->oferta_status_id;
+            $data->opis = $request->opis;
+            $data->user_id = $request->user_id;
+            $data->save();
 
         return Redirect::route('oferta')->with('success', 'Zapisano.');
     }
@@ -131,7 +131,21 @@ class OfertaController extends Controller
 
         return Redirect::back()->with('success', 'Oferta przywrócona');
     }
-    public function exchangeRate($amount, $currency)
+//    public function exchangeRate($amount, $currency)
+//    {
+//        $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
+//        $kwotaPLN = ($amount * $currency['kurs']);
+//
+//        return (float) $kwotaPLN;
+//    }
+    public function exchangeRate($currency)
+    {
+        $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
+        $currency = $currency['kurs'];
+
+        return (string) $currency;
+    }
+    public function kwotaPLN($amount, $currency)
     {
         $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
         $kwotaPLN = ($amount * $currency['kurs']);

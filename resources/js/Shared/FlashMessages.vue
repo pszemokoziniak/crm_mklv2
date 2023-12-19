@@ -33,6 +33,9 @@ export default {
       show: true,
     }
   },
+  // created() {
+  //   setTimeout(() => this.show = true, 1000)
+  // },
   watch: {
     '$page.props.flash': {
       handler() {
@@ -41,5 +44,13 @@ export default {
       deep: true,
     },
   },
+  // mounted() {
+  //   this.created()
+  // },
+  methods: {
+    created() {
+      setTimeout(() => this.show = false, 1000)
+    },
+  }
 }
 </script>

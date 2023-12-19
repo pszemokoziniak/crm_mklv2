@@ -8,6 +8,7 @@ use App\Http\Requests\ZapytaniaStoreRequest;
 use App\Models\Branza;
 use App\Models\Client;
 use App\Models\Kraj;
+use App\Models\Kursy;
 use App\Models\User;
 use App\Models\Zakres;
 use App\Models\Zapytania;
@@ -59,8 +60,30 @@ class ZapytaniaController extends Controller
     }
     public function store(ZapytaniaStoreRequest $request)
     {
-        Zapytania::create($request->all());
-
+//        Zapytania::create($request->all());
+        $walutaName = Kraj::where('id', $request->waluta)->pluck('waluta');
+        (int) $kwotaPLN = (int) $request->kwota * (float) $this->exchangeRate($walutaName[0]);
+        (float) $kurs = $this->exchangeRate($walutaName[0]);
+        $data = new Zapytania();
+        $data->id_zapyt = $request->id_zapyt;
+        $data->user_otrzymal_id = $request->user_otrzymal_id;
+        $data->data_otrzymania = $request->data_otrzymania;
+        $data->data_zlozenia = $request->data_zlozenia;
+        $data->client_id = $request->client_id;
+        $data->nazwa_projektu = $request->nazwa_projektu;
+        $data->miejscowosc = $request->miejscowosc;
+        $data->kwotaPLN = $kwotaPLN;
+        $data->kurs = $kurs;
+        $data->kraj_id = $request->kraj_id;
+        $data->zakres_id = $request->zakres_id;
+        $data->user_opracowuje_id = $request->user_opracowuje_id;
+        $data->start = $request->start;
+        $data->end = $request->end;
+        $data->kwota = $request->kwota;
+        $data->waluta = $request->waluta;
+        $data->opis = $request->opis;
+        $data->user_id = $request->user_id;
+        $data->save();
         return Redirect::route('zapytania')->with('success', 'Zapisano.');
     }
 
@@ -114,5 +137,19 @@ class ZapytaniaController extends Controller
         $zapytania->restore();
 
         return Redirect::back()->with('success', 'Zapytanie przywrócone');
+    }
+    public function exchangeRate($currency)
+    {
+        $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
+        $currency = $currency['kurs'];
+
+        return (string) $currency;
+    }
+    public function kwotaPLN($amount, $currency)
+    {
+        $currency = Kursy::select('kurs')->where('id', $currency)->latest()->first()->toArray();
+        $kwotaPLN = ($amount * $currency['kurs']);
+
+        return (float) $kwotaPLN;
     }
 }

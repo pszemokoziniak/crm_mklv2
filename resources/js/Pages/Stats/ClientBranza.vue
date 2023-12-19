@@ -30,7 +30,7 @@ export default {
       },
         options: {
           responsive: false,
-          maintainAspectRatio: false
+          maintainAspectRatio: true
         }
       }
     }

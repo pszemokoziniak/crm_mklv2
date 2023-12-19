@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EditController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\KrajController;
+use App\Http\Controllers\KursyController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\OfertaStatusController;
 use App\Http\Controllers\OrganizationsController;
@@ -312,6 +313,36 @@ Route::delete('zakres/{zakres}', [ZakresController::class, 'destroy'])
 
 Route::put('zakres/{zakres}/restore', [ZakresController::class, 'restore'])
     ->name('zakres.restore')
+    ->middleware('auth');
+
+// Kursy
+
+Route::get('kursy', [KursyController::class, 'index'])
+    ->name('kursy')
+    ->middleware('auth');
+
+Route::get('kursy/create', [KursyController::class, 'create'])
+    ->name('kursy.create')
+    ->middleware('auth');
+
+Route::post('kursy', [KursyController::class, 'store'])
+    ->name('kursy.store')
+    ->middleware('auth');
+
+Route::get('kursy/{kursy}/edit', [KursyController::class, 'edit'])
+    ->name('kursy.edit')
+    ->middleware('auth');
+
+Route::post('kursy/{kursy}', [KursyController::class, 'update'])
+    ->name('kursy.update')
+    ->middleware('auth');
+
+Route::delete('kursy/{kursy}', [KursyController::class, 'destroy'])
+    ->name('kursy.destroy')
+    ->middleware('auth');
+
+Route::put('kursy/{kursy}/restore', [KursyController::class, 'restore'])
+    ->name('kursy.restore')
     ->middleware('auth');
 
 // Status Oferta

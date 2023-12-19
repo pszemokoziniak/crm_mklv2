@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Head title="Create Contact" />
+    <Head title="Utwórz oferta" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-indigo-400 hover:text-indigo-600" href="/oferta">Oferty</Link>
       <span class="text-indigo-400 font-medium">/</span> Utwórz
@@ -76,6 +76,7 @@ export default {
         data_wyslania: '',
         kwota: '',
         waluta: '',
+        kurs: '',
         data_kontakt: '',
         oferta_status_id: '',
         opis: '',

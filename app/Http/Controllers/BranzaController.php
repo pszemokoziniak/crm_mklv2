@@ -46,7 +46,7 @@ class BranzaController extends Controller
             ['name' => $request->name]
         );
 
-        return Redirect::back()->with('success', 'Poprawione.');
+        return Redirect::route('branza')->with('success', 'Poprawione.');
     }
 
     public function destroy(Branza $branza)

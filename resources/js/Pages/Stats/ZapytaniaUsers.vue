@@ -1,4 +1,5 @@
 <template>
+  <h1 class="text-2xl font-bold p-1 mt-3">Dodali zapytania</h1>
   <Pie :data="data" :options="options" />
 </template>
 
@@ -13,20 +14,23 @@ export default {
   components: {
     Pie
   },
+  props: {
+    zapytaniaUsers: Array,
+  },
   data() {
     return {
       data: {
-        labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
+        labels: this.zapytaniaUsers[0],
         datasets: [
           {
-            backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
-            data: [40, 20, 80, 10]
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#7f95cd", "#2e5ea4","#c738b9","#ccdb6b","#7a3e0a","#3d7835","#cdcce3","#941b4b","#aebcbd","#cda9e8"],
+            data: this.zapytaniaUsers[1],
           }
         ]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false
+        responsive: false,
+        maintainAspectRatio: true,
       }
     }
   }
