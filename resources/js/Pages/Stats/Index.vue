@@ -24,6 +24,11 @@
       <zapytania-branze :zapytaniaBranze="zapytaniaBranze" />
       <zapytania-zakres :zapytaniaZakres="zapytaniaZakres"/>
       <zapytania-users :zapytaniaUsers="zapytaniaUsers"/>
+      <h2 class="flex items-center text-3xl font-extrabold dark:text-white p-1">Oferty</h2>
+      <hr>
+      <p class="text-2xl p-1">Ilość ofert - {{quantityOferta[0]}} Wartość zapytań: {{ quantityOferta[1] }} </p>
+      <oferta-status :ofertaStatus="ofertaStatus"/>
+      <oferta-status-win :ofertaStatusWin="ofertaStatusWin"/>
     </div>
   </div>
 </template>
@@ -47,6 +52,8 @@ import ClientsOfertySumAmount from "@/Pages/Stats/ClientsOfertaSumAmount.vue";
 import ZapytaniaBranze from "@/Pages/Stats/ZapytaniaBranze.vue";
 import ZapytaniaZakres from "@/Pages/Stats/ZapytaniaZakres.vue";
 import ZapytaniaUsers from "@/Pages/Stats/ZapytaniaUsers.vue";
+import OfertaStatus from "@/Pages/Stats/OfertaStatus.vue";
+import OfertaStatusWin from "@/Pages/Stats/OfertaStatusWin.vue";
 import TextInput from "@/Shared/TextInput.vue";
 
 export default {
@@ -67,6 +74,8 @@ export default {
     ZapytaniaBranze,
     ZapytaniaZakres,
     ZapytaniaUsers,
+    OfertaStatus,
+    OfertaStatusWin,
   },
   layout: Layout,
   props: {
@@ -81,6 +90,9 @@ export default {
     zapytaniaBranze: Array,
     zapytaniaZakres: Array,
     zapytaniaUsers: Array,
+    quantityOferta: Array,
+    ofertaStatus: Array,
+    ofertaStatusWin: Array,
     start: Date,
     end: Date,
     quantityZapytania: Array,

@@ -40,6 +40,9 @@ class StatsController extends Controller
             'zapytaniaBranze' => $this->zapytaniaBranze(),
             'zapytaniaZakres' => $this->zapytaniaZakres(),
             'zapytaniaUsers' => $this->zapytaniaUsers(),
+            'quantityOferta' => $this->quantityOferta(),
+            'ofertaStatus' => $this->ofertaStatus(),
+            'ofertaStatusWin' => $this->ofertaStatusWin(),
         ]);
 
     }
@@ -203,9 +206,46 @@ class StatsController extends Controller
     public function zapytaniaUsers()
     {
 
-        $data = Zapytania::select(DB::raw('users.id, users.last_name, users.first_name SUM(zapytanias.kwotaPLN) AS count'))
+        $data = Zapytania::select(DB::raw('users.id, users.last_name, users.first_name, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('users', 'users.id', '=', 'zapytanias.user_id')
             ->groupBy('users.last_name', 'users.first_name', 'users.id')
+            ->get();
+
+       foreach ($data as $item) {
+            $labels[] = $item->last_name.' '.$item->first_name;
+            $amounts[] = $item->count;
+        }
+        return [$labels,$amounts];
+    }
+    public function quantityOferta()
+    {
+        (int) $count = Oferta::get()->count();
+        (float) $sum = Oferta::sum('kwotaPLN');
+
+        return [$count, number_format($sum, 2)];
+    }
+    public function ofertaStatus()
+    {
+
+        $data = Oferta::select(DB::raw('oferta_statuses.id, oferta_statuses.name, SUM(ofertas.kwotaPLN) AS count'))
+            ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
+            ->where('oferta_statuses.name', 'Wygrana')
+            ->orWhere('oferta_statuses.name', 'Przegrana')
+            ->groupBy('oferta_statuses.name', 'oferta_statuses.id')
+            ->get();
+
+        foreach ($data as $item) {
+            $labels[] = $item->name;
+            $amounts[] = $item->count;
+        }
+        return [$labels,$amounts];
+    }
+    public function ofertaStatusWin()
+    {
+
+        $data = Oferta::select(DB::raw('oferta_statuses.id, oferta_statuses.name, SUM(ofertas.kwotaPLN) AS count'))
+            ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
+            ->groupBy('oferta_statuses.name', 'oferta_statuses.id')
             ->get();
 
         foreach ($data as $item) {
