@@ -29,15 +29,15 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/reports">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">LinkedIn</div>
+      <Link class="group flex items-center py-3" href="/faza">
+        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('faza') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('faza') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Faza projektu</div>
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/reports">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Linki www</div>
+      <Link class="group flex items-center py-3" href="/objekt">
+        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('objekt') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('objekt') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Objekt projektu</div>
       </Link>
     </div>
     <div class="mb-4">

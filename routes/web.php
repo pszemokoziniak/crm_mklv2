@@ -7,9 +7,11 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EditController;
+use App\Http\Controllers\FazaController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\KrajController;
 use App\Http\Controllers\KursyController;
+use App\Http\Controllers\ObjektController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\OfertaStatusController;
 use App\Http\Controllers\OrganizationsController;
@@ -313,6 +315,66 @@ Route::delete('zakres/{zakres}', [ZakresController::class, 'destroy'])
 
 Route::put('zakres/{zakres}/restore', [ZakresController::class, 'restore'])
     ->name('zakres.restore')
+    ->middleware('auth');
+
+// Objekty
+
+Route::get('objekt', [ObjektController::class, 'index'])
+    ->name('objekt')
+    ->middleware('auth');
+
+Route::get('objekt/create', [ObjektController::class, 'create'])
+    ->name('objekt.create')
+    ->middleware('auth');
+
+Route::post('objekt', [ObjektController::class, 'store'])
+    ->name('objekt.store')
+    ->middleware('auth');
+
+Route::get('objekt/{objekt}/edit', [ObjektController::class, 'edit'])
+    ->name('objekt.edit')
+    ->middleware('auth');
+
+Route::post('objekt/{objekt}', [ObjektController::class, 'update'])
+    ->name('objekt.update')
+    ->middleware('auth');
+
+Route::delete('objekt/{objekt}', [ObjektController::class, 'destroy'])
+    ->name('objekt.destroy')
+    ->middleware('auth');
+
+Route::put('objekt/{objekt}/restore', [ObjektController::class, 'restore'])
+    ->name('objekt.restore')
+    ->middleware('auth');
+
+// Faza
+
+Route::get('faza', [FazaController::class, 'index'])
+    ->name('faza')
+    ->middleware('auth');
+
+Route::get('faza/create', [FazaController::class, 'create'])
+    ->name('faza.create')
+    ->middleware('auth');
+
+Route::post('faza', [FazaController::class, 'store'])
+    ->name('faza.store')
+    ->middleware('auth');
+
+Route::get('faza/{faza}/edit', [FazaController::class, 'edit'])
+    ->name('faza.edit')
+    ->middleware('auth');
+
+Route::post('faza/{faza}', [FazaController::class, 'update'])
+    ->name('faza.update')
+    ->middleware('auth');
+
+Route::delete('faza/{faza}', [FazaController::class, 'destroy'])
+    ->name('faza.destroy')
+    ->middleware('auth');
+
+Route::put('faza/{faza}/restore', [FazaController::class, 'restore'])
+    ->name('faza.restore')
     ->middleware('auth');
 
 // Kursy
