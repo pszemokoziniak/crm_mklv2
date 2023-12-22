@@ -18,7 +18,7 @@ class CreateFutureProjectsTable extends Migration
             $table->text('nazwa')->nullable();
             $table->string('miasto',50)->nullable();
             $table->uuid('kraj_id')->nullable(false);
-            $table->uuid('obiekt_id')->nullable(false);
+            $table->uuid('objekt_id')->nullable(false);
             $table->uuid('client_id')->nullable(false);
             $table->text('opis')->nullable();
             $table->date('start')->nullable();
@@ -33,7 +33,7 @@ class CreateFutureProjectsTable extends Migration
             $table->integer('arch_user')->nullable();
 
             $table->foreign('kraj_id')->references('id')->on('krajs');
-            $table->foreign('obiekt_id')->references('id')->on('obiekts');
+            $table->foreign('objekt_id')->references('id')->on('objekts');
             $table->foreign('client_id')->references('id')->on('clients');
             $table->foreign('faza_id')->references('id')->on('fazas');
             $table->foreign('user_id')->references('id')->on('users');

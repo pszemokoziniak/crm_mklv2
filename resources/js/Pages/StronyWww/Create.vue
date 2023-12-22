@@ -1,15 +1,23 @@
 <template>
   <div>
-    <Head title="Faza projektu" />
+    <Head title="Strony WWW" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/faza">Faza projektu</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/stronywww">Strony WWW</Link>
       <span class="text-indigo-400 font-medium">/</span> Utwórz
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.name" :error="form.errors.name" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwa" />
+          <text-input v-model="form.name" :error="form.errors.name" class="pb-8 pr-6 w-full lg:w-1/1" label="Nazwa" />
+          <text-input v-model="form.link" :error="form.errors.link" class="pb-8 pr-6 w-full lg:w-1/1" label="Link" />
         </div>
+
+<!--        <div class="flex flex-wrap -mb-8 -mr-6 p-8">-->
+<!--          <text-input v-model="form.updated_at" :error="form.errors.updated_at" class="pb-8 pr-6 w-full lg:w-1/2" label="Update" />-->
+<!--        </div>-->
+<!--        <div class="flex flex-wrap -mb-8 -mr-6 p-8">-->
+<!--          <text-input v-model="form.click" :error="form.errors.click" class="pb-8 pr-6 w-full lg:w-1/2" label="Click" />-->
+<!--        </div>-->
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
           <loading-button :loading="form.processing" class="btn-indigo" type="submit">Dodaj</loading-button>
         </div>
@@ -44,12 +52,13 @@ export default {
     return {
       form: this.$inertia.form({
         name: '',
+        link: '',
       }),
     }
   },
   methods: {
     store() {
-      this.form.post('/faza')
+      this.form.post('/stronywww')
     },
   },
 }

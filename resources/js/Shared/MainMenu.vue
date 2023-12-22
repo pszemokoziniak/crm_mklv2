@@ -31,21 +31,21 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/reports">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Przyszłe projekty</div>
+      <Link class="group flex items-center py-3" href="/futureproject">
+        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('futureproject') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('futureproject') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Przyszłe projekty</div>
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/reports">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">LinkedIn</div>
+      <Link class="group flex items-center py-3" href="/linkedin">
+        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('linkedin') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('linkedin') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">LinkedIn</div>
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/reports">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Linki www</div>
+      <Link class="group flex items-center py-3" href="/stronywww">
+        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('stronywww') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('stronywww') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Linki www</div>
       </Link>
     </div>
     <div class="mb-4">

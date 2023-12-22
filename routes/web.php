@@ -8,19 +8,23 @@ use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EditController;
 use App\Http\Controllers\FazaController;
+use App\Http\Controllers\FutureProjectController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\KrajController;
 use App\Http\Controllers\KursyController;
+use App\Http\Controllers\LinkedinController;
 use App\Http\Controllers\ObjektController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\OfertaStatusController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\StronyWwwController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ZakresController;
 use App\Http\Controllers\ZapytaniaController;
 use App\Models\OfertaStatus;
+use App\Models\StronyWww;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -227,6 +231,36 @@ Route::put('zapytania/{zapytania}/restore', [ZapytaniaController::class, 'restor
     ->name('zapytania.restore')
     ->middleware('auth');
 
+// Future Projects
+
+Route::get('futureproject', [FutureProjectController::class, 'index'])
+    ->name('futureproject')
+    ->middleware('auth');
+
+Route::get('futureproject/create', [FutureProjectController::class, 'create'])
+    ->name('futureproject.create')
+    ->middleware('auth');
+
+Route::post('futureproject', [FutureProjectController::class, 'store'])
+    ->name('futureproject.store')
+    ->middleware('auth');
+
+Route::get('futureproject/{futureProject}/edit', [FutureProjectController::class, 'edit'])
+    ->name('futureproject.edit')
+    ->middleware('auth');
+
+Route::put('futureproject/{futureProject}', [FutureProjectController::class, 'update'])
+    ->name('futureproject.update')
+    ->middleware('auth');
+
+Route::delete('futureproject/{futureProject}', [FutureProjectController::class, 'destroy'])
+    ->name('futureproject.destroy')
+    ->middleware('auth');
+
+Route::put('futureproject/{futureProject}/restore', [FutureProjectController::class, 'restore'])
+    ->name('futureproject.restore')
+    ->middleware('auth');
+
 // Oferta
 
 Route::get('oferta', [OfertaController::class, 'index'])
@@ -285,6 +319,74 @@ Route::delete('branza/{branza}', [BranzaController::class, 'destroy'])
 
 Route::put('branza/{branza}/restore', [BranzaController::class, 'restore'])
     ->name('branza.restore')
+    ->middleware('auth');
+
+// LinkedIn
+
+Route::get('linkedin', [LinkedinController::class, 'index'])
+    ->name('linkedin')
+    ->middleware('auth');
+
+Route::get('linkedin/create', [LinkedinController::class, 'create'])
+    ->name('linkedin.create')
+    ->middleware('auth');
+
+Route::post('linkedin', [LinkedinController::class, 'store'])
+    ->name('linkedin.store')
+    ->middleware('auth');
+
+Route::get('linkedin/{linkedin}/edit', [LinkedinController::class, 'edit'])
+    ->name('linkedin.edit')
+    ->middleware('auth');
+
+Route::post('linkedin/{linkedin}', [LinkedinController::class, 'update'])
+    ->name('linkedin.update')
+    ->middleware('auth');
+
+Route::delete('linkedin/{linkedin}', [LinkedinController::class, 'destroy'])
+    ->name('linkedin.destroy')
+    ->middleware('auth');
+
+Route::put('linkedin/{linkedin}/restore', [LinkedinController::class, 'restore'])
+    ->name('linkedin.restore')
+    ->middleware('auth');
+
+Route::get('linkedin/{linkedin}/click', [LinkedinController::class, 'click'])
+    ->name('linkedin.click')
+    ->middleware('auth');
+
+// Strony www
+
+Route::get('stronywww', [StronyWwwController::class, 'index'])
+    ->name('stronywww')
+    ->middleware('auth');
+
+Route::get('stronywww/create', [StronyWwwController::class, 'create'])
+    ->name('stronywww.create')
+    ->middleware('auth');
+
+Route::post('stronywww', [StronyWwwController::class, 'store'])
+    ->name('stronywww.store')
+    ->middleware('auth');
+
+Route::get('stronywww/{stronyWww}/edit', [StronyWwwController::class, 'edit'])
+    ->name('stronywww.edit')
+    ->middleware('auth');
+
+Route::post('stronywww/{stronyWww}', [StronyWwwController::class, 'update'])
+    ->name('stronywww.update')
+    ->middleware('auth');
+
+Route::delete('stronywww/{stronyWww}', [StronyWwwController::class, 'destroy'])
+    ->name('stronywww.destroy')
+    ->middleware('auth');
+
+Route::put('stronywww/{stronyWww}/restore', [StronyWwwController::class, 'restore'])
+    ->name('stronywww.restore')
+    ->middleware('auth');
+
+Route::get('stronywww/{stronyWww}/click', [StronyWwwController::class, 'click'])
+    ->name('stronywww.click')
     ->middleware('auth');
 
 // Zakres
