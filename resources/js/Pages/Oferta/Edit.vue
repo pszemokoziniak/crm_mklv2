@@ -3,7 +3,7 @@
     <Head title="Popraw ofertę" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-indigo-400 hover:text-indigo-600" href="/oferta">Oferty</Link>
-      <span class="text-indigo-400 font-medium">/</span> Utwórz
+      <span class="text-indigo-400 font-medium">/</span> Popraw
     </h1>
     <trashed-message v-if="oferta.deleted_at" class="mb-6" @restore="restore"> Oferta została usunięta </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
@@ -21,7 +21,7 @@
             <option v-for="item in clients" :key="item.id" :value="item.id">{{ item.nazwa }} </option>
           </select-input>
           <text-input v-model="form.data_wyslania" :error="form.errors.data_wyslania" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Ofertę wysłano" />
-          <text-input v-model="form.kwota" :error="form.errors.kwota" type="number" class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
+          <number-input v-model="form.kwota" :error="form.errors.kwota" class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
           <select-input v-model="form.waluta" :error="form.errors.waluta" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
             <option :value="null" />
             <option v-for="item in krajs" :key="item.id" :value="item.waluta">{{ item.waluta }}</option>

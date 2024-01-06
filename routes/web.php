@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\BackUpController;
 use App\Http\Controllers\BranzaController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ClientController;
@@ -153,6 +155,20 @@ Route::get('reports', [ReportsController::class, 'index'])
     ->name('reports')
     ->middleware('auth');
 
+// BackUp
+
+Route::get('backup', [BackUpController::class, 'index'])
+    ->name('backup')
+    ->middleware('auth');
+
+Route::get('backup/store', [BackUpController::class, 'store'])
+    ->name('backup.store')
+    ->middleware('auth');
+
+Route::get('backup/download/{file}', [BackUpController::class, 'download'])
+    ->name('backup.download')
+    ->middleware('auth');
+
 // Calendar
 
 Route::get('calendar', [CalendarController::class, 'index'])
@@ -163,6 +179,12 @@ Route::get('calendar', [CalendarController::class, 'index'])
 
 Route::get('stats', [StatsController::class, 'index'])
     ->name('stats')
+    ->middleware('auth');
+
+// Activity Log
+
+Route::get('activity', [ActivityLogController::class, 'index'])
+    ->name('activity')
     ->middleware('auth');
 
 // Images

@@ -14,9 +14,11 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use App\Traits\StoreActivityLog;
 
 class ClientController extends Controller
 {
+    use StoreActivityLog;
     public function index()
     {
         return Inertia::render('Clients/Index', [
@@ -54,7 +56,9 @@ class ClientController extends Controller
 
     public function store(ClientRequest $request)
     {
-        Client::create($request->all());
+        $data = Client::create($request->all());
+
+        $this->storeActivityLog('Dodano klienta', $data->id, $data->id, 'clients', 'zmiany', Auth::id());
 
         return Redirect::route('clients')->with('success', 'Zapisano.');
     }
@@ -85,6 +89,8 @@ class ClientController extends Controller
     public function update(Client $client, ContactStoreRequest $request)
     {
         $client->update($request->validated());
+
+        $this->storeActivityLog('Poprawiono klienta', $client->id, $client->id, 'clients', 'zmiany', Auth::id());
 
         return Redirect::back()->with('success', 'Klient poprawiony.');
     }

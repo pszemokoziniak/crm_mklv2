@@ -15,12 +15,15 @@ use App\Models\Zakres;
 use App\Models\Zapytania;
 use Carbon\Carbon;
 //use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use App\Traits\StoreActivityLog;
 
 class FutureProjectController extends Controller
 {
+    use StoreActivityLog;
     public function index()
     {
         return Inertia::render('FutureProjects/Index', [
@@ -66,7 +69,10 @@ class FutureProjectController extends Controller
     }
     public function store(FutureProjectRequest $request)
     {
-        FutureProject::create($request->all());
+        $data = FutureProject::create($request->all());
+
+        $this->storeActivityLog('Dodoano przyszły projekt', $data->id, $request->client_id, 'futureproject', 'zmiany', Auth::id());
+
 //        $walutaName = Kraj::where('id', $request->waluta)->pluck('waluta');
 //        (int) $kwotaPLN = (int) $request->kwota * (float) $this->exchangeRate($walutaName[0]);
 //        (float) $kurs = $this->exchangeRate($walutaName[0]);
@@ -124,6 +130,8 @@ class FutureProjectController extends Controller
     public function update(FutureProject $futureProject, FutureProjectRequest $request)
     {
         $futureProject->update($request->all());
+
+        $this->storeActivityLog('Poprawiono przyszły projekt', $futureProject->id, $request->client_id, 'futureproject', 'zmiany', Auth::id());
 
         return Redirect::back()->with('success', 'Zapytanie poprawione.');
     }

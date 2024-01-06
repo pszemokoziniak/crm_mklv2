@@ -1,81 +1,99 @@
 <template>
-  <div class="md:flex md:flex-grow md:overflow-hidden">
-    <edit-menu class="hidden flex-shrink-0 p-12 w-56 bg-indigo-800 overflow-y-auto md:block" />
-    <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto" scroll-region>
-      <flash-messages />
-      <slot />
-    </div>
-  </div>
+<!--  <div class="md:flex md:flex-grow md:overflow-hidden">-->
+<!--    <edit-menu class="hidden flex-shrink-0 p-12 w-56 bg-indigo-800 overflow-y-auto md:block" />-->
+<!--    <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto" scroll-region>-->
+<!--      <flash-messages />-->
+<!--      <slot />-->
+<!--    </div>-->
+<!--  </div>-->
+
   <div class="w-full">
     <Head title="Edit" />
-
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:gap-1 lg:gap-3 md:mx-10 lg:mx-20 lg:my-auto">
-
-
-
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/branze/`">
+      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/branza/`">
         <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
           <div class="px-6 py-4">
             <div class="font-bold text-xl mb-2 flex justify-center">Branże</div>
           </div>
         </div>
       </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/branze/`">
+      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/kraj/`">
         <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
           <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Branże</div>
+            <div class="font-bold text-xl mb-2 flex justify-center">Kraj</div>
           </div>
         </div>
       </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/branze/`">
+      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/zakres/`">
         <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
           <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Branże</div>
+            <div class="font-bold text-xl mb-2 flex justify-center">Zakres</div>
           </div>
         </div>
       </Link>
-
-
-
-
-
-
-
-
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/calendar`">
-        <div class="h-full lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="flex justify-center my-12">
-            <img class="" src="/images/Kalendarz.png" alt="Kalendarz">
-          </div>
+      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/ofertastatus/`">
+        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
           <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Kalendarz</div>
-            <div class="flex justify-center text-blueMf-100 my-12 text-lg md:text-base lg:text-xs">Zobacz szczegóły</div>
+            <div class="font-bold text-xl mb-2 flex justify-center">Oferty Status</div>
+          </div>
+        </div>
+      </Link>
+      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/kursy/`">
+        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
+          <div class="px-6 py-4">
+            <div class="font-bold text-xl mb-2 flex justify-center">Kursy</div>
+          </div>
+        </div>
+      </Link>
+      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/faza/`">
+        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
+          <div class="px-6 py-4">
+            <div class="font-bold text-xl mb-2 flex justify-center">Faza projektu</div>
+          </div>
+        </div>
+      </Link>
+      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/objekt/`">
+        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
+          <div class="px-6 py-4">
+            <div class="font-bold text-xl mb-2 flex justify-center">Objekt projektu</div>
           </div>
         </div>
       </Link>
 
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/raporty/`">
-        <div class="h-full lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="flex justify-center my-12">
-            <img class="" src="/images/Raporty.png" width="69" height="75" alt="Raporty">
-          </div>
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Raporty</div>
-            <div class="flex justify-center text-blueMf-100 my-12 text-lg md:text-base lg:text-xs">Zobacz szczegóły</div>
-          </div>
-        </div>
-      </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/programy/detale?nazwa=PT&program=Program Krajowy`">
-        <div class="h-full lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="flex justify-center my-12">
-            <img class="" src="/images/RPD.png" width="69" height="75" alt="RPD">
-          </div>
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Wspólny RPD</div>
-            <div class="flex justify-center text-blueMf-100 my-12 text-lg md:text-base lg:text-xs">Zobacz szczegóły</div>
-          </div>
-        </div>
-      </Link>
+<!--      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/calendar`">-->
+<!--        <div class="h-full lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">-->
+<!--          <div class="flex justify-center my-12">-->
+<!--            <img class="" src="/images/Kalendarz.png" alt="Kalendarz">-->
+<!--          </div>-->
+<!--          <div class="px-6 py-4">-->
+<!--            <div class="font-bold text-xl mb-2 flex justify-center">Kalendarz</div>-->
+<!--            <div class="flex justify-center text-blueMf-100 my-12 text-lg md:text-base lg:text-xs">Zobacz szczegóły</div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </Link>-->
+
+<!--      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/raporty/`">-->
+<!--        <div class="h-full lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">-->
+<!--          <div class="flex justify-center my-12">-->
+<!--            <img class="" src="/images/Raporty.png" width="69" height="75" alt="Raporty">-->
+<!--          </div>-->
+<!--          <div class="px-6 py-4">-->
+<!--            <div class="font-bold text-xl mb-2 flex justify-center">Raporty</div>-->
+<!--            <div class="flex justify-center text-blueMf-100 my-12 text-lg md:text-base lg:text-xs">Zobacz szczegóły</div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </Link>-->
+<!--      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/programy/detale?nazwa=PT&program=Program Krajowy`">-->
+<!--        <div class="h-full lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">-->
+<!--          <div class="flex justify-center my-12">-->
+<!--            <img class="" src="/images/RPD.png" width="69" height="75" alt="RPD">-->
+<!--          </div>-->
+<!--          <div class="px-6 py-4">-->
+<!--            <div class="font-bold text-xl mb-2 flex justify-center">Wspólny RPD</div>-->
+<!--            <div class="flex justify-center text-blueMf-100 my-12 text-lg md:text-base lg:text-xs">Zobacz szczegóły</div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </Link>-->
     </div>
   </div>
 </template>

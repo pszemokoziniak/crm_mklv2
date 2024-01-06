@@ -2,79 +2,79 @@
   <div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/">
-        <icon name="dashboard" class="mr-2 w-4 h-4" :class="isUrl('') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="home" class="mr-2 w-4 h-4" :class="isUrl('') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Home</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/clients">
-        <icon name="office" class="mr-2 w-4 h-4" :class="isUrl('clients') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="clients" class="mr-2 w-4 h-4" :class="isUrl('clients') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('clients') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Klienci</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/zapytania">
-        <icon name="users" class="mr-2 w-4 h-4" :class="isUrl('contacts') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="zapytania" class="mr-2 w-4 h-4" :class="isUrl('contacts') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('zapytania') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Zapytania</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/oferta">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="oferty" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Oferty</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/calendar">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('calendar') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="calendar" class="mr-2 w-4 h-4" :class="isUrl('calendar') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('calendar') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Kalendarz</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/futureproject">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('futureproject') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="future" class="mr-2 w-4 h-4" :class="isUrl('futureproject') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('futureproject') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Przyszłe projekty</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/linkedin">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('linkedin') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="linkedin" class="mr-2 w-4 h-4" :class="isUrl('linkedin') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('linkedin') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">LinkedIn</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/stronywww">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('stronywww') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="www" class="mr-2 w-4 h-4" :class="isUrl('stronywww') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('stronywww') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Linki www</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/stats">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('stats') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="statystyki" class="mr-2 w-4 h-4" :class="isUrl('stats') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('stats') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Statystyki</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/edit">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('edit') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="edit" class="mr-2 w-4 h-4" :class="isUrl('edit') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('edit') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Edit</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/reports">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="users" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Użytkownikcy</div>
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/reports">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Historia</div>
+      <Link class="group flex items-center py-3" href="/activity">
+        <icon name="historia" class="mr-2 w-4 h-4" :class="isUrl('activity') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('activity') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Historia</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/reports">
-        <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <icon name="backup" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">BackUp</div>
       </Link>
     </div>

@@ -14,12 +14,15 @@ use App\Models\Zakres;
 use App\Models\Zapytania;
 use Carbon\Carbon;
 //use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use App\Traits\StoreActivityLog;
 
 class ZapytaniaController extends Controller
 {
+    use StoreActivityLog;
     public function index()
     {
         return Inertia::render('Zapytania/Index', [
@@ -84,6 +87,9 @@ class ZapytaniaController extends Controller
         $data->opis = $request->opis;
         $data->user_id = $request->user_id;
         $data->save();
+
+        ($data)??$this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
+
         return Redirect::route('zapytania')->with('success', 'Zapisano.');
     }
 
@@ -121,6 +127,9 @@ class ZapytaniaController extends Controller
     public function update(Zapytania $zapytania, ZapytaniaStoreRequest $request)
     {
         $zapytania->update($request->all());
+
+        ($zapytania)??$this->storeActivityLog('Poprawiono zapytanie', $zapytania->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
+
 
         return Redirect::back()->with('success', 'Zapytanie poprawione.');
     }

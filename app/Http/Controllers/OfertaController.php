@@ -15,12 +15,15 @@ use App\Models\Zakres;
 use App\Models\Zapytania;
 use Carbon\Carbon;
 //use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use App\Traits\StoreActivityLog;
 
 class OfertaController extends Controller
 {
+    use StoreActivityLog;
     public function index()
     {
         return Inertia::render('Oferta/Index', [
@@ -63,8 +66,9 @@ class OfertaController extends Controller
     }
     public function store(OfertaStoreRequest $request)
     {
-        (int) $kwotaPLN = (int) $request->kwota * (float) $this->exchangeRate($request->waluta);
-        (float) $kurs = $this->exchangeRate($request->waluta);
+        try {
+            (int) $kwotaPLN = (int) $request->kwota * (float) $this->exchangeRate($request->waluta);
+            (float) $kurs = $this->exchangeRate($request->waluta);
             $data = new Oferta();
             $data->zapytania_id = $request->zapytania_id;
             $data->typ = $request->typ;
@@ -78,9 +82,14 @@ class OfertaController extends Controller
             $data->oferta_status_id = $request->oferta_status_id;
             $data->opis = $request->opis;
             $data->user_id = $request->user_id;
-            $data->save();
 
-        return Redirect::route('oferta')->with('success', 'Zapisano.');
+            $this->storeActivityLog('Nowa oferta', $data->id, $request->client_id, 'oferta', 'zmiany', Auth::id());
+
+            return Redirect::route('oferta')->with('success', 'Zapisano.');
+
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
     public function edit(Oferta $oferta)
@@ -113,9 +122,15 @@ class OfertaController extends Controller
 
     public function update(Oferta $oferta, OfertaStoreRequest $request)
     {
+        try {
         $oferta->update($request->all());
+        $this->storeActivityLog('Poprawiono ofertę', $oferta->id, $request->client_id, 'oferta', 'zmiany', Auth::id());
 
         return Redirect::back()->with('success', 'Oferta poprawiona.');
+
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
     public function destroy(Oferta $oferta)
