@@ -2,45 +2,29 @@
   <div>
     <Head title="Back Up" />
     <h1 class="mb-8 text-3xl font-bold">Back Up</h1>
+    <div class="flex items-center justify-between mb-6">
+      <Link class="btn-indigo" href="/backup/store">
+        <span>Dodaj</span>
+                <span class="hidden md:inline">&nbsp;Back Up</span>
+      </Link>
+    </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
           <th class="pb-4 pt-6 px-6">Back Up</th>
           <th class="pb-4 pt-6 px-6">Akcja</th>
-<!--          <th class="pb-4 pt-6 px-6">Info</th>-->
-<!--          <th class="pb-4 pt-6 px-6">Użytkownik</th>-->
-<!--          <th class="pb-4 pt-6 px-6">Data</th>-->
         </tr>
         <tr v-for="item in files" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.link_id}/edit`">
+            <p class="flex items-center px-6 py-4 focus:text-indigo-500">
               {{ item }}
-<!--              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />-->
-            </Link>
+            </p>
           </td>
           <td class="border-t">
-            <Link class="btn-indigo" :href="`/backup/download/${item}`">
+            <a :href="`/backup/download/${item}`" class="btn-indigo">
               <span>Pobierz</span>
-            </Link>
+            </a>
           </td>
-<!--          <td class="border-t">-->
-<!--            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.id}/edit`">-->
-<!--&lt;!&ndash;              {{ item.updated_at }}&ndash;&gt;-->
-<!--              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />-->
-<!--            </Link>-->
-<!--          </td>-->
-<!--          <td class="border-t">-->
-<!--            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.link_id}/edit`">-->
-<!--              {{ item.user.last_name }} {{ item.user.first_name }}-->
-<!--              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />-->
-<!--            </Link>-->
-<!--          </td>-->
-<!--          <td class="border-t">-->
-<!--            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.link_id}/edit`">-->
-<!--              {{ item.created_at }}-->
-<!--              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />-->
-<!--            </Link>-->
-<!--          </td>-->
         </tr>
         <tr v-if="files.length === 0">
           <td class="px-6 py-4 border-t" colspan="4">Brak</td>

@@ -165,7 +165,7 @@ Route::get('backup/store', [BackUpController::class, 'store'])
     ->name('backup.store')
     ->middleware('auth');
 
-Route::get('backup/download/{file}', [BackUpController::class, 'download'])
+Route::get('backup/download/{file}', [BackUpController::class, 'downloadBackUp'])
     ->name('backup.download')
     ->middleware('auth');
 

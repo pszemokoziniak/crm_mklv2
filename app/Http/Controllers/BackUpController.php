@@ -13,17 +13,17 @@ class BackUpController extends Controller
 {
     public function index()
     {
-        $files = File::allFiles(storage_path('backup/'));
+        $files = File::allFiles(storage_path('backup'));
         foreach ($files as $file) {
             $files = pathinfo($file);
-//            $allFiles[] = [$files['basename'],storage_path('backup/').$files['basename']];
             $allFiles[] = $files['basename'];
         }
+        krsort($allFiles);
+
         return Inertia::render('BackUp/Index', [
             'files' => $allFiles,
         ]);
     }
-
     public function store()
     {
         $filename=date('Y-m-d_H-i-s').'.sql';
@@ -34,11 +34,20 @@ class BackUpController extends Controller
         $PATH=storage_path('backup/');
 
         exec('mysqldump -u '.$DBUSER.' -p'.$DBPASSWD.' '.$DATABASE.' > '.$PATH.$filename);
+
+        $this->index();
+//        return Inertia::render('BackUp/Index');
     }
 
-    public function download($file)
+    public function downloadBackUp($file)
     {
-        $file = storage_path('backup/'.$file);
-        return Response::download($file);
+        $file_path = storage_path('backup/'.$file);
+//        dd($file_path);
+        $headers = array(
+            'Content-Type:' . mime_content_type($file_path),
+        );
+        $file_name = $file;
+
+        return response()->download($file_path, $file_name, $headers);
     }
 }
