@@ -253,6 +253,12 @@ Route::put('zapytania/{zapytania}/restore', [ZapytaniaController::class, 'restor
     ->name('zapytania.restore')
     ->middleware('auth');
 
+
+Route::get('zapytania/{zapytania}/pdf', [ZapytaniaController::class, 'pdf'])
+    ->name('zapytania.pdf')
+    ->middleware('auth');
+
+
 // Future Projects
 
 Route::get('futureproject', [FutureProjectController::class, 'index'])

@@ -6,6 +6,12 @@
       <span class="text-indigo-400 font-medium"></span>
       {{ form.id_zapyt }}
     </h1>
+    <form @submit.prevent="submit" action="pdf" ref="form">
+      <div class="pb-5">
+        <input type='hidden' name="param" :value="`${zapytania.id}`" class="px-2 ml-2 rounded-lg border">
+        <button type="submit" class="btn-indigo">Generuj PDF</button>
+      </div>
+    </form>
     <trashed-message v-if="zapytania.deleted_at" class="mb-6" @restore="restore"> Zapytanie zostało usunięte </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
@@ -119,6 +125,9 @@ export default {
       if (confirm('Chcesz przywrócić zapytanie?')) {
         this.$inertia.put(`/zapytania/${this.zapytania.id}/restore`)
       }
+    },
+    submit: function(){
+      this.$refs.form.submit()
     },
   },
 }

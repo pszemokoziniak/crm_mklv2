@@ -161,4 +161,17 @@ class ZapytaniaController extends Controller
 
         return (float) $kwotaPLN;
     }
+    public function pdf(Zapytania $zapytania)
+    {
+        $data = Zapytania::with('client')
+            ->with('user')
+            ->with('kraj')
+            ->with('zakres')
+            ->get();
+
+        $pdf = app('dompdf.wrapper');
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        $pdf->loadView('zapytaniaPdf', compact('data'));
+        return $pdf->stream('users.pdf');
+    }
 }
