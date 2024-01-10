@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ClientRequest;
 use App\Http\Requests\ContactStoreRequest;
 use App\Http\Requests\ZapytaniaStoreRequest;
+use App\Mail\ZapytaniaMail;
 use App\Models\Branza;
 use App\Models\Client;
 use App\Models\Kraj;
@@ -15,6 +16,7 @@ use App\Models\Zapytania;
 use Carbon\Carbon;
 //use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -90,7 +92,13 @@ class ZapytaniaController extends Controller
 
         ($data)??$this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
-        return Redirect::route('zapytania')->with('success', 'Zapisano.');
+//        $data = $data->toArray();
+//        dd($data->id);
+//        dd($this->zapytaniaById($data->id));
+
+        Mail::send(new ZapytaniaMail($this->zapytaniaById($data->id)));
+
+        return Redirect::route('zapytania')->with('success', 'Zapisano. Mail wysłany');
     }
 
     public function edit(Zapytania $zapytania)
@@ -169,9 +177,23 @@ class ZapytaniaController extends Controller
             ->with('zakres')
             ->get();
 
+        $data = $this->zapytaniaById($zapytania->id);
+
         $pdf = app('dompdf.wrapper');
         $pdf->getDomPDF()->set_option("enable_php", true);
         $pdf->loadView('zapytaniaPdf', compact('data'));
         return $pdf->stream('users.pdf');
     }
+    public function zapytaniaById($id)
+    {
+        $data = Zapytania::with('client')
+            ->with('user')
+            ->with('kraj')
+            ->with('zakres')
+            ->where('zapytanias.id', $id)
+            ->firstOrFail();
+
+        return $data;
+    }
+
 }

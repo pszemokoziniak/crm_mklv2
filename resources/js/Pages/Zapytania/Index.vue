@@ -6,8 +6,8 @@
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block text-gray-700">Wybierz:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
-          <option value="with">Z usuniętymi</option>
-          <option value="only">Tylko usunięte</option>
+          <option value="with">Wszystko</option>
+          <option value="only">Archiwum</option>
         </select>
       </search-filter>
       <Link class="btn-indigo" href="/zapytania/create">
