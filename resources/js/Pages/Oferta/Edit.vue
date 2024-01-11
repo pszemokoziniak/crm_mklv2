@@ -6,32 +6,44 @@
       <span class="text-indigo-400 font-medium">/</span> Popraw
     </h1>
     <trashed-message v-if="oferta.deleted_at" class="mb-6" @restore="restore"> Oferta została usunięta </trashed-message>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+      <dix class="text-2xl font-bold border-1 border-green text-red-800 -mr-6 p-8">
+        <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${oferta.zapytania_id}/edit`">{{zapytaniaById.nazwa_projektu}}</Link>
+        /
+        <Link class="text-indigo-400 hover:text-indigo-600" :href="`/clients/${oferta.client_id}/edit`">{{clientById.nazwa}}</Link>
+      </dix>
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <select-input v-model="form.zapytania_id" :error="form.errors.zapytania_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Zapytanie">
+          <select-input v-model="form.zapytania_id" :error="form.errors.zapytania_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Zapytanie">
             <option v-for="item in zapytanie" :key="item.id" :value="item.id">{{ item.nazwa_projektu }} </option>
           </select-input>
-          <select-input v-model="form.typ" :error="form.errors.typ" class="pb-8 pr-6 w-full lg:w-1/2" label="Typ klienta">
+          <select-input v-model="form.typ" :error="form.errors.typ" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Typ klienta">
             <option :value="null" />
             <option :value="'Klient oferuje'">Klient oferuje</option>
             <option :value="'Klienta ma kontakt'">Klienta ma kontakt</option>
           </select-input>
-          <select-input v-model="form.client_id" :error="form.errors.client_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Klient">
+          <select-input v-model="form.client_id" :error="form.errors.client_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Klient">
             <option v-for="item in clients" :key="item.id" :value="item.id">{{ item.nazwa }} </option>
           </select-input>
-          <text-input v-model="form.data_wyslania" :error="form.errors.data_wyslania" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Ofertę wysłano" />
-          <number-input v-model="form.kwota" :error="form.errors.kwota" class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
-          <select-input v-model="form.waluta" :error="form.errors.waluta" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
+          <text-input v-model="form.data_wyslania" :error="form.errors.data_wyslania" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Ofertę wysłano" />
+          <number-input v-model="form.kwota" :error="form.errors.kwota" :disabled="disable"  class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
+          <select-input v-model="form.waluta" :error="form.errors.waluta" :disabled="disable"  class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
             <option :value="null" />
             <option v-for="item in krajs" :key="item.id" :value="item.waluta">{{ item.waluta }}</option>
           </select-input>
-          <text-input v-model="form.data_kontakt" :error="form.errors.data_kontakt" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
-          <select-input v-model="form.oferta_status_id" :error="form.errors.oferta_status_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Status">
+          <text-input v-model="form.data_kontakt" :error="form.errors.data_kontakt" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
+          <select-input v-model="form.oferta_status_id" :error="form.errors.oferta_status_id" :disabled="disable"  class="pb-8 pr-6 w-full lg:w-1/2" label="Status">
             <option :value="null" />
             <option v-for="item in statuses" :key="item.id" :value="item.id">{{ item.name }} </option>
           </select-input>
-          <text-area v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" />
+          <text-area v-model="form.opis" :error="form.errors.opis" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" />
+        </div>
+        <hr>
+        <div class="grid gap-1 grid-cols-3 p-5">
+          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
+            <icon name="edit" class="mr-2 w-4 h-4 inline"/>
+            <button v-if="!oferta.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="disableForm">Edytuj dane</button>
+          </div>
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button v-if="!oferta.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Archiwizuj</button>
@@ -52,9 +64,11 @@ import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
 import TextArea from "@/Shared/TextareaInput.vue";
+import Icon from "@/Shared/Icon.vue";
 
 export default {
   components: {
+    Icon,
     TextArea,
     Head,
     Link,
@@ -75,10 +89,13 @@ export default {
     users: Object,
     zakres: Object,
     statuses: Object,
+    clientById: Object,
+    zapytaniaById: Object,
   },
   remember: 'form',
   data() {
     return {
+      disable: true,
       form: this.$inertia.form({
         id: this.oferta.id,
         zapytania_id: this.oferta.zapytania_id,
@@ -106,6 +123,20 @@ export default {
     restore() {
       if (confirm('Chcesz przywrócić ofertę?')) {
         this.$inertia.put(`/oferta/${this.oferta.id}/restore`)
+      }
+    },
+    disableForm() {
+      let elems_input = document.getElementById('form').getElementsByTagName('input');
+      for(let i = 0; i < elems_input.length; i++) {
+        elems_input[i].disabled = false;
+      }
+      let elems_select = document.getElementById('form').getElementsByTagName('select');
+      for(let i = 0; i < elems_select.length; i++) {
+        elems_select[i].disabled = false;
+      }
+      let elems_text_area = document.getElementById('form').getElementsByTagName('textarea');
+      for(let i = 0; i < elems_text_area.length; i++) {
+        elems_text_area[i].disabled = false;
       }
     },
   },

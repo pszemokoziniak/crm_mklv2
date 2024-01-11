@@ -9,6 +9,10 @@
 
     <trashed-message v-if="zapytania.deleted_at" class="mb-6" @restore="restore"> Zapytanie zostało usunięte </trashed-message>
     <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+      <dix class="text-2xl font-bold border-1 border-green text-red-800 -mr-6 p-8">
+        {{zapytania.nazwa_projektu}} /
+        <Link class="text-indigo-400 hover:text-indigo-600" :href="`/clients/${zapytania.client_id}/edit`">{{clientById.nazwa}}</Link>
+      </dix>
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <select-input v-model="form.user_otrzymal_id" :error="form.errors.user_otrzymal_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Otrzymał">
@@ -104,6 +108,7 @@ export default {
     krajs: Object,
     users: Object,
     zakres: Object,
+    clientById: Object,
   },
   remember: 'form',
   data() {
@@ -156,6 +161,10 @@ export default {
       let elems_select = document.getElementById('form').getElementsByTagName('select');
       for(let i = 0; i < elems_select.length; i++) {
         elems_select[i].disabled = false;
+      }
+      let elems_text_area = document.getElementById('form').getElementsByTagName('textarea');
+      for(let i = 0; i < elems_text_area.length; i++) {
+        elems_text_area[i].disabled = false;
       }
     },
   },

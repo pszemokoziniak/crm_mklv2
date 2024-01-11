@@ -82,6 +82,7 @@ class OfertaController extends Controller
             $data->oferta_status_id = $request->oferta_status_id;
             $data->opis = $request->opis;
             $data->user_id = $request->user_id;
+            $data->save();
 
             $this->storeActivityLog('Nowa oferta', $data->id, $request->client_id, 'oferta', 'zmiany', Auth::id());
 
@@ -94,6 +95,7 @@ class OfertaController extends Controller
 
     public function edit(Oferta $oferta)
     {
+//        dd(Client::where('id', $oferta->client_id)->get()->map->only('id', 'nazwa_projektu'));
         return Inertia::render('Oferta/Edit', [
             'oferta' => [
                 'id' => $oferta->id,
@@ -114,7 +116,9 @@ class OfertaController extends Controller
             'users' => User::get(),
             'zakres' => Zakres::get(),
             'clients' => Client::get(),
-            'zapytanie' => Zapytania::get()->map->only('id', 'nazwa_projektu'),
+            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->get(),
+            'clientById' => Client::select('id', 'nazwa')->where('id', $oferta->client_id)->firstOrFail(),
+            'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->firstOrFail(),
             'statuses' => OfertaStatus::get()->map->only('id', 'name'),
 
         ]);
@@ -126,7 +130,7 @@ class OfertaController extends Controller
         $oferta->update($request->all());
         $this->storeActivityLog('Poprawiono ofertę', $oferta->id, $request->client_id, 'oferta', 'zmiany', Auth::id());
 
-        return Redirect::back()->with('success', 'Oferta poprawiona.');
+        return Redirect::route('oferta')->with('success', 'Oferta poprawiona.');
 
         } catch (\Throwable $e) {
             report($e);

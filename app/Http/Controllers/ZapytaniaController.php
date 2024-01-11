@@ -129,6 +129,7 @@ class ZapytaniaController extends Controller
             'users' => User::get(),
             'zakres' => Zakres::get(),
             'clients' => Client::get(),
+            'clientById' => Client::where('id', $zapytania->client_id)->firstOrFail(),
         ]);
     }
 
@@ -139,7 +140,7 @@ class ZapytaniaController extends Controller
         ($zapytania)??$this->storeActivityLog('Poprawiono zapytanie', $zapytania->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
 
-        return Redirect::back()->with('success', 'Zapytanie poprawione.');
+        return Redirect::route('zapytania')->with('success', 'Zapytanie poprawione.');
     }
 
     public function destroy(Zapytania $zapytania)
@@ -182,7 +183,7 @@ class ZapytaniaController extends Controller
         $pdf = app('dompdf.wrapper');
         $pdf->getDomPDF()->set_option("enable_php", true);
         $pdf->loadView('zapytaniaPdf', compact('data'));
-        return $pdf->stream('users.pdf');
+        return $pdf->stream('zapytanie'.$zapytania->id_zapyt.'.pdf');
     }
     public function zapytaniaById($id)
     {

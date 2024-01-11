@@ -107,7 +107,6 @@ export default {
       this.$inertia.post(`/users/${this.user.id}/unblock`)
     },
     disableForm() {
-
       let elems_input = document.getElementById('form').getElementsByTagName('input');
       for(let i = 0; i < elems_input.length; i++) {
         elems_input[i].disabled = false;
@@ -116,6 +115,10 @@ export default {
       let elems_select = document.getElementById('form').getElementsByTagName('select');
       for(let i = 0; i < elems_select.length; i++) {
         elems_select[i].disabled = false;
+      }
+      let elems_text_area = document.getElementById('form').getElementsByTagName('textarea');
+      for(let i = 0; i < elems_text_area.length; i++) {
+        elems_text_area[i].disabled = false;
       }
     },
   },
