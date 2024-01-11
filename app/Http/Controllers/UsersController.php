@@ -26,6 +26,7 @@ class UsersController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'owner' => $user->owner,
+                    'active' => $user->active,
                     'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
                     'deleted_at' => $user->deleted_at,
                 ]),
@@ -46,6 +47,7 @@ class UsersController extends Controller
             'password' => ['nullable'],
             'owner' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
+            'active' => ['required', 'numeric'],
         ]);
 
         Auth::user()->account->users()->create([
@@ -55,7 +57,8 @@ class UsersController extends Controller
             'password' => Request::get('password'),
             'owner' => Request::get('owner'),
             'photo_path' => Request::file('photo') ? Request::file('photo')->store('users') : null,
-        ]);
+            'active' => Request::get('active'),
+            ]);
 
         return Redirect::route('users')->with('success', 'User created.');
     }
@@ -71,6 +74,7 @@ class UsersController extends Controller
                 'owner' => $user->owner,
                 'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
                 'deleted_at' => $user->deleted_at,
+                'active' => $user->active,
             ],
         ]);
     }
@@ -88,9 +92,10 @@ class UsersController extends Controller
             'password' => ['nullable'],
             'owner' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
+            'active' => ['required']
         ]);
 
-        $user->update(Request::only('first_name', 'last_name', 'email', 'owner'));
+        $user->update(Request::only('first_name', 'last_name', 'email', 'owner', 'active'));
 
         if (Request::file('photo')) {
             $user->update(['photo_path' => Request::file('photo')->store('users')]);
@@ -100,7 +105,7 @@ class UsersController extends Controller
             $user->update(['password' => Request::get('password')]);
         }
 
-        return Redirect::back()->with('success', 'User updated.');
+        return Redirect::back()->with('success', 'Użytkonik porawiony.');
     }
 
     public function destroy(User $user)
@@ -120,4 +125,19 @@ class UsersController extends Controller
 
         return Redirect::back()->with('success', 'User restored.');
     }
+    public function block(User $user)
+    {
+        $user->active = 0;
+        $user->save();
+        return Redirect::back()->with('success', 'Użytkownik zablokowany.');
+    }
+
+    public function unblock(User $user)
+    {
+        $user->active = 1;
+        $user->save();
+        return Redirect::back()->with('success', 'Użytkownik odblokowany.');
+    }
+
+
 }

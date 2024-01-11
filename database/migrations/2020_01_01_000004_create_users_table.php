@@ -23,6 +23,8 @@ class CreateUsersTable extends Migration
             $table->string('password')->nullable();
             $table->boolean('owner')->default(false);
             $table->string('photo_path', 100)->nullable();
+            $table->integer('active');
+            $table->timestamp('login_time')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

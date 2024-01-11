@@ -195,5 +195,9 @@ class ZapytaniaController extends Controller
 
         return $data;
     }
+    public function mail(Zapytania $zapytania)
+    {
+        Mail::send(new ZapytaniaMail($this->zapytaniaById($zapytania->id)));
+    }
 
 }

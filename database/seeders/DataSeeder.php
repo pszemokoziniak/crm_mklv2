@@ -57,5 +57,15 @@ class DataSeeder extends Seeder
             'name' => 'Monako',
             'waluta' => 'EUR',
         ]);
+        DB::table('kursies')->insert([
+            'id' => Str::uuid(),
+            'name' => 'PLN',
+            'kurs' => 1,
+        ]);
+        DB::table('kursies')->insert([
+            'id' => Str::uuid(),
+            'name' => 'EUR',
+            'kurs' => 4,
+        ]);
     }
 }

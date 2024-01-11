@@ -3,29 +3,41 @@
     <Head :title="`${form.first_name} ${form.last_name}`" />
     <div class="flex justify-start mb-8 max-w-3xl">
       <h1 class="text-3xl font-bold">
-        <Link class="text-indigo-400 hover:text-indigo-600" href="/users">Users</Link>
+        <Link class="text-indigo-400 hover:text-indigo-600" href="/users">Użytkownik</Link>
         <span class="text-indigo-400 font-medium">/</span>
         {{ form.first_name }} {{ form.last_name }}
       </h1>
       <img v-if="user.photo" class="block ml-4 w-8 h-8 rounded-full" :src="user.photo" />
     </div>
-    <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore"> This user has been deleted. </trashed-message>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore"> Ten użytkownik został zarchiwizowany. </trashed-message>
+    <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.first_name" :error="form.errors.first_name" class="pb-8 pr-6 w-full lg:w-1/2" label="First name" />
-          <text-input v-model="form.last_name" :error="form.errors.last_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Last name" />
-          <text-input v-model="form.email" :error="form.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
-          <text-input v-model="form.password" :error="form.errors.password" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Password" />
-          <select-input v-model="form.owner" :error="form.errors.owner" class="pb-8 pr-6 w-full lg:w-1/2" label="Owner">
+          <text-input v-model="form.first_name" :error="form.errors.first_name" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwisko" />
+          <text-input v-model="form.last_name" :error="form.errors.last_name" :disabled="disable" class="pb-8  w-full lg:w-1/2" label="Imię" />
+          <text-input v-model="form.email" :error="form.errors.email" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
+          <text-input v-model="form.password" :error="form.errors.password" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Hasło" />
+          <select-input v-model="form.owner" :error="form.errors.owner" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Owner">
             <option :value="true">Yes</option>
             <option :value="false">No</option>
           </select-input>
-          <file-input v-model="form.photo" :error="form.errors.photo" class="pb-8 pr-6 w-full lg:w-1/2" type="file" accept="image/*" label="Photo" />
+          <file-input v-model="form.photo" :error="form.errors.photo" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" type="file" accept="image/*" label="Zdjęcie" />
+        </div>
+        <hr>
+        <div class="grid gap-1 grid-cols-3 p-5">
+          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
+            <icon name="zablokuj" class="mr-2 w-4 h-4 inline"/>
+            <button v-if="user.active===1" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="blockActive">Zablokuj konto </button>
+            <button v-if="user.active===0" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="unblockActive">Odblokuj konto</button>
+          </div>
+          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
+            <icon name="edit" class="mr-2 w-4 h-4 inline"/>
+            <button v-if="!user.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="disableForm">Edytuj dane</button>
+          </div>
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button v-if="!user.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Delete User</button>
-          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Update User</loading-button>
+          <button v-if="!user.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Archiwizuj</button>
+          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Popraw</loading-button>
         </div>
       </form>
     </div>
@@ -40,6 +52,7 @@ import FileInput from '@/Shared/FileInput'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
+import Icon from "@/Shared/Icon.vue";
 
 export default {
   components: {
@@ -50,6 +63,7 @@ export default {
     SelectInput,
     TextInput,
     TrashedMessage,
+    Icon,
   },
   layout: Layout,
   props: {
@@ -58,6 +72,7 @@ export default {
   remember: 'form',
   data() {
     return {
+      disable: true,
       form: this.$inertia.form({
         _method: 'put',
         first_name: this.user.first_name,
@@ -83,6 +98,24 @@ export default {
     restore() {
       if (confirm('Are you sure you want to restore this user?')) {
         this.$inertia.put(`/users/${this.user.id}/restore`)
+      }
+    },
+    blockActive() {
+      this.$inertia.post(`/users/${this.user.id}/block`)
+    },
+    unblockActive() {
+      this.$inertia.post(`/users/${this.user.id}/unblock`)
+    },
+    disableForm() {
+
+      let elems_input = document.getElementById('form').getElementsByTagName('input');
+      for(let i = 0; i < elems_input.length; i++) {
+        elems_input[i].disabled = false;
+
+      }
+      let elems_select = document.getElementById('form').getElementsByTagName('select');
+      for(let i = 0; i < elems_select.length; i++) {
+        elems_select[i].disabled = false;
       }
     },
   },

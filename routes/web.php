@@ -258,6 +258,11 @@ Route::get('zapytania/{zapytania}/pdf', [ZapytaniaController::class, 'pdf'])
     ->name('zapytania.pdf')
     ->middleware('auth');
 
+//  Mail Zapytania
+
+Route::get('zapytania/{zapytania}/mail', [ZapytaniaController::class, 'mail'])
+    ->name('mail.zapytania')
+    ->middleware('auth');
 
 // Future Projects
 
@@ -602,3 +607,14 @@ Route::put('kraj/{kraj}/restore', [KrajController::class, 'restore'])
 Route::get('edit', [EditController::class, 'index'])
     ->name('edit')
     ->middleware('auth');
+
+// Block edit access
+
+Route::post('users/{user}/block', [UsersController::class, 'block'])
+    ->name('users.block')
+    ->middleware('auth');
+
+Route::post('users/{user}/unblock', [UsersController::class, 'unblock'])
+    ->name('users.unblock')
+    ->middleware('auth');
+

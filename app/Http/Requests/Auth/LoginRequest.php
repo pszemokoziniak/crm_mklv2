@@ -33,6 +33,11 @@ class LoginRequest extends FormRequest
             'password' => 'required|string',
         ];
     }
+    public function messages() {
+        return [
+            'required'  => 'Pole jest wymagane.',
+        ];
+    }
 
     /**
      * Attempt to authenticate the request's credentials.
