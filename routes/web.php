@@ -12,6 +12,8 @@ use App\Http\Controllers\EditController;
 use App\Http\Controllers\FazaController;
 use App\Http\Controllers\FutureProjectController;
 use App\Http\Controllers\ImagesController;
+use App\Http\Controllers\KontaktController;
+use App\Http\Controllers\KontaktPersonController;
 use App\Http\Controllers\KrajController;
 use App\Http\Controllers\KursyController;
 use App\Http\Controllers\LinkedinController;
@@ -147,6 +149,66 @@ Route::delete('contacts/{contact}', [ContactsController::class, 'destroy'])
 
 Route::put('contacts/{contact}/restore', [ContactsController::class, 'restore'])
     ->name('contacts.restore')
+    ->middleware('auth');
+
+// Kontakt
+
+Route::get('kontakt', [KontaktController::class, 'index'])
+    ->name('kontakt')
+    ->middleware('auth');
+
+Route::get('kontakt/create', [KontaktController::class, 'create'])
+    ->name('kontakt.create')
+    ->middleware('auth');
+
+Route::post('kontakt', [KontaktController::class, 'store'])
+    ->name('kontakt.store')
+    ->middleware('auth');
+
+Route::get('kontakt/{kontakt}/edit', [KontaktController::class, 'edit'])
+    ->name('kontakt.edit')
+    ->middleware('auth');
+
+Route::put('kontakt/{kontakt}', [KontaktController::class, 'update'])
+    ->name('kontakt.update')
+    ->middleware('auth');
+
+Route::delete('kontakt/{kontakt}', [KontaktController::class, 'destroy'])
+    ->name('kontakt.destroy')
+    ->middleware('auth');
+
+Route::put('kontakt/{kontakt}/restore', [KontaktController::class, 'restore'])
+    ->name('kontakt.restore')
+    ->middleware('auth');
+
+// KontaktPerson
+
+Route::get('kontaktperson/{client_id}/index', [KontaktPersonController::class, 'index'])
+    ->name('kontaktperson')
+    ->middleware('auth');
+
+Route::get('kontaktperson/create/{client}', [KontaktPersonController::class, 'create'])
+    ->name('kontaktperson.create')
+    ->middleware('auth');
+
+Route::post('kontaktperson/post/{client}', [KontaktPersonController::class, 'store'])
+    ->name('kontaktperson.post.store')
+    ->middleware('auth');
+
+Route::get('kontaktperson/{kontaktPerson}/edit', [KontaktPersonController::class, 'edit'])
+    ->name('kontaktperson.edit')
+    ->middleware('auth');
+
+Route::put('kontaktperson/{kontaktPerson}', [KontaktPersonController::class, 'update'])
+    ->name('kontaktperson.update')
+    ->middleware('auth');
+
+Route::delete('kontaktperson/{kontaktPerson}', [KontaktPersonController::class, 'destroy'])
+    ->name('kontaktperson.destroy')
+    ->middleware('auth');
+
+Route::put('kontaktperson/{kontaktPerson}/restore', [KontaktPersonController::class, 'restore'])
+    ->name('kontaktperson.restore')
     ->middleware('auth');
 
 // Reports

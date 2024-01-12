@@ -83,6 +83,7 @@ class ClientController extends Controller
             'branza' => Branza::get(),
             'kraj' => Kraj::get(),
             'user' => User::get(),
+            'client_id' => $client->id,
         ]);
     }
 

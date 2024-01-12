@@ -92,7 +92,7 @@ class UsersController extends Controller
             'password' => ['nullable'],
             'owner' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
-            'active' => ['required']
+            'active' => ['nullable']
         ]);
 
         $user->update(Request::only('first_name', 'last_name', 'email', 'owner', 'active'));
