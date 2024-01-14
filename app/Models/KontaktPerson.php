@@ -12,11 +12,7 @@ class KontaktPerson extends Model
     use HasFactory;
     use UUID;
 
-    /**
-     * The table associated with the model.
-     * @var string
-     */
-    protected $table = 'contact_persons';
+    protected  $table = 'kontakt_persons';
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

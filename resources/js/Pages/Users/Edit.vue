@@ -25,16 +25,36 @@
         </div>
         <hr>
         <div class="grid gap-1 grid-cols-3 p-5">
-          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
-            <icon name="zablokuj" class="mr-2 w-4 h-4 inline"/>
-            <button v-if="user.active===1" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="blockActive">Zablokuj konto </button>
-            <button v-if="user.active===0" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="unblockActive">Odblokuj konto</button>
+          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 cursor-default" @click="disableForm">
+            <div class="group flex items-center py-3 cursor-pointer" @click="disableForm">
+              <icon name="edit" class="mr-2 w-4 h-4 inline"/>
+              <div class="">Edytuj dane</div>
+            </div>
           </div>
-          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
-            <icon name="edit" class="mr-2 w-4 h-4 inline"/>
-            <button v-if="!user.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="disableForm">Edytuj dane</button>
+          <div v-if="user.active===1" class="px-8 py-4 bg-gray-50 border-t border-gray-100" @click="blockActive">
+            <Link class="group flex items-center py-3" href="#">
+              <icon name="zablokuj" class="mr-2 w-4 h-4 inline"/>
+              <div class="">Zablokuj</div>
+            </Link>
+          </div>
+          <div v-if="user.active===0" class="px-8 py-4 bg-gray-50 border-t border-gray-100" @click="unblockActive">
+            <Link class="group flex items-center py-3" href="#">
+              <icon name="zablokuj" class="mr-2 w-4 h-4 inline"/>
+              <div class="">Odblokuj konto</div>
+            </Link>
           </div>
         </div>
+<!--        <div class="grid gap-1 grid-cols-3 p-5">-->
+<!--          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">-->
+<!--            <icon name="zablokuj" class="mr-2 w-4 h-4 inline"/>-->
+<!--            <button v-if="user.active===1" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="blockActive">Zablokuj konto </button>-->
+<!--            <button v-if="user.active===0" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="unblockActive">Odblokuj konto</button>-->
+<!--          </div>-->
+<!--          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">-->
+<!--            <icon name="edit" class="mr-2 w-4 h-4 inline"/>-->
+<!--            <button v-if="!user.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="disableForm">Edytuj dane</button>-->
+<!--          </div>-->
+<!--        </div>-->
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button v-if="!user.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Archiwizuj</button>
           <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Popraw</loading-button>

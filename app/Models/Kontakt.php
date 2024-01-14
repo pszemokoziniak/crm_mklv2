@@ -15,4 +15,16 @@ class Kontakt extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function zapytania(): BelongsTo
+    {
+        return $this->belongsTo(Zapytania::class);
+    }
+    public function oferta(): BelongsTo
+    {
+        return $this->belongsTo(Oferta::class);
+    }
+    public function kontaktperson(): BelongsTo
+    {
+        return $this->belongsTo(KontaktPerson::class);
+    }
 }

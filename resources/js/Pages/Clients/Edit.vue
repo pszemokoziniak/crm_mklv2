@@ -36,25 +36,18 @@
               <icon name="edit" class="mr-2 w-4 h-4 inline"/>
               <div class="">Edytuj dane</div>
             </div>
-<!--            <icon name="edit" class="mr-2 w-4 h-4 inline"/>-->
-<!--            <button v-if="!user.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="disableForm">Edytuj dane</button>-->
           </div>
           <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
             <Link class="group flex items-center py-3" :href="`/kontaktperson/${client_id}/index`">
               <icon name="addPerson" class="mr-2 w-4 h-4 inline"/>
               <div class="">Osoby kontaktowe</div>
             </Link>
-
-<!--            <icon name="addPerson" class="mr-2 w-4 h-4 inline"/>-->
-<!--            <button v-if="!user.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="contactPerson">Osoba kontaktowa</button>-->
           </div>
           <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
             <Link class="group flex items-center py-3" :href="`/kontakt/${client_id}/index`">
               <icon name="addContact" class="mr-2 w-4 h-4 inline"/>
-              <div class="">Dodaj kontakt z klientem</div>
+              <div class="">Dodaj kontakt</div>
             </Link>
-<!--            <icon name="addContact" class="mr-2 w-4 h-4 inline"/>-->
-<!--            <button v-if="!user.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="addContactTime">Dodaj kontakt</button>-->
           </div>
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">

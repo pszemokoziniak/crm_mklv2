@@ -153,15 +153,15 @@ Route::put('contacts/{contact}/restore', [ContactsController::class, 'restore'])
 
 // Kontakt
 
-Route::get('kontakt', [KontaktController::class, 'index'])
+Route::get('kontakt/{client_id}/index', [KontaktController::class, 'index'])
     ->name('kontakt')
     ->middleware('auth');
 
-Route::get('kontakt/create', [KontaktController::class, 'create'])
+Route::get('kontakt/create/{client}/{kontaktPerson_id}', [KontaktController::class, 'create'])
     ->name('kontakt.create')
     ->middleware('auth');
 
-Route::post('kontakt', [KontaktController::class, 'store'])
+Route::post('kontakt/post/{client}', [KontaktController::class, 'store'])
     ->name('kontakt.store')
     ->middleware('auth');
 

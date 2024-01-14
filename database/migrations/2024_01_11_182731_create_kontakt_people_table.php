@@ -13,7 +13,7 @@ class CreateKontaktPeopleTable extends Migration
      */
     public function up()
     {
-        Schema::create('contact_persons', function (Blueprint $table) {
+        Schema::create('kontakt_persons', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('first_name');
             $table->string('last_name');

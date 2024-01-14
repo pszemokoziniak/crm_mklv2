@@ -14,9 +14,6 @@ class KontaktPersonController extends Controller
 {
     public function index($client_id)
     {
-//        dd(KontaktPerson::with('user')
-//            ->where('client_id', $client->id)
-//            ->get());
         return Inertia::render('KontaktPerson/Index', [
             'kontaktPerson' => KontaktPerson::with('user')
                 ->where('client_id', $client_id)
@@ -31,14 +28,12 @@ class KontaktPersonController extends Controller
             'client_id' => $client->id,
         ]);
     }
-
     public function store(Request $request)
     {
         KontaktPerson::create($request->all());
 
         return redirect()->route('kontaktperson', [$request->client_id])->with('success', 'Osoba kontaktowa dodana.');
     }
-
     public function edit(KontaktPerson $kontaktPerson)
     {
         return Inertia::render('KontaktPerson/Edit', [

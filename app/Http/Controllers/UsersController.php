@@ -47,7 +47,7 @@ class UsersController extends Controller
             'password' => ['nullable'],
             'owner' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
-            'active' => ['required', 'numeric'],
+            'active' => ['required'],
         ]);
 
         Auth::user()->account->users()->create([

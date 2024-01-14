@@ -67,5 +67,21 @@ class DataSeeder extends Seeder
             'name' => 'EUR',
             'kurs' => 4,
         ]);
+        DB::table('fazas')->insert([
+            'id' => Str::uuid(),
+            'name' => 'Faza1',
+        ]);
+        DB::table('fazas')->insert([
+            'id' => Str::uuid(),
+            'name' => 'Faza2',
+        ]);
+        DB::table('objekts')->insert([
+            'id' => Str::uuid(),
+            'name' => 'Objekt1',
+        ]);
+        DB::table('objekts')->insert([
+            'id' => Str::uuid(),
+            'name' => 'Objekt2',
+        ]);
     }
 }
