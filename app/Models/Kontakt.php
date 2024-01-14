@@ -25,6 +25,6 @@ class Kontakt extends Model
     }
     public function kontaktperson(): BelongsTo
     {
-        return $this->belongsTo(KontaktPerson::class);
+        return $this->belongsTo(KontaktPerson::class, 'kontakt_person_id', 'id');
     }
 }

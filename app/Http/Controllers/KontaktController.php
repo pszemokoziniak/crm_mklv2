@@ -14,11 +14,6 @@ class KontaktController extends Controller
 {
     public function index($client_id)
     {
-        dd(Kontakt::with('user')
-            ->with('zapytania')
-            ->with('kontaktperson')
-            ->where('client_id', $client_id)
-            ->get());
         return Inertia::render('Kontakt/Index', [
             'kontakt' => Kontakt::with('user')
                 ->with('zapytania')
