@@ -41,7 +41,7 @@
       <div>
         <p class="text-center w-full p-2 text-indigo-600">Przyszłe projekty</p>
         <div v-for="item in futureProjects" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
-          <Link class="" :href="`/oferta/${item.id}/edit`">
+          <Link class="" :href="`/futureproject/${item.id}/edit`">
             <p class="p-1">{{item.nazwa}}</p>
             <p class="p-1">{{item.client.nazwa}}</p>
             <p class="p-1">{{item.data_kontakt}}</p>
