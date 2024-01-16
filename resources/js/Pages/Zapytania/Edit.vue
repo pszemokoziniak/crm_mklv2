@@ -10,8 +10,8 @@
     <trashed-message v-if="zapytania.deleted_at" class="mb-6" @restore="restore"> Zapytanie zostało usunięte </trashed-message>
     <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <dix class="text-2xl font-bold border-1 border-green text-red-800 -mr-6 p-8">
-        {{zapytania.nazwa_projektu}} /
-        <Link class="text-indigo-400 hover:text-indigo-600" :href="`/clients/${zapytania.client_id}/edit`">{{clientById.nazwa}}</Link>
+          {{zapytania.nazwa_projektu}} /
+          <Link class="text-indigo-400 hover:text-indigo-600" :href="`/clients/${zapytania.client_id}/edit`">{{clientById.nazwa}}</Link>
       </dix>
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">

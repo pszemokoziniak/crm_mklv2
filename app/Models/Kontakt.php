@@ -23,6 +23,10 @@ class Kontakt extends Model
     {
         return $this->belongsTo(Oferta::class);
     }
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
     public function kontaktperson(): BelongsTo
     {
         return $this->belongsTo(KontaktPerson::class, 'kontakt_person_id', 'id');
