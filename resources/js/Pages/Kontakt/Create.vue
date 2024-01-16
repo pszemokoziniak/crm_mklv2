@@ -64,7 +64,6 @@ export default {
         subject: '',
         description: '',
         call_time: '',
-        // phone: '',
         zapytania_id: '',
         kontakt_person_id: this.kontaktPerson.id,
         client_id: this.client_id,

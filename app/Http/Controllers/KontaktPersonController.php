@@ -19,6 +19,7 @@ class KontaktPersonController extends Controller
                 ->where('client_id', $client_id)
                 ->get(),
             'client_id' => $client_id,
+            'client' => Client::where('id', $client_id)->get()->map->only('nazwa'),
         ]);
     }
     public function create(Client $client)

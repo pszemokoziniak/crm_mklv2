@@ -1,12 +1,16 @@
 <template>
   <div>
-    <Head title="Kontakt" />
-    <h1 class="mb-8 text-3xl font-bold">Kontakty</h1>
+    <Head title="Kontakty" />
     <div class="flex items-center justify-between mb-6">
-      <Link class="btn-indigo" :href="`/kontakt/create/${client_id}`">
-        <span>Dodaj</span>
-        <span class="hidden md:inline">&nbsp;Kontak</span>
-      </Link>
+      <h1 class="mb-8 text-3xl font-bold">Kontakty /
+        <Link class="text-indigo-400 hover:text-indigo-600" :href="`/kontaktperson/${client_id}/index`">
+          <span>Osoby kontaktowe</span>
+        </Link>
+      </h1>
+<!--      <Link class="btn-indigo" :href="`/kontakt/create/${client_id}`">-->
+<!--        <span>Dodaj</span>-->
+<!--        <span class="hidden md:inline">&nbsp;Kontak</span>-->
+<!--      </Link>-->
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
@@ -18,36 +22,36 @@
         </tr>
         <tr v-for="item in kontakt" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/kontakt/${client_id}/edit`">
+            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/kontakt/${item.kontaktperson.id}/edit`">
               {{ item.subject }}
               <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
             </Link>
           </td>
           <td class="border-t">
-            <Link class="flex items-center px-6 py-4" :href="`/kontakt/${client_id}/edit`" tabindex="-1">
-              {{ item.kontaktperson.last_name }} {{ item.kontaktperson.first_name }}
-            </Link>
-          </td>
-          <td class="border-t">
-            <Link class="flex items-center px-6 py-4" :href="`/kontakt/${client_id}/edit`" tabindex="-1">
+            <Link class="flex items-center px-6 py-4" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
               {{ item.description }}
             </Link>
           </td>
           <td class="border-t">
-            <Link class="flex items-center px-6 py-4" :href="`/kontakt/${client_id}/edit`" tabindex="-1">
+            <Link class="flex items-center px-6 py-4" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
+              {{ item.kontaktperson.last_name }} {{ item.kontaktperson.first_name }}
+            </Link>
+          </td>
+          <td class="border-t">
+            <Link class="flex items-center px-6 py-4" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
               {{ item.call_time }}
             </Link>
           </td>
 
 <!--          <td class="border-t">-->
-<!--            <Link class="flex items-center px-6 py-4" :href="`/kontakt/${client_id}/edit`" tabindex="-1">-->
+<!--            <Link class="flex items-center px-6 py-4" :href="`/kontakt/${item.id}/edit`" tabindex="-1">-->
 <!--              <div v-if="item.zapytania">-->
 <!--                {{ item.zapytania.nazwa_projektu }}-->
 <!--              </div>-->
 <!--            </Link>-->
 <!--          </td>-->
           <td class="w-px border-t">
-            <Link class="flex items-center px-4" :href="`/kontakt/${client_id}/edit`" tabindex="-1">
+            <Link class="flex items-center px-4" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
             </Link>
           </td>

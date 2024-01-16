@@ -1,7 +1,11 @@
 <template>
   <div>
-<!--    <Head title="Kontakt" />-->
-    <h1 class="mb-8 text-3xl font-bold">Osoby kontaktowe</h1>
+    <Head title="Osoby kontaktowe" />
+    <h1 class="mb-8 text-3xl font-bold">Osoby kontaktowe /
+      <Link class="text-indigo-400 hover:text-indigo-600" :href="`/clients/${client_id}/edit`">
+        <span>{{client[0].nazwa}}</span>
+      </Link>
+    </h1>
     <div class="flex items-center justify-between mb-6">
       <Link class="btn-indigo" :href="`/kontaktperson/create/${client_id}`">
         <span>Dodaj</span>
@@ -82,6 +86,7 @@ export default {
   props: {
     kontaktPerson: Object,
     client_id: String,
+    client: Object,
   },
   data() {
     return {

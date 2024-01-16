@@ -46,7 +46,7 @@
           <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
             <Link class="group flex items-center py-3" :href="`/kontakt/${client_id}/index`">
               <icon name="addContact" class="mr-2 w-4 h-4 inline"/>
-              <div class="">Dodaj kontakt</div>
+              <div class="">Kontakty</div>
             </Link>
           </div>
         </div>
