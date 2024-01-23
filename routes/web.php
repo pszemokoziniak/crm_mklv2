@@ -25,6 +25,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\StronyWwwController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ZadaniaController;
 use App\Http\Controllers\ZakresController;
 use App\Http\Controllers\ZapytaniaController;
 use App\Models\OfertaStatus;
@@ -418,6 +419,36 @@ Route::delete('branza/{branza}', [BranzaController::class, 'destroy'])
 
 Route::put('branza/{branza}/restore', [BranzaController::class, 'restore'])
     ->name('branza.restore')
+    ->middleware('auth');
+
+// Zadania
+
+Route::get('zadania', [ZadaniaController::class, 'index'])
+    ->name('zadania')
+    ->middleware('auth');
+
+Route::get('zadania/create', [ZadaniaController::class, 'create'])
+    ->name('zadania.create')
+    ->middleware('auth');
+
+Route::post('zadania', [ZadaniaController::class, 'store'])
+    ->name('zadania.store')
+    ->middleware('auth');
+
+Route::get('zadania/{zadania}/edit', [ZadaniaController::class, 'edit'])
+    ->name('zadania.edit')
+    ->middleware('auth');
+
+Route::put('zadania/{zadania}', [ZadaniaController::class, 'update'])
+    ->name('zadania.update')
+    ->middleware('auth');
+
+Route::delete('zadania/{zadania}', [ZadaniaController::class, 'destroy'])
+    ->name('zadania.destroy')
+    ->middleware('auth');
+
+Route::put('zadania/{zadania}/restore', [ZadaniaController::class, 'restore'])
+    ->name('zadania.restore')
     ->middleware('auth');
 
 // LinkedIn

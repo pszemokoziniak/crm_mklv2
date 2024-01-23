@@ -26,7 +26,6 @@ class OfertaController extends Controller
     use StoreActivityLog;
     public function index()
     {
-//        dd(Kraj::where('id', $oferta->zapytania->kraj_id)->withTrashed());
         return Inertia::render('Oferta/Index', [
             'filters' => Request::all('search', 'trashed'),
             'ofertas' => Oferta::with('client')
@@ -152,13 +151,6 @@ class OfertaController extends Controller
 
         return Redirect::back()->with('success', 'Oferta przywrócona');
     }
-//    public function exchangeRate($amount, $currency)
-//    {
-//        $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
-//        $kwotaPLN = ($amount * $currency['kurs']);
-//
-//        return (float) $kwotaPLN;
-//    }
     public function exchangeRate($currency)
     {
         $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();

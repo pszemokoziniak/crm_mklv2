@@ -20,8 +20,14 @@
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/oferta">
-        <icon name="oferty" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('reports') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Oferty</div>
+        <icon name="oferty" class="mr-2 w-4 h-4" :class="isUrl('oferta') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('oferta') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Oferty</div>
+      </Link>
+    </div>
+    <div class="mb-4">
+      <Link class="group flex items-center py-3" href="/zadania">
+        <icon name="tasks" class="mr-2 w-4 h-4" :class="isUrl('zadania') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('zadania') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Zadania</div>
       </Link>
     </div>
     <div class="mb-4">

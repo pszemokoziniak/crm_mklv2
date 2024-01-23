@@ -95,10 +95,6 @@ class ZapytaniaController extends Controller
 
         ($data)??$this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
-//        $data = $data->toArray();
-//        dd($data->id);
-//        dd($this->zapytaniaById($data->id));
-
         Mail::send(new ZapytaniaMail($this->zapytaniaById($data->id)));
 
         return Redirect::route('zapytania')->with('success', 'Zapisano. Mail wysłany');
