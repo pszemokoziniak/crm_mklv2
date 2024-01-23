@@ -36,12 +36,12 @@ class Zapytania extends Model
 
     public function oferta()
     {
-        return $this->belongsTo(Oferta::class, 'id', 'zapytania_id');
+        return $this->belongsTo(Oferta::class, 'id', 'zapytania_id')->withTrashed();
     }
 
     public function scopeOrderByCreatedAt($query)
     {
-        $query->orderBy('created_at');
+        $query->orderBy('created_at', 'DESC');
     }
     public function scopeFilter($query, array $filters)
     {

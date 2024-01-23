@@ -26,7 +26,7 @@ class ClientController extends Controller
             'clients' => Client::with('branza')
                 ->with('user')
                 ->with('kraj')
-//                ->orderByName()
+                ->orderByCreatedAt()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()

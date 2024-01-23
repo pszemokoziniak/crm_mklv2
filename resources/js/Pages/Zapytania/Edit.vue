@@ -6,13 +6,19 @@
       <span class="text-indigo-400 font-medium"></span>
       {{ form.id_zapyt }}
     </h1>
-
-    <trashed-message v-if="zapytania.deleted_at" class="mb-6" @restore="restore"> Zapytanie zostało usunięte </trashed-message>
+    <trashed-message v-if="zapytania.deleted_at" class="mb-6" @restore="restore"> Zapytanie zostało zarchiwizowane </trashed-message>
     <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <dix class="text-2xl font-bold border-1 border-green text-red-800 -mr-6 p-8">
+      <div class="text-2xl font-bold -mr-6 pr-8">
+        <div class="border-1 py-2">
           {{zapytania.nazwa_projektu}} /
           <Link class="text-indigo-400 hover:text-indigo-600" :href="`/clients/${zapytania.client_id}/edit`">{{clientById.nazwa}}</Link>
-      </dix>
+        </div>
+        <div v-if="archiwumOpis[0]" class="border-1 border-solid border-gray-700  py-2 text-sm ml-6">
+          Powód archiwizacji: {{archiwumOpis[0].description}} <br />
+          Użytkownik: {{archiwumOpis[0].user.last_name}} {{archiwumOpis[0].user.first_name}} <br />
+          Data archiwizacji: {{archiwumOpis[0].created_at}}
+        </div>
+      </div>
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <select-input v-model="form.user_otrzymal_id" :error="form.errors.user_otrzymal_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Otrzymał">
@@ -49,7 +55,7 @@
           <text-area v-model="form.opis" :error="form.errors.opis" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" />
         </div>
         <hr>
-        <div class="grid gap-1 grid-cols-3 p-5">
+        <div v-if="!zapytania.deleted_at" class="grid gap-1 grid-cols-3 p-5">
           <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
             <icon name="edit" class="mr-2 w-4 h-4 inline"/>
             <button v-if="!zapytania.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="disableForm">Edytuj dane</button>
@@ -67,7 +73,10 @@
           </div>
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button v-if="!zapytania.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Archiwizuj</button>
+          <Link v-if="!zapytania.deleted_at" class="text-red-600 hover:underline" :href="`/zapytania/${zapytania.id}/archiwum`" tabindex="-1">
+              Archiwizuj
+          </Link>
+<!--          <button v-if="!zapytania.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="archiwum">Archiwizuj</button>-->
           <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Popraw</loading-button>
         </div>
       </form>
@@ -86,8 +95,12 @@ import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
 import TextArea from "@/Shared/TextareaInput.vue";
 import Icon from "@/Shared/Icon.vue";
+import archiwum from "@/Pages/Zapytania/Archiwum.vue";
 
 export default {
+  computed: {
+
+  },
   components: {
     Icon,
     TextArea,
@@ -109,6 +122,7 @@ export default {
     users: Object,
     zakres: Object,
     clientById: Object,
+    archiwumOpis: Object,
   },
   remember: 'form',
   data() {
@@ -137,8 +151,11 @@ export default {
     update() {
       this.form.put(`/zapytania/${this.zapytania.id}`)
     },
+    archiwum() {
+      this.form.post(`/zapytania/${this.zapytania.id}/archiwum`)
+    },
     destroy() {
-      if (confirm('Czy chcesz usunąć te zapytanie?')) {
+      if (confirm('Czy chcesz zarchiwizować te zapytanie?')) {
         this.$inertia.delete(`/zapytania/${this.zapytania.id}`)
       }
     },

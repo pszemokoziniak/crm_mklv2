@@ -97,9 +97,6 @@ export default {
       }),
     }
   },
-  computed() {
-    console.log(this.id_zapyt)
-  },
   methods: {
     store() {
       this.form.post('/zapytania')

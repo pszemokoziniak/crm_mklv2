@@ -26,6 +26,7 @@ class OfertaController extends Controller
     use StoreActivityLog;
     public function index()
     {
+//        dd(Kraj::where('id', $oferta->zapytania->kraj_id)->withTrashed());
         return Inertia::render('Oferta/Index', [
             'filters' => Request::all('search', 'trashed'),
             'ofertas' => Oferta::with('client')
@@ -44,7 +45,7 @@ class OfertaController extends Controller
                     'zapytania' => $oferta->zapytania ? $oferta->zapytania : null,
                     'kwota' => $oferta->kwota,
                     'waluta' => $oferta->waluta,
-                    'kraj' => Kraj::where('id', $oferta->zapytania->kraj_id)->first(),
+//                    'kraj' => Kraj::where('id', $oferta->zapytania->kraj_id)->firstOrFail(),
                     'status' => $oferta->status ? $oferta->status : null,
                     'user' => $oferta->user ? $oferta->user : null,
                     'deleted_at' => $oferta->deleted_at,
@@ -95,6 +96,7 @@ class OfertaController extends Controller
 
     public function edit(Oferta $oferta)
     {
+//        dd(Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->firstOrFail());
 //        dd(Client::where('id', $oferta->client_id)->get()->map->only('id', 'nazwa_projektu'));
         return Inertia::render('Oferta/Edit', [
             'oferta' => [
@@ -116,9 +118,9 @@ class OfertaController extends Controller
             'users' => User::get(),
             'zakres' => Zakres::get(),
             'clients' => Client::get(),
-            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->get(),
-            'clientById' => Client::select('id', 'nazwa')->where('id', $oferta->client_id)->firstOrFail(),
-            'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->firstOrFail(),
+            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->withTrashed()->get(),
+            'clientById' => Client::select('id', 'nazwa')->where('id', $oferta->client_id)->withTrashed()->firstOrFail(),
+            'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->firstOrFail(),
             'statuses' => OfertaStatus::get()->map->only('id', 'name'),
 
         ]);
@@ -141,7 +143,7 @@ class OfertaController extends Controller
     {
         $oferta->delete();
 
-        return Redirect::back()->with('success', 'Oferta usunięta.');
+        return Redirect::back()->with('success', 'Oferta zarchiwizowana.');
     }
 
     public function restore(Oferta $oferta)

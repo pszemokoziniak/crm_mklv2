@@ -28,7 +28,7 @@ class FutureProject extends Model
     }
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Client::class)->withTrashed();
     }
     public function user(): BelongsTo
     {
@@ -42,7 +42,7 @@ class FutureProject extends Model
 
     public function scopeOrderByCreatedAt($query)
     {
-        $query->orderBy('created_at');
+        $query->orderBy('created_at', 'DESC');
     }
     public function scopeFilter($query, array $filters)
     {

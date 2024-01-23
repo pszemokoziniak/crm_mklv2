@@ -39,6 +39,10 @@ class Client extends Model
     {
         return $this->hasOne(Zapytania::class);
     }
+    public function scopeOrderByCreatedAt($query)
+    {
+        $query->orderBy('created_at', 'DESC');
+    }
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {

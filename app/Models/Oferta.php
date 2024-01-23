@@ -23,7 +23,7 @@ class Oferta extends Model
     }
     public function zapytania()
     {
-        return $this->belongsTo(Zapytania::class);
+        return $this->belongsTo(Zapytania::class)->withTrashed();
     }
     public function user()
     {
@@ -43,7 +43,7 @@ class Oferta extends Model
     }
     public function scopeOrderByCreatedAt($query)
     {
-        $query->orderBy('created_at');
+        $query->orderBy('created_at', 'DESC');
     }
     public function scopeFilter($query, array $filters)
     {

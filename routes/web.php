@@ -307,7 +307,7 @@ Route::put('zapytania/{zapytania}', [ZapytaniaController::class, 'update'])
     ->name('zapytania.update')
     ->middleware('auth');
 
-Route::delete('zapytania/{zapytania}', [ZapytaniaController::class, 'destroy'])
+Route::post('zapytania/{zapytania}/destroy', [ZapytaniaController::class, 'destroy'])
     ->name('zapytania.destroy')
     ->middleware('auth');
 
@@ -318,6 +318,10 @@ Route::put('zapytania/{zapytania}/restore', [ZapytaniaController::class, 'restor
 
 Route::get('zapytania/{zapytania}/pdf', [ZapytaniaController::class, 'pdf'])
     ->name('zapytania.pdf')
+    ->middleware('auth');
+
+Route::get('zapytania/{id}/archiwum', [ZapytaniaController::class, 'archiwum'])
+    ->name('zapytania.archiwum')
     ->middleware('auth');
 
 //  Mail Zapytania

@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ArchiwumStoreRequest;
 use App\Http\Requests\ClientRequest;
 use App\Http\Requests\ContactStoreRequest;
 use App\Http\Requests\ZapytaniaStoreRequest;
 use App\Mail\ZapytaniaMail;
+use App\Models\ArchiwumZapytania;
 use App\Models\Branza;
 use App\Models\Client;
 use App\Models\Kraj;
 use App\Models\Kursy;
+use App\Models\Oferta;
 use App\Models\User;
 use App\Models\Zakres;
 use App\Models\Zapytania;
@@ -60,7 +63,7 @@ class ZapytaniaController extends Controller
             'kraj' => Kraj::get()->map->only('id', 'name', 'waluta'),
             'users' => User::get()->map->only('id', 'first_name', 'last_name'),
             'clients' => Client::get()->map->only('id', 'nazwa'),
-            'id_zapyt' => (Zapytania::count()+1).'/'.Carbon::now()->format('Y'),
+            'id_zapyt' => (Zapytania::withTrashed()->count()+1).'/'.Carbon::now()->format('Y'),
         ]);
     }
     public function store(ZapytaniaStoreRequest $request)
@@ -129,7 +132,8 @@ class ZapytaniaController extends Controller
             'users' => User::get(),
             'zakres' => Zakres::get(),
             'clients' => Client::get(),
-            'clientById' => Client::where('id', $zapytania->client_id)->firstOrFail(),
+            'clientById' => Client::where('id', $zapytania->client_id)->withTrashed()->firstOrFail(),
+            'archiwumOpis' => ArchiwumZapytania::with('user')->where('zapytania_id', $zapytania->id)->get(),
         ]);
     }
 
@@ -143,13 +147,23 @@ class ZapytaniaController extends Controller
         return Redirect::route('zapytania')->with('success', 'Zapytanie poprawione.');
     }
 
-    public function destroy(Zapytania $zapytania)
+    public function destroy(Zapytania $zapytania, ArchiwumStoreRequest $request)
     {
+        ArchiwumZapytania::create($request->all());
+        Oferta::where('zapytania_id', $zapytania->id)->delete();
+
         $zapytania->delete();
 
-        return Redirect::back()->with('success', 'Zapytanie usunięte.');
+        return Redirect::route('zapytania.edit', $zapytania->id)->with('success', 'Zapytanie zarchiwizowane.');
     }
+    public function archiwum($id)
+    {
+        $zapytania = Zapytania::where('id', $id)->withTrashed()->get()->map->only('id', 'id_zapyt', 'nazwa_projektu');
 
+        return Inertia::render('Zapytania/Archiwum', [
+            'zapytania' => $zapytania,
+        ]);
+    }
     public function restore(Zapytania $zapytania)
     {
         $zapytania->restore();

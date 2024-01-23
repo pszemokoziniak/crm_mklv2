@@ -29,7 +29,7 @@ class KontaktController extends Controller
     {
         return Inertia::render('Kontakt/Create', [
 //            'clients' => Client::get(),
-            'zapytanias' => Zapytania::get(),
+            'zapytanias' => Zapytania::withTrashed()->get(),
 //            'ofertas' => Oferta::get(),
             'client_id' => $client->id,
             'kontaktPersons' => KontaktPerson::where('client_id', $client->id)->get(),

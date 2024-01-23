@@ -29,7 +29,7 @@
       </div>
       <div>
         <p class="text-center w-full p-2 text-indigo-600">Oferty</p>
-        <div v-for="item in ofertas" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
+        <div v-for="item in ofertas.data" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
           <Link class="" :href="`/oferta/${item.id}/edit`">
             <p class="p-1">{{item.zapytania.nazwa_projektu}}</p>
             <p class="p-1">{{item.client.nazwa}}</p>

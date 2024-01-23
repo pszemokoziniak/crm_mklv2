@@ -123,7 +123,7 @@ class FutureProjectController extends Controller
             'faza' => Faza::get()->map->only('id', 'name'),
             'krajs' => Kraj::get()->map->only('id', 'name'),
             'users' => User::get()->map->only('id', 'first_name', 'last_name'),
-            'clients' => Client::get()->map->only('id', 'nazwa'),
+            'clients' => Client::withTrashed()->get()->map->only('id', 'nazwa'),
         ]);
     }
 
