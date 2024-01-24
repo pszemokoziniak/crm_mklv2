@@ -42,9 +42,9 @@
             </Link>
           </td>
           <td class="w-px border-t">
-            <Link class="btn-indigo" :href="`/linkedin/${item.id}/click`">
+            <a class="btn-indigo" target="_blank" :href="`/linkedin/${item.id}/click`">
               <span>Odwiedź stronę</span>
-            </Link>
+            </a>
           </td>
         </tr>
         <tr v-if="linkedin.length === 0">

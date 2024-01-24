@@ -68,8 +68,7 @@ class StronyWwwController extends Controller
             'click' => $click
         ]);
 
-        return Redirect::to('https://www.pakainfo.com');
-//        return Redirect::to($stronyWww->link)->with('success', 'Usunięte.');
+        return Redirect::away((str_contains($stronyWww->link, 'https://'))?$stronyWww->link:'https://'.$stronyWww->link);
     }
 
     public function restore(StronyWww $stronyWww)

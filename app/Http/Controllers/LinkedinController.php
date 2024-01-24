@@ -68,8 +68,7 @@ class LinkedinController extends Controller
             'click' => $click
         ]);
 
-        return Redirect::to('https://www.pakainfo.com');
-//        return Redirect::to($linkedin->link)->with('success', 'Usunięte.');
+        return Redirect::away((str_contains($linkedin->link, 'https://'))?$linkedin->link:'https://'.$linkedin->link);
     }
 
     public function restore(Linkedin $linkedin)

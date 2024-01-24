@@ -5,7 +5,6 @@
     <div class="flex items-center justify-between mb-6">
       <Link class="btn-indigo" href="/stronywww/create">
         <span>Dodaj</span>
-<!--        <span class="hidden md:inline">&nbsp;Branza</span>-->
       </Link>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
@@ -14,7 +13,7 @@
           <th class="pb-4 pt-6 px-6">Firma</th>
           <th class="pb-4 pt-6 px-6">Link</th>
           <th class="pb-4 pt-6 px-6">Update</th>
-          <th class="pb-4 pt-6 px-6">Ostatni click</th>
+          <th class="pb-4 pt-6 px-6">Ilość kliknięć</th>
         </tr>
         <tr v-for="item in stronywww" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
@@ -42,9 +41,9 @@
             </Link>
           </td>
           <td class="w-px border-t">
-            <Link class="btn-indigo" :href="`/stronywww/${item.id}/click`">
+            <a class="btn-indigo" target="_blank" :href="`/stronywww/${item.id}/click`">
               <span>Odwiedź stronę</span>
-            </Link>
+            </a>
           </td>
         </tr>
         <tr v-if="stronywww.length === 0">
