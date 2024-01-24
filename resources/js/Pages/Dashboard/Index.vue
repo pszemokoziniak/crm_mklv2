@@ -2,7 +2,7 @@
   <div>
     <Head title="Do zrobienia" />
     <h1 class="mb-8 text-3xl font-bold">Do zrobienia</h1>
-    <div class="grid grid-cols-4 gap-4">
+    <div class="grid grid-cols-5 gap-4">
       <div>
         <p class="text-center w-full p-2 text-indigo-600">Klienci kontakty</p>
         <div v-for="item in kontakts" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
@@ -49,6 +49,17 @@
           </Link>
         </div>
       </div>
+      <div>
+        <p class="text-center w-full p-2 text-indigo-600">Zadania</p>
+        <div v-for="item in zadania" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
+          <Link class="" :href="`/zadania/${item.id}/edit`">
+            <p class="p-1">{{item.users.last_name}} {{item.users.first_name}}</p>
+            <p class="p-1">{{item.subject}}</p>
+            <p class="p-1">{{item.deadline}}</p>
+<!--            <p class="p-1 text-red-600">{{item.user.last_name}} {{item.user.first_name}}</p>-->
+          </Link>
+        </div>
+      </div>
     </div>
 
 <!--    <p class="mb-8 leading-normal">Hey there! Welcome to Ping CRM, a demo app designed to help illustrate how <a class="text-indigo-500 hover:text-orange-600 underline" href="https://inertiajs.com">Inertia.js</a> works.</p>-->
@@ -70,6 +81,7 @@ export default {
     zapytanias: Object,
     ofertas: Object,
     futureProjects: Object,
+    zadania: Object,
   }
 }
 </script>
