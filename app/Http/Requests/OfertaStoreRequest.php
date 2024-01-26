@@ -30,7 +30,7 @@ class OfertaStoreRequest extends FormRequest
             'data_wyslania' => ['required', 'date'],
             'kwota' => ['required'],
             'kurs' => ['nullable'],
-            'waluta' => ['required', 'max:3'],
+            'waluta_id' => ['required'],
             'data_kontakt' => ['required', 'max:50'],
             'oferta_status_id' => ['required'],
             'opis' => ['required'],

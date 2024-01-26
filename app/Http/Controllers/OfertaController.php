@@ -11,6 +11,7 @@ use App\Models\Kursy;
 use App\Models\Oferta;
 use App\Models\OfertaStatus;
 use App\Models\User;
+use App\Models\Waluta;
 use App\Models\Zakres;
 use App\Models\Zapytania;
 use Carbon\Carbon;
@@ -33,6 +34,7 @@ class OfertaController extends Controller
                 ->with('kraj')
                 ->with('zapytania')
                 ->with('status')
+                ->with('waluta')
                 ->OrderByCreatedAt()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
@@ -43,7 +45,7 @@ class OfertaController extends Controller
                     'client' => $oferta->client ? $oferta->client : null,
                     'zapytania' => $oferta->zapytania ? $oferta->zapytania : null,
                     'kwota' => $oferta->kwota,
-                    'waluta' => $oferta->waluta,
+                    'waluta' => $oferta->waluta ? $oferta->waluta : null,
 //                    'kraj' => Kraj::where('id', $oferta->zapytania->kraj_id)->firstOrFail(),
                     'status' => $oferta->status ? $oferta->status : null,
                     'user' => $oferta->user ? $oferta->user : null,
@@ -62,22 +64,24 @@ class OfertaController extends Controller
             'users' => User::get()->map->only('id', 'first_name', 'last_name'),
             'statuses' => OfertaStatus::get()->map->only('id', 'name'),
             'krajs' => Kraj::get()->map->only('id', 'waluta'),
+            'waluta' => Waluta::get()->map->only('id', 'name'),
         ]);
     }
     public function store(OfertaStoreRequest $request)
     {
-        try {
-            (int) $kwotaPLN = (int) $request->kwota * (float) $this->exchangeRate($request->waluta);
-            (float) $kurs = $this->exchangeRate($request->waluta);
+            $kurs = $this->changeRate($request->waluta_id, $request->kwota);
+
+//            (int) $kwotaPLN = (int) $request->kwota * (float) $this->exchangeRate($request->waluta_id);
+//            (float) $kurs = $this->exchangeRate($request->waluta_id);
             $data = new Oferta();
             $data->zapytania_id = $request->zapytania_id;
             $data->typ = $request->typ;
             $data->client_id = $request->client_id;
             $data->data_wyslania = $request->data_wyslania;
             $data->kwota = $request->kwota;
-            $data->waluta = $request->waluta;
-            $data->kurs = $kurs;
-            $data->kwotaPLN = $kwotaPLN;
+            $data->waluta_id = $request->waluta_id;
+            $data->kurs = $kurs[0];
+            $data->kwotaPLN = $kurs[1];
             $data->data_kontakt = $request->data_kontakt;
             $data->oferta_status_id = $request->oferta_status_id;
             $data->opis = $request->opis;
@@ -87,10 +91,6 @@ class OfertaController extends Controller
             $this->storeActivityLog('Nowa oferta', $data->id, $request->client_id, 'oferta', 'zmiany', Auth::id());
 
             return Redirect::route('oferta')->with('success', 'Zapisano.');
-
-        } catch (\Throwable $e) {
-            report($e);
-        }
     }
 
     public function edit(Oferta $oferta)
@@ -105,7 +105,7 @@ class OfertaController extends Controller
                 'client_id' => $oferta->client_id,
                 'data_wyslania' => $oferta->data_wyslania,
                 'kwota' => $oferta->kwota,
-                'waluta' => $oferta->waluta,
+                'waluta_id' => $oferta->waluta_id,
                 'data_kontakt' => $oferta->data_kontakt,
                 'oferta_status_id' => $oferta->oferta_status_id,
                 'opis' => $oferta->opis,
@@ -121,21 +121,17 @@ class OfertaController extends Controller
             'clientById' => Client::select('id', 'nazwa')->where('id', $oferta->client_id)->withTrashed()->firstOrFail(),
             'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->firstOrFail(),
             'statuses' => OfertaStatus::get()->map->only('id', 'name'),
-
+            'waluta' => Waluta::get()->map->only('id', 'name'),
         ]);
     }
 
     public function update(Oferta $oferta, OfertaStoreRequest $request)
     {
-        try {
         $oferta->update($request->all());
+        $this->saveRate($oferta->id, $request->kurs, $request->kwota);
         $this->storeActivityLog('Poprawiono ofertę', $oferta->id, $request->client_id, 'oferta', 'zmiany', Auth::id());
 
         return Redirect::route('oferta')->with('success', 'Oferta poprawiona.');
-
-        } catch (\Throwable $e) {
-            report($e);
-        }
     }
 
     public function destroy(Oferta $oferta)
@@ -151,12 +147,32 @@ class OfertaController extends Controller
 
         return Redirect::back()->with('success', 'Oferta przywrócona');
     }
-    public function exchangeRate($currency)
+//    public function exchangeRate($currency)
+//    {
+//        $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
+//        $currency = $currency['kurs'];
+//
+//        return (string) $currency;
+//    }
+    public function exchangeRate($id)
     {
-        $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
-        $currency = $currency['kurs'];
+        $currency = Kursy::select('kurs')->where('waluta_id', $id)->latest()->first()->toArray();
+        return (string) $currency['kurs'];
+    }
+    public function changeRate($waluta, $kwota)
+    {
+        $waluta = Waluta::where('id', $waluta)->pluck('id');
+        $kurs = $this->exchangeRate($waluta[0]);
+        $kwotaPLN = (float) $kwota * (float) $kurs;
 
-        return (string) $currency;
+        return [(float) $kurs, (float) $kwotaPLN];
+    }
+    public function saveRate($id, $kurs, $kwotaPLN)
+    {
+        $data = Oferta::find($id);
+        $data->kurs = (float) $kurs;
+        $data->kwotaPLN = $kwotaPLN;
+        $data->save();
     }
     public function kwotaPLN($amount, $currency)
     {

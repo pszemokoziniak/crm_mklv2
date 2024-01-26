@@ -59,6 +59,13 @@
           </div>
         </div>
       </Link>
+      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/waluta/`">
+        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
+          <div class="px-6 py-4">
+            <div class="font-bold text-xl mb-2 flex justify-center">Waluta</div>
+          </div>
+        </div>
+      </Link>
 
 <!--      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/calendar`">-->
 <!--        <div class="h-full lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">-->

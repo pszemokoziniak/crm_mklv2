@@ -5,6 +5,7 @@
       <Link class="text-indigo-400 hover:text-indigo-600" href="/oferta">Oferty</Link>
       <span class="text-indigo-400 font-medium">/</span> Popraw
     </h1>
+    {{oferta}}
     <trashed-message v-if="oferta.deleted_at" class="mb-6" @restore="restore"> Oferta została usunięta </trashed-message>
     <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <dix class="text-2xl font-bold border-1 border-green text-red-800 -mr-6 p-8">
@@ -27,9 +28,9 @@
           </select-input>
           <text-input v-model="form.data_wyslania" :error="form.errors.data_wyslania" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Ofertę wysłano" />
           <number-input v-model="form.kwota" :error="form.errors.kwota" :disabled="disable"  class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
-          <select-input v-model="form.waluta" :error="form.errors.waluta" :disabled="disable"  class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
+          <select-input v-model="form.waluta_id" :error="form.errors.waluta_id" :disabled="disable"  class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
             <option :value="null" />
-            <option v-for="item in krajs" :key="item.id" :value="item.waluta">{{ item.waluta }}</option>
+            <option v-for="item in waluta" :key="item.id">{{ item.name }}</option>
           </select-input>
           <text-input v-model="form.data_kontakt" :error="form.errors.data_kontakt" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
           <select-input v-model="form.oferta_status_id" :error="form.errors.oferta_status_id" :disabled="disable"  class="pb-8 pr-6 w-full lg:w-1/2" label="Status">
@@ -91,6 +92,7 @@ export default {
     statuses: Object,
     clientById: Object,
     zapytaniaById: Object,
+    waluta: Object,
   },
   remember: 'form',
   data() {
@@ -103,7 +105,7 @@ export default {
         client_id: this.oferta.client_id,
         data_wyslania: this.oferta.data_wyslania,
         kwota: this.oferta.kwota,
-        waluta: this.oferta.waluta,
+        waluta_id: this.oferta.waluta_id,
         data_kontakt: this.oferta.data_kontakt,
         oferta_status_id: this.oferta.oferta_status_id,
         opis: this.oferta.opis,

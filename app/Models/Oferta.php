@@ -37,6 +37,10 @@ class Oferta extends Model
     {
         return $this->belongsTo(Client::class);
     }
+    public function waluta()
+    {
+        return $this->belongsTo(Waluta::class);
+    }
     public function status()
     {
         return $this->belongsTo(OfertaStatus::class, 'oferta_status_id', 'id');

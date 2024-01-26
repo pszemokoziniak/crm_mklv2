@@ -20,7 +20,6 @@
           <th class="pb-4 pt-6 px-6">Zapytanie</th>
           <th class="pb-4 pt-6 px-6">Typ</th>
           <th class="pb-4 pt-6 px-6">Klient</th>
-          <th class="pb-4 pt-6 px-6">Kraj</th>
           <th class="pb-4 pt-6 px-6">Kwota</th>
           <th class="pb-4 pt-6 px-6">Status</th>
           <th class="pb-4 pt-6 px-6">Dodał</th>
@@ -48,14 +47,8 @@
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/oferta/${item.id}/edit`" tabindex="-1">
-              <div v-if="item.kraj">
-                {{ item.kraj.name }}
-              </div>
-            </Link>
-          </td>
-          <td class="border-t">
-            <Link class="flex items-center px-6 py-4" :href="`/oferta/${item.id}/edit`" tabindex="-1">
-              {{ item.kwota }} {{ item.waluta }}
+              {{ item.kwota }}
+              {{ item.waluta.name }}
             </Link>
           </td>
           <td class="border-t">
@@ -77,7 +70,7 @@
           </td>
         </tr>
         <tr v-if="ofertas.length === 0">
-          <td class="px-6 py-4 border-t" colspan="4">Brak zapytań.</td>
+          <td class="px-6 py-4 border-t" colspan="4">Brak ofert.</td>
         </tr>
       </table>
     </div>

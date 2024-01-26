@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class KursyStoreRequest extends FormRequest
+class WalutaStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +24,15 @@ class KursyStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'waluta_id' => ['required'],
-            'kurs' => ['required', 'numeric']
+            'id' => ['request'],
+            'name' => ['required'],
+            'user_id' => ['required']
         ];
     }
     public function messages() {
         return [
-            'required'  => 'Pole :attribute jest wymagane.',
+            'required'  => 'Pole jest wymagane.',
             'max' => 'Nazwa możne zawierać',
-            'numeric' => 'Pole musi zawierać cyfrę',
         ];
     }
 
@@ -40,7 +40,6 @@ class KursyStoreRequest extends FormRequest
     {
         return [
             'name' => 'Nazwa',
-            'kurs' => 'Kurs',
         ];
     }
 }

@@ -14,6 +14,7 @@ use App\Models\Kraj;
 use App\Models\Kursy;
 use App\Models\Oferta;
 use App\Models\User;
+use App\Models\Waluta;
 use App\Models\Zakres;
 use App\Models\Zapytania;
 use Carbon\Carbon;
@@ -47,6 +48,7 @@ class ZapytaniaController extends Controller
                     'client' => $zapytania->client ? $zapytania->client : null,
                     'kwota' => $zapytania->kwota,
                     'kraj' => $zapytania->kraj ? $zapytania->kraj : null,
+                    'waluta' => $zapytania->waluta ? $zapytania->waluta : null,
                     'zakres' => $zapytania->zakres ? $zapytania->zakres : null,
                     'user' => $zapytania->user ? $zapytania->user : null,
                     'deleted_at' => $zapytania->deleted_at,
@@ -61,6 +63,7 @@ class ZapytaniaController extends Controller
         return Inertia::render('Zapytania/Create', [
             'zakres' => Zakres::get()->map->only('id', 'name'),
             'kraj' => Kraj::get()->map->only('id', 'name', 'waluta'),
+            'waluta' => Waluta::get()->map->only('id', 'name'),
             'users' => User::get()->map->only('id', 'first_name', 'last_name'),
             'clients' => Client::get()->map->only('id', 'nazwa'),
             'id_zapyt' => (Zapytania::withTrashed()->count()+1).'/'.Carbon::now()->format('Y'),
@@ -68,10 +71,8 @@ class ZapytaniaController extends Controller
     }
     public function store(ZapytaniaStoreRequest $request)
     {
-//        Zapytania::create($request->all());
-        $walutaName = Kraj::where('id', $request->waluta)->pluck('waluta');
-        (int) $kwotaPLN = (int) $request->kwota * (float) $this->exchangeRate($walutaName[0]);
-        (float) $kurs = $this->exchangeRate($walutaName[0]);
+        $kurs = $this->changeRate($request->waluta_id, $request->kwota);
+
         $data = new Zapytania();
         $data->id_zapyt = $request->id_zapyt;
         $data->user_otrzymal_id = $request->user_otrzymal_id;
@@ -79,19 +80,21 @@ class ZapytaniaController extends Controller
         $data->data_zlozenia = $request->data_zlozenia;
         $data->client_id = $request->client_id;
         $data->nazwa_projektu = $request->nazwa_projektu;
+        $data->preliminarz = $request->preliminarz;
         $data->miejscowosc = $request->miejscowosc;
-        $data->kwotaPLN = $kwotaPLN;
-        $data->kurs = $kurs;
+        $data->kwotaPLN = $kurs[1];
+        $data->kurs = $kurs[0];
         $data->kraj_id = $request->kraj_id;
         $data->zakres_id = $request->zakres_id;
         $data->user_opracowuje_id = $request->user_opracowuje_id;
         $data->start = $request->start;
         $data->end = $request->end;
         $data->kwota = $request->kwota;
-        $data->waluta = $request->waluta;
+        $data->waluta_id = $request->waluta_id;
         $data->opis = $request->opis;
         $data->user_id = $request->user_id;
         $data->save();
+
 
         ($data)??$this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
@@ -111,6 +114,7 @@ class ZapytaniaController extends Controller
                 'data_zlozenia' => $zapytania->data_zlozenia,
                 'client_id' => $zapytania->client_id,
                 'nazwa_projektu' => $zapytania->nazwa_projektu,
+                'preliminarz' => $zapytania->preliminarz,
                 'miejscowosc' => $zapytania->miejscowosc,
                 'kraj_id' => $zapytania->kraj_id,
                 'zakres_id' => $zapytania->zakres_id,
@@ -118,16 +122,18 @@ class ZapytaniaController extends Controller
                 'start' => $zapytania->start,
                 'end' => $zapytania->end,
                 'kwota' => $zapytania->kwota,
-                'waluta' => $zapytania->waluta,
+                'waluta_id' => $zapytania->waluta_id,
                 'opis' => $zapytania->opis,
                 'user_id' => $zapytania->user_id,
                 'deleted_at' => $zapytania->deleted_at,
             ],
             'branzas' => Branza::get(),
             'krajs' => Kraj::get(),
+            'waluta' => Waluta::get(),
             'users' => User::get(),
             'zakres' => Zakres::get(),
             'clients' => Client::get(),
+            'oferty' => Oferta::with('user')->where('zapytania_id', $zapytania->id)->get(),
             'clientById' => Client::where('id', $zapytania->client_id)->withTrashed()->firstOrFail(),
             'archiwumOpis' => ArchiwumZapytania::with('user')->where('zapytania_id', $zapytania->id)->get(),
         ]);
@@ -136,16 +142,16 @@ class ZapytaniaController extends Controller
     public function update(Zapytania $zapytania, ZapytaniaStoreRequest $request)
     {
         $zapytania->update($request->all());
-
+        $this->saveRate($zapytania->id, $request->kurs, $request->kwota);
         ($zapytania)??$this->storeActivityLog('Poprawiono zapytanie', $zapytania->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
 
         return Redirect::route('zapytania')->with('success', 'Zapytanie poprawione.');
     }
 
-    public function destroy(Zapytania $zapytania, ArchiwumStoreRequest $request)
+    public function destroy(Zapytania $zapytania)
     {
-        ArchiwumZapytania::create($request->all());
+//        ArchiwumZapytania::create($request->all());
         Oferta::where('zapytania_id', $zapytania->id)->delete();
 
         $zapytania->delete();
@@ -166,19 +172,32 @@ class ZapytaniaController extends Controller
 
         return Redirect::back()->with('success', 'Zapytanie przywrócone');
     }
-    public function exchangeRate($currency)
+    public function exchangeRate($id)
     {
-        $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
-        $currency = $currency['kurs'];
-
-        return (string) $currency;
+        $currency = Kursy::select('kurs')->where('waluta_id', $id)->latest()->first()->toArray();
+        return (string) $currency['kurs'];
     }
-    public function kwotaPLN($amount, $currency)
+//    public function kwotaPLN($amount, $currency)
+//    {
+//        $currency = Kursy::select('kurs')->where('id', $currency)->latest()->first()->toArray();
+//        $kwotaPLN = ($amount * $currency['kurs']);
+//
+//        return (float) $kwotaPLN;
+//    }
+    public function changeRate($waluta, $kwota)
     {
-        $currency = Kursy::select('kurs')->where('id', $currency)->latest()->first()->toArray();
-        $kwotaPLN = ($amount * $currency['kurs']);
+        $waluta = Waluta::where('id', $waluta)->pluck('id');
+        $kurs = $this->exchangeRate($waluta[0]);
+        $kwotaPLN = (float) $kwota * (float) $kurs;
 
-        return (float) $kwotaPLN;
+        return [(float) $kurs, (float) $kwotaPLN];
+    }
+    public function saveRate($id, $kurs, $kwotaPLN)
+    {
+        $data = Zapytania::find($id);
+        $data->kurs = (float) $kurs;
+        $data->kwotaPLN = $kwotaPLN;
+        $data->save();
     }
     public function pdf(Zapytania $zapytania)
     {

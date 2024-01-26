@@ -38,12 +38,12 @@ class DataSeeder extends Seeder
 
         DB::table('oferta_statuses')->insert([
             'id' => Str::uuid(),
-            'name' => 'Status1',
+            'name' => 'Przegrana',
         ]);
 
         DB::table('oferta_statuses')->insert([
             'id' => Str::uuid(),
-            'name' => 'Status2',
+            'name' => 'Wygrana',
         ]);
 
         DB::table('krajs')->insert([
@@ -56,16 +56,6 @@ class DataSeeder extends Seeder
             'id' => Str::uuid(),
             'name' => 'Monako',
             'waluta' => 'EUR',
-        ]);
-        DB::table('kursies')->insert([
-            'id' => Str::uuid(),
-            'name' => 'PLN',
-            'kurs' => 1,
-        ]);
-        DB::table('kursies')->insert([
-            'id' => Str::uuid(),
-            'name' => 'EUR',
-            'kurs' => 4,
         ]);
         DB::table('fazas')->insert([
             'id' => Str::uuid(),

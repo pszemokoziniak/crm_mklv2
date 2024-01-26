@@ -47,7 +47,7 @@
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-              {{ item.kwota }} {{ item.kraj.waluta }}
+              {{ formatNumber(item.kwota) }} {{ item.waluta.name }}
             </Link>
           </td>
           <td class="border-t">
@@ -119,6 +119,12 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    formatNumber (num) {
+      return new Intl.NumberFormat('pl-PL',{
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(num)
     },
   },
 }

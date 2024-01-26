@@ -20,9 +20,9 @@ class CreateOfertasTable extends Migration
             $table->uuid('client_id')->nullable(false);
             $table->date('data_wyslania')->nullable();
             $table->bigInteger('kwota')->nullable();
-            $table->text('waluta')->nullable();
-            $table->text('kurs')->nullable();
-            $table->text('kwotaPLN')->nullable();
+            $table->uuid('waluta_id')->nullable();
+            $table->decimal('kurs', 8, 4)->nullable();
+            $table->float('kwotaPLN', 10,2)->nullable();
             $table->date('data_kontakt')->nullable();
             $table->uuid('oferta_status_id')->nullable(false);
             $table->text('opis')->nullable();
@@ -35,6 +35,7 @@ class CreateOfertasTable extends Migration
             $table->foreign('client_id')->references('id')->on('clients');
             $table->foreign('oferta_status_id')->references('id')->on('oferta_statuses');
             $table->foreign('arch_user_id')->references('id')->on('users');
+//            $table->foreign('waluta_id')->references('id')->on('walutas');
             $table->foreign('user_id')->references('id')->on('users');
             $table->softDeletes();
             $table->timestamps();

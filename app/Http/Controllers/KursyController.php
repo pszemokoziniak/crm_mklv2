@@ -6,6 +6,7 @@ use App\Http\Requests\EditRequest;
 use App\Http\Requests\KursyStoreRequest;
 use App\Models\Kraj;
 use App\Models\Kursy;
+use App\Models\Waluta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -16,14 +17,14 @@ class KursyController extends Controller
     public function index()
     {
         return Inertia::render('Kursy/Index', [
-            'kursy' => Kursy::OrderByCreatedAt()->get(),
+            'kursy' => Kursy::with('waluta')->OrderByCreatedAt()->get(),
         ]);
     }
 
     public function create()
     {
         return Inertia::render('Kursy/Create', [
-            'waluta' => Kraj::get()->map->only('id', 'waluta'),
+            'waluta' => Waluta::get()->map->only('id', 'name'),
         ]);
     }
 
@@ -39,20 +40,21 @@ class KursyController extends Controller
         return Inertia::render('Kursy/Edit', [
             'kursy' => [
                 'id' => $kursy->id,
-                'name' => $kursy->name,
+                'waluta_id' => $kursy->waluta_id,
                 'kurs' => $kursy->kurs,
                 'deleted_at' => $kursy->deleted_at,
             ],
+            'waluta' => Waluta::get(),
         ]);
     }
 
     public function update(KursyStoreRequest $request)
     {
         Kursy::find($request->id)->update(
-            ['name' => $request->name, 'kurs' => $request->kurs],
+            ['waluta_id' => $request->waluta_id, 'kurs' => $request->kurs],
         );
 
-        return Redirect::back()->with('success', 'Poprawiono.');
+        return Redirect::route('kursy')->with('success', 'Poprawiono.');
     }
 
 //    public function destroy(Kraj $kraj)

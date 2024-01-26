@@ -1,7 +1,7 @@
 <template>
   <div>
     <Head :title="`${form.nazwa_projektu}`" />
-    <h1 class="mb-8 text-3xl font-bold">
+    <h1 class="ml-6 mb-8 text-3xl font-bold">
       <Link class="text-indigo-400 hover:text-indigo-600" href="/zapytania">Zapytanie</Link>
       <span class="text-indigo-400 font-medium"></span>
       {{ form.id_zapyt }}
@@ -31,7 +31,11 @@
             <option :value="null" />
             <option v-for="item in clients" :key="item.id" :value="item.id">{{ item.nazwa }}</option>
           </select-input>
-          <text-input v-model="form.nazwa_projektu" :error="form.errors.nazwa_projektu" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/1" label="Nazwa projektu" />
+          <text-input v-model="form.nazwa_projektu" :error="form.errors.nazwa_projektu" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwa projektu" />
+          <select-input v-model="form.preliminarz" :error="form.errors.preliminarz" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Preliminarz">
+            <option value="Tak">Tak</option>
+            <option value="Nie">Nie</option>
+          </select-input>
           <text-input v-model="form.miejscowosc" :error="form.errors.miejscowosc" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Miejscowść" />
           <select-input v-model="form.kraj_id" :error="form.errors.kraj_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Kraj">
             <option :value="null" />
@@ -48,11 +52,15 @@
           <text-input v-model="form.start" :error="form.errors.start" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany termin rozpoczęcia" />
           <text-input v-model="form.end" :error="form.errors.end" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany termin zakończenia realizacji" />
           <number-input v-model="form.kwota" :error="form.errors.kwota" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
-          <select-input v-model="form.waluta" :error="form.errors.waluta" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
+          <select-input v-model="form.waluta_id" :error="form.errors.waluta_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
             <option :value="null" />
-            <option v-for="item in krajs" :key="item.id" :value="item.id">{{ item.waluta }}</option>
+            <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
           <text-area v-model="form.opis" :error="form.errors.opis" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" />
+        </div>
+        <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
+          <button v-if="!zapytania.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Archiwizuj</button>
+          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Popraw zapytanie</loading-button>
         </div>
         <hr>
         <div v-if="!zapytania.deleted_at" class="grid gap-1 grid-cols-3 p-5">
@@ -72,13 +80,49 @@
             <button v-if="!zapytania.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="mail">Wyślij mail</button>
           </div>
         </div>
-        <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <Link v-if="!zapytania.deleted_at" class="text-red-600 hover:underline" :href="`/zapytania/${zapytania.id}/archiwum`" tabindex="-1">
-              Archiwizuj
-          </Link>
-<!--          <button v-if="!zapytania.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="archiwum">Archiwizuj</button>-->
-          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Popraw</loading-button>
+        <hr>
+        <div class="bg-white rounded-md shadow overflow-x-auto">
+          <h1 class="ml-6 mb-4 pt-6 text-3xl font-bold">
+          </h1>
+          <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
+            <Link class="text-indigo-400 hover:text-indigo-600 text-3xl font-bold" href="/oferta">Oferty</Link>
+            <Link href="/oferta/create" class="btn-indigo ml-auto" type="submit">Dodaj ofertę</Link>
+          </div>
+          <table class="w-full whitespace-nowrap">
+            <tr class="text-left font-bold">
+              <th class="pb-4 pt-6 px-6">Kwota</th>
+              <th class="pb-4 pt-6 px-6">Data kontaktu</th>
+              <th class="pb-4 pt-6 px-6">Dodał</th>
+            </tr>
+            <tr v-for="item in oferty" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+              <td class="border-t">
+                <Link class="flex items-center px-6 py-4" :href="`/oferta/${item.id}/edit`" tabindex="-1">
+                  {{ formatNumber(item.kwota) }} {{ item.waluta }}
+                </Link>
+              </td>
+              <td class="border-t">
+                <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/oferta/${item.id}/edit`">
+                  {{ item.data_kontakt }}
+                  <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
+                </Link>
+              </td>
+              <td class="border-t">
+                <Link class="flex items-center px-6 py-4" :href="`/oferta/${item.id}/edit`" tabindex="-1">
+                  {{ item.user.last_name }} {{ item.user.first_name }}<br>{{ item.created_at }}
+                </Link>
+              </td>
+              <td class="w-px border-t">
+                <Link class="flex items-center px-4" :href="`/oferta/${item.id}/edit`" tabindex="-1">
+                  <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
+                </Link>
+              </td>
+            </tr>
+            <tr v-if="oferty.length === 0">
+              <td class="px-6 py-4 border-t" colspan="4">Brak ofert.</td>
+            </tr>
+          </table>
         </div>
+
       </form>
     </div>
   </div>
@@ -123,6 +167,8 @@ export default {
     zakres: Object,
     clientById: Object,
     archiwumOpis: Object,
+    waluta: Object,
+    oferty: Object,
   },
   remember: 'form',
   data() {
@@ -135,6 +181,7 @@ export default {
         data_zlozenia: this.zapytania.data_zlozenia,
         client_id: this.zapytania.client_id,
         nazwa_projektu: this.zapytania.nazwa_projektu,
+        preliminarz: this.zapytania.preliminarz,
         miejscowosc: this.zapytania.miejscowosc,
         kraj_id: this.zapytania.kraj_id,
         zakres_id: this.zapytania.zakres_id,
@@ -142,7 +189,7 @@ export default {
         start: this.zapytania.start,
         end: this.zapytania.end,
         kwota: this.zapytania.kwota,
-        waluta: this.zapytania.waluta,
+        waluta_id: this.zapytania.waluta_id,
         opis: this.zapytania.opis,
       }),
     }
@@ -156,7 +203,7 @@ export default {
     },
     destroy() {
       if (confirm('Czy chcesz zarchiwizować te zapytanie?')) {
-        this.$inertia.delete(`/zapytania/${this.zapytania.id}`)
+        this.$inertia.delete(`/zapytania/${this.zapytania.id}/destroy`)
       }
     },
     restore() {
@@ -183,6 +230,12 @@ export default {
       for(let i = 0; i < elems_text_area.length; i++) {
         elems_text_area[i].disabled = false;
       }
+    },
+    formatNumber (num) {
+      return new Intl.NumberFormat('pl-PL',{
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(num)
     },
   },
 }

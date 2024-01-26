@@ -37,7 +37,7 @@ class ZapytaniaStoreRequest extends FormRequest
         'start' => ['required', 'date'],
         'end' => ['required', 'date'],
         'kwota' => ['required', 'numeric'],
-        'waluta' => ['required'],
+        'waluta_id' => ['required'],
         'opis' => ['required', 'max:50'],
         ];
     }

@@ -13,6 +13,15 @@ class Zapytania extends Model
     use HasFactory;
     use SoftDeletes;
     use UUID;
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'created_at' => 'date:Y-m-d',
+    ];
     public function resolveRouteBinding($value, $field = null)
     {
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
@@ -32,6 +41,11 @@ class Zapytania extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function waluta(): BelongsTo
+    {
+        return $this->belongsTo(Waluta::class);
     }
 
     public function oferta()

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateKursiesTable extends Migration
+class CreateWalutasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateKursiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('kursies', function (Blueprint $table) {
+        Schema::create('walutas', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('waluta_id');
-            $table->float('kurs', '10', '4');
-            $table->uuid('user_id');
+            $table->string('name');
+            $table->uuid('user_id')->nullable(false);
+            $table->foreign('user_id')->references('id')->on('users');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -30,6 +30,6 @@ class CreateKursiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kursies');
+        Schema::dropIfExists('walutas');
     }
 }

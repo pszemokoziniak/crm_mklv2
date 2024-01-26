@@ -21,6 +21,7 @@ class CreateZapytaniasTable extends Migration
             $table->date('data_zlozenia')->nullable();
             $table->uuid('client_id')->nullable(false);
             $table->text('nazwa_projektu')->nullable();
+            $table->string('preliminarz')->nullable();
             $table->string('miejscowosc', 100)->nullable();
             $table->uuid('kraj_id')->nullable(false);
             $table->uuid('zakres_id')->nullable(false);
@@ -29,12 +30,12 @@ class CreateZapytaniasTable extends Migration
             $table->date('start')->nullable();
             $table->date('end')->nullable();
             $table->bigInteger('kwota')->nullable();
-            $table->text('waluta')->nullable();
+            $table->uuid('waluta_id')->nullable();
             $table->text('opis')->nullable();
             $table->string('miasto',50)->nullable();
             $table->uuid('user_id')->nullable(false);
-            $table->decimal('kurs')->nullable();
-            $table->decimal('kwotaPLN')->nullable();
+            $table->decimal('kurs', 8,4)->nullable();
+            $table->decimal('kwotaPLN', 15,2)->nullable();
             $table->boolean('arch')->nullable();
             $table->date('arch_time')->nullable();
             $table->integer('arch_user')->nullable();

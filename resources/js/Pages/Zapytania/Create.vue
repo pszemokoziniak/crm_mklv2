@@ -18,7 +18,11 @@
             <option :value="null" />
             <option v-for="item in clients" :key="item.id" :value="item.id">{{ item.nazwa }}</option>
           </select-input>
-          <text-input v-model="form.nazwa_projektu" :error="form.errors.nazwa_projektu" class="pb-8 pr-6 w-full lg:w-1/1" label="Nazwa projektu" />
+          <text-input v-model="form.nazwa_projektu" :error="form.errors.nazwa_projektu" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwa projektu" />
+          <select-input v-model="form.preliminarz" :error="form.errors.preliminarz" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Preliminarz">
+            <option value="Tak">Tak</option>
+            <option value="Nie">Nie</option>
+          </select-input>
           <text-input v-model="form.miejscowosc" :error="form.errors.miejscowosc" class="pb-8 pr-6 w-full lg:w-1/2" label="Miejscowść" />
           <select-input v-model="form.kraj_id" :error="form.errors.kraj_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Kraj">
             <option :value="null" />
@@ -35,9 +39,9 @@
           <text-input v-model="form.start" :error="form.errors.start" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany termin rozpoczęcia" />
           <text-input v-model="form.end" :error="form.errors.end" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany termin zakończenia realizacji" />
           <text-input v-model="form.kwota" :error="form.errors.kwota" type="number" class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
-          <select-input v-model="form.waluta" :error="form.errors.waluta" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
+          <select-input v-model="form.waluta_id" :error="form.errors.waluta_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
             <option :value="null" />
-            <option v-for="item in kraj" :key="item.id" :value="item.id">{{ item.waluta }}</option>
+            <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
           <text-area v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" />
         </div>
@@ -73,6 +77,7 @@ export default {
     users: Object,
     clients: Object,
     id_zapyt: String,
+    waluta: Object,
   },
   remember: 'form',
   data() {
@@ -84,6 +89,7 @@ export default {
         data_zlozenia: '',
         client_id: '',
         nazwa_projektu: '',
+        preliminarz: '',
         miejscowosc: '',
         kraj_id: '',
         zakres_id: '',
@@ -91,7 +97,7 @@ export default {
         start: '',
         end: '',
         kwota: '',
-        waluta: '',
+        waluta_id: '',
         opis: '',
         user_id: this.$page.props.auth.user.id,
       }),

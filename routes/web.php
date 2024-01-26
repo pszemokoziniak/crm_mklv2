@@ -25,6 +25,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\StronyWwwController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\WalutaController;
 use App\Http\Controllers\ZadaniaController;
 use App\Http\Controllers\ZakresController;
 use App\Http\Controllers\ZapytaniaController;
@@ -308,7 +309,7 @@ Route::put('zapytania/{zapytania}', [ZapytaniaController::class, 'update'])
     ->name('zapytania.update')
     ->middleware('auth');
 
-Route::post('zapytania/{zapytania}/destroy', [ZapytaniaController::class, 'destroy'])
+Route::delete('zapytania/{zapytania}/destroy', [ZapytaniaController::class, 'destroy'])
     ->name('zapytania.destroy')
     ->middleware('auth');
 
@@ -547,6 +548,36 @@ Route::delete('zakres/{zakres}', [ZakresController::class, 'destroy'])
 
 Route::put('zakres/{zakres}/restore', [ZakresController::class, 'restore'])
     ->name('zakres.restore')
+    ->middleware('auth');
+
+// Waluta
+
+Route::get('waluta', [WalutaController::class, 'index'])
+    ->name('waluta')
+    ->middleware('auth');
+
+Route::get('waluta/create', [WalutaController::class, 'create'])
+    ->name('waluta.create')
+    ->middleware('auth');
+
+Route::post('waluta', [WalutaController::class, 'store'])
+    ->name('waluta.store')
+    ->middleware('auth');
+
+Route::get('waluta/{waluta}/edit', [WalutaController::class, 'edit'])
+    ->name('waluta.edit')
+    ->middleware('auth');
+
+Route::post('waluta/{waluta}', [WalutaController::class, 'update'])
+    ->name('waluta.update')
+    ->middleware('auth');
+
+Route::delete('waluta/{waluta}', [WalutaController::class, 'destroy'])
+    ->name('waluta.destroy')
+    ->middleware('auth');
+
+Route::put('waluta/{waluta}/restore', [WalutaController::class, 'restore'])
+    ->name('waluta.restore')
     ->middleware('auth');
 
 // Objekty

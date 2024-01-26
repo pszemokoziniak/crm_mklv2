@@ -21,9 +21,9 @@
           </select-input>
           <text-input v-model="form.data_wyslania" :error="form.errors.data_wyslania" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Ofertę wysłano" />
           <text-input v-model="form.kwota" :error="form.errors.kwota" type="number" class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
-          <select-input v-model="form.waluta" :error="form.errors.waluta" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
+          <select-input v-model="form.waluta_id" :error="form.errors.waluta_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
             <option :value="null" />
-            <option v-for="item in krajs" :key="item.id" :value="item.waluta">{{ item.waluta }}</option>
+            <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
           <text-input v-model="form.data_kontakt" :error="form.errors.data_kontakt" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
           <select-input v-model="form.oferta_status_id" :error="form.errors.oferta_status_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Status">
@@ -65,6 +65,7 @@ export default {
     users: Object,
     statuses: Object,
     krajs: Object,
+    waluta: Object,
   },
   remember: 'form',
   data() {
@@ -75,7 +76,7 @@ export default {
         client_id: '',
         data_wyslania: '',
         kwota: '',
-        waluta: '',
+        waluta_id: '',
         kurs: '',
         data_kontakt: '',
         oferta_status_id: '',

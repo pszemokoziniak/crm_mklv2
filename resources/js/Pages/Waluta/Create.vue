@@ -1,18 +1,14 @@
 <template>
   <div>
-    <Head title="Kursy" />
+    <Head title="Utwórz walute" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/kursy">Kursy</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/waluta">Waluta</Link>
       <span class="text-indigo-400 font-medium">/</span> Utwórz
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <select-input v-model="form.waluta_id" :error="form.errors.waluta_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwa waluty">
-            <option :value="null" />
-            <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
-          </select-input>
-          <number-input v-model="form.kurs" :error="form.errors.kurs" :step="0.0001" @change="putDotNumber()"  class="pb-8 pr-6 w-full lg:w-1/2" label="Kurs" />
+          <text-input v-model="form.name" :error="form.errors.name" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwa" />
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
           <loading-button :loading="form.processing" class="btn-indigo" type="submit">Dodaj</loading-button>
@@ -29,11 +25,9 @@ import TextInput from '@/Shared/TextInput'
 import TextArea from '@/Shared/TextareaInput.vue'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
-import NumberInput from "@/Shared/NumberInput.vue";
 
 export default {
   components: {
-    NumberInput,
     Head,
     Link,
     LoadingButton,
@@ -43,38 +37,21 @@ export default {
   },
   layout: Layout,
   props: {
-    waluta: Object,
+    // organizations: Array,
   },
   remember: 'form',
   data() {
     return {
       form: this.$inertia.form({
-        waluta_id: '',
-        kurs: '',
+        name: '',
         user_id: this.$page.props.auth.user.id,
       }),
     }
   },
-  computed: {
-    kurs: function () {
-      return this.kurs + ' ' + this.kurs
-    }
-  },
   methods: {
     store() {
-      this.form.kurs
-      this.form.post('/kursy')
+      this.form.post('/waluta')
     },
-    formatNumber00 (num) {
-      return new Intl.NumberFormat('pl-PL',{
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(num)
-    },
-    putDotNumber(param){
-      console.log(param);
-      this.text=param
-    }
   },
 }
 </script>
