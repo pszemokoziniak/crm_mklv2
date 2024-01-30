@@ -331,6 +331,15 @@ Route::get('zapytania/{id}/archiwum', [ZapytaniaController::class, 'archiwum'])
 Route::get('zapytania/{zapytania}/mail', [ZapytaniaController::class, 'mail'])
     ->name('mail.zapytania')
     ->middleware('auth');
+// Wznowinie zapytania
+
+Route::get('zapytania/{zapytania}/wznowienie', [ZapytaniaController::class, 'wznowienie'])
+    ->name('zapytania.wznowienie')
+    ->middleware('auth');
+
+Route::get('zapytania/{zapytania}/deletewznowienie', [ZapytaniaController::class, 'deleteWznowienie'])
+    ->name('zapytania.delete.wznowienie')
+    ->middleware('auth');
 
 // Future Projects
 

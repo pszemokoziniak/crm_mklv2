@@ -3,8 +3,7 @@
     <Head :title="`${form.nazwa_projektu}`" />
     <h1 class="ml-6 mb-8 text-3xl font-bold">
       <Link class="text-indigo-400 hover:text-indigo-600" href="/zapytania">Zapytanie</Link>
-      <span class="text-indigo-400 font-medium"></span>
-      {{ form.id_zapyt }}
+      {{ form.id_zapyt }} <span v-if="zapytania.wznowienie === 2" class="text-red-600 font-medium">Wznowiony</span>
     </h1>
     <trashed-message v-if="zapytania.deleted_at" class="mb-6" @restore="restore"> Zapytanie zostało zarchiwizowane </trashed-message>
     <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
@@ -71,13 +70,21 @@
           <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
             <form @submit.prevent="submit" action="pdf" ref="form">
               <input type='hidden' name="param" :value="`${zapytania.id}`">
-              <icon name="edit" class="mr-2 w-4 h-4 inline"/>
+              <icon name="pdf" class="mr-2 w-4 h-4 inline"/>
               <button type="submit" class="text-indigo-600 hover:underline ml-auto" tabindex="-1">Generuj PDF</button>
             </form>
           </div>
           <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
             <icon name="mail" class="mr-2 w-4 h-4 inline"/>
             <button v-if="!zapytania.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="mail">Wyślij mail</button>
+          </div>
+          <div v-if="zapytania.wznowienie === 1" class="px-8 py-4 bg-gray-50 border-t border-gray-100">
+            <icon name="wznowienie" class="mr-2 w-4 h-4 inline"/>
+            <button v-if="!zapytania.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="wznowienie">Wznowienie</button>
+          </div>
+          <div v-if="zapytania.wznowienie === 2" class="px-8 py-4 bg-gray-50 border-t border-gray-100">
+            <icon name="deleteWznowienie" class="mr-2 w-4 h-4 inline"/>
+            <button v-if="!zapytania.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="deleteWznowienie">Anuluj wznowienie</button>
           </div>
         </div>
         <hr>
@@ -216,6 +223,12 @@ export default {
     },
     mail() {
       this.form.get(`/zapytania/${this.zapytania.id}/mail`)
+    },
+    wznowienie() {
+      this.form.get(`/zapytania/${this.zapytania.id}/wznowienie`)
+    },
+    deleteWznowienie() {
+      this.form.get(`/zapytania/${this.zapytania.id}/deletewznowienie`)
     },
     disableForm() {
       let elems_input = document.getElementById('form').getElementsByTagName('input');

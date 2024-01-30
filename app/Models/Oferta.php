@@ -23,7 +23,7 @@ class Oferta extends Model
     }
     public function ofertastatus(): BelongsTo
     {
-        return $this->belongsTo(OfertaStatus::class);
+        return $this->belongsTo(OfertaStatus::class, 'oferta_status_id', 'id');
     }
     public function zapytania()
     {

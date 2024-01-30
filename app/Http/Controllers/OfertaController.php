@@ -56,7 +56,6 @@ class OfertaController extends Controller
     }
     public function create()
     {
-
         return Inertia::render('Oferta/Create', [
             'zapytanie' => Zapytania::get()->map->only('id', 'nazwa_projektu'),
             'typs' => ['Klient oferuje', 'Klient na kontrakt'],
@@ -69,17 +68,12 @@ class OfertaController extends Controller
     }
     public function createData(Zapytania $zapytania, Client $client)
     {
-//        $this->checkStatusOpen($zapytania->zapytania_id);
-        $oferta =  Oferta::with('status')
-            ->where('zapytania_id', $zapytania->id)
-            ->whereHas('status', function ($query) {
-                $query->where('name', 'like', 'Przegrana');
-                $query->orWhere('name', 'like', 'Wygrana');
-            })->first();
+        $oferta = $this->checkStatusOpen($zapytania->zapytania_id);
 
         if ($oferta !== null) {
             return Redirect::route('oferta.edit', $oferta->id)->with('error', 'Nie można dodać nowej oferty, ponieważ do tego zapytania jest otwarta oferta ze statusem => Toczy się. Zmień status oferty');
         }
+
         return Inertia::render('Oferta/Create', [
             'zapytanie' => Zapytania::get()->map->only('id', 'nazwa_projektu'),
             'typs' => ['Klient oferuje', 'Klient na kontrakt'],
@@ -95,7 +89,6 @@ class OfertaController extends Controller
     public function store(OfertaStoreRequest $request)
     {
             $kurs = $this->changeRate($request->waluta_id, $request->kwota);
-//            $checkStatusOpen = $this->checkStatusOpen($request->zapytania_id);
 
             $data = new Oferta();
             $data->zapytania_id = $request->zapytania_id;
@@ -113,6 +106,10 @@ class OfertaController extends Controller
             $data->save();
 
             $this->storeActivityLog('Nowa oferta', $data->id, $request->client_id, 'oferta', 'zmiany', Auth::id());
+
+            $data = Zapytania::find($request->zapytania_id);
+            $data->wznowienie = 1;
+            $data->save();
 
             return Redirect::route('oferta')->with('success', 'Zapisano.');
     }
@@ -191,15 +188,12 @@ class OfertaController extends Controller
     }
     public function checkStatusOpen($id)
     {
-        $oferta =  Oferta::with('status')
-            ->where('ofertas.zapytania_id', $id)
-            ->orWhereHas('status', function ($query) {
-                $query->where('name', 'like', 'Przegrana');
-                $query->orWhere('name', 'like', 'Wygrana');
-            })->firstOrFail();
+        return Oferta::with('status')
+            ->where('zapytania_id', $id)
+            ->whereHas('status', function ($query) {
+                $query->where('name', 'like', 'Toczy się');
+//                $query->orWhere('name', 'like', 'Wygrana');
+            })->first();
 
-        if ($oferta->count() > 0) {
-            return Redirect::route('oferta.edit', $oferta->id)->with('success', 'Zmień status oferty');
-        }
     }
 }

@@ -2,12 +2,6 @@
   <div>
     <Head title="Historia" />
     <h1 class="mb-8 text-3xl font-bold">Historia</h1>
-<!--    <div class="flex items-center justify-between mb-6">-->
-<!--      <Link class="btn-indigo" href="/linkedin/create">-->
-<!--        <span>Dodaj</span>-->
-<!--&lt;!&ndash;        <span class="hidden md:inline">&nbsp;Branza</span>&ndash;&gt;-->
-<!--      </Link>-->
-<!--    </div>-->
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">

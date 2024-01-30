@@ -124,6 +124,7 @@ class ZapytaniaController extends Controller
                 'kwota' => $zapytania->kwota,
                 'waluta_id' => $zapytania->waluta_id,
                 'opis' => $zapytania->opis,
+                'wznowienie' => $zapytania->wznowienie,
                 'user_id' => $zapytania->user_id,
                 'deleted_at' => $zapytania->deleted_at,
             ],
@@ -177,13 +178,6 @@ class ZapytaniaController extends Controller
         $currency = Kursy::select('kurs')->where('waluta_id', $id)->latest()->first()->toArray();
         return (string) $currency['kurs'];
     }
-//    public function kwotaPLN($amount, $currency)
-//    {
-//        $currency = Kursy::select('kurs')->where('id', $currency)->latest()->first()->toArray();
-//        $kwotaPLN = ($amount * $currency['kurs']);
-//
-//        return (float) $kwotaPLN;
-//    }
     public function changeRate($waluta, $kwota)
     {
         $waluta = Waluta::where('id', $waluta)->pluck('id');
@@ -228,6 +222,16 @@ class ZapytaniaController extends Controller
     public function mail(Zapytania $zapytania)
     {
         Mail::send(new ZapytaniaMail($this->zapytaniaById($zapytania->id)));
+    }
+    public function wznowienie(Zapytania $zapytania)
+    {
+        $zapytania->wznowienie = 2;
+        $zapytania->save();
+    }
+    public function deleteWznowienie(Zapytania $zapytania)
+    {
+        $zapytania->wznowienie = 1;
+        $zapytania->save();
     }
 
 }

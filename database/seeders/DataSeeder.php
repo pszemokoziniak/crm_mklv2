@@ -46,6 +46,16 @@ class DataSeeder extends Seeder
             'name' => 'Wygrana',
         ]);
 
+        DB::table('oferta_statuses')->insert([
+            'id' => Str::uuid(),
+            'name' => 'Rezygnacja',
+        ]);
+
+        DB::table('oferta_statuses')->insert([
+            'id' => Str::uuid(),
+            'name' => 'Toczy się',
+        ]);
+
         DB::table('krajs')->insert([
             'id' => Str::uuid(),
             'name' => 'Polska',

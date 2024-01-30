@@ -11,7 +11,7 @@
           <select-input v-model="form.zapytania_id" :error="form.errors.zapytania_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Zapytanie">
             <option v-for="item in zapytanie" :key="item.id" :value="item.id">{{ item.nazwa_projektu }} </option>
           </select-input>
-          <select-input v-model="form.typ" :error="form.errors.typ" class="pb-8 pr-6 w-full lg:w-1/2" label="Typ klienta">
+          <select-input v-model="form.typ" :error="form.errors.typ" class="pb-8 pr-6 w-full lg:w-1/2" label="Oferuje / Kontrakt">
             <option :value="null" />
             <option :value="'Klient oferuje'">Klient oferuje</option>
             <option :value="'Klienta ma kontakt'">Klienta ma kontakt</option>
