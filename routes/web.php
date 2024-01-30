@@ -372,6 +372,10 @@ Route::get('oferta/create', [OfertaController::class, 'create'])
     ->name('oferta.create')
     ->middleware('auth');
 
+Route::get('/oferta/create/data/{zapytania}/{client}', [OfertaController::class, 'createData'])
+    ->name('oferta.create.data')
+    ->middleware('auth');
+
 Route::post('oferta', [OfertaController::class, 'store'])
     ->name('oferta.store')
     ->middleware('auth');

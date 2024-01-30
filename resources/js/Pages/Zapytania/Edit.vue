@@ -86,7 +86,7 @@
           </h1>
           <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
             <Link class="text-indigo-400 hover:text-indigo-600 text-3xl font-bold" href="/oferta">Oferty</Link>
-            <Link href="/oferta/create" class="btn-indigo ml-auto" type="submit">Dodaj ofertę</Link>
+            <Link :href="`/oferta/create/data/${zapytania.id}/${zapytania.client_id}`" class="btn-indigo ml-auto" type="submit">Dodaj ofertę</Link>
           </div>
           <table class="w-full whitespace-nowrap">
             <tr class="text-left font-bold">

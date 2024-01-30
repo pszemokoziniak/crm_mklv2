@@ -66,14 +66,16 @@ export default {
     statuses: Object,
     krajs: Object,
     waluta: Object,
+    clientById: String,
+    zapytaniaById: String,
   },
   remember: 'form',
   data() {
     return {
       form: this.$inertia.form({
-        zapytania_id: '',
+        zapytania_id: this.zapytaniaById?this.zapytaniaById:'',
         typ: '',
-        client_id: '',
+        client_id: this.clientById?this.clientById:'',
         data_wyslania: '',
         kwota: '',
         waluta_id: '',

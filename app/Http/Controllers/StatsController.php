@@ -165,7 +165,8 @@ class StatsController extends Controller
 //                ->where('oferta.oferta_status_id', '603f809e-aa41-49be-b25f-2166dd93bd5e')
                 ->whereHas('oferta', function ($query) {
                     $query->where('oferta_status_id', '603f809e-aa41-49be-b25f-2166dd93bd5e');
-                })->get()->sum('oferta.kwotaPLN');
+                })
+                ->get()->sum('oferta.kwotaPLN');
 
             $zapytaniaMonthSum[] = $zapytania;
             $ofertyMonthSum[] = $oferty;

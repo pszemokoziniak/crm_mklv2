@@ -13,6 +13,10 @@ class Oferta extends Model
     use HasFactory;
     use SoftDeletes;
     use UUID;
+
+    protected $casts = [
+        'created_at' => 'date:Y-m-d',
+    ];
     public function resolveRouteBinding($value, $field = null)
     {
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();

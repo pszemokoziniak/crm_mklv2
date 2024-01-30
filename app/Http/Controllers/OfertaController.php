@@ -67,12 +67,36 @@ class OfertaController extends Controller
             'waluta' => Waluta::get()->map->only('id', 'name'),
         ]);
     }
+    public function createData(Zapytania $zapytania, Client $client)
+    {
+//        $this->checkStatusOpen($zapytania->zapytania_id);
+        $oferta =  Oferta::with('status')
+            ->where('zapytania_id', $zapytania->id)
+            ->whereHas('status', function ($query) {
+                $query->where('name', 'like', 'Przegrana');
+                $query->orWhere('name', 'like', 'Wygrana');
+            })->first();
+
+        if ($oferta !== null) {
+            return Redirect::route('oferta.edit', $oferta->id)->with('error', 'Nie można dodać nowej oferty, ponieważ do tego zapytania jest otwarta oferta ze statusem => Toczy się. Zmień status oferty');
+        }
+        return Inertia::render('Oferta/Create', [
+            'zapytanie' => Zapytania::get()->map->only('id', 'nazwa_projektu'),
+            'typs' => ['Klient oferuje', 'Klient na kontrakt'],
+            'clients' => Client::get()->map->only('id', 'nazwa'),
+            'users' => User::get()->map->only('id', 'first_name', 'last_name'),
+            'statuses' => OfertaStatus::get()->map->only('id', 'name'),
+            'krajs' => Kraj::get()->map->only('id', 'waluta'),
+            'waluta' => Waluta::get()->map->only('id', 'name'),
+            'zapytaniaById' => $zapytania->id,
+            'clientById' => $client->id,
+        ]);
+    }
     public function store(OfertaStoreRequest $request)
     {
             $kurs = $this->changeRate($request->waluta_id, $request->kwota);
+//            $checkStatusOpen = $this->checkStatusOpen($request->zapytania_id);
 
-//            (int) $kwotaPLN = (int) $request->kwota * (float) $this->exchangeRate($request->waluta_id);
-//            (float) $kurs = $this->exchangeRate($request->waluta_id);
             $data = new Oferta();
             $data->zapytania_id = $request->zapytania_id;
             $data->typ = $request->typ;
@@ -95,8 +119,6 @@ class OfertaController extends Controller
 
     public function edit(Oferta $oferta)
     {
-//        dd(Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->firstOrFail());
-//        dd(Client::where('id', $oferta->client_id)->get()->map->only('id', 'nazwa_projektu'));
         return Inertia::render('Oferta/Edit', [
             'oferta' => [
                 'id' => $oferta->id,
@@ -147,13 +169,6 @@ class OfertaController extends Controller
 
         return Redirect::back()->with('success', 'Oferta przywrócona');
     }
-//    public function exchangeRate($currency)
-//    {
-//        $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
-//        $currency = $currency['kurs'];
-//
-//        return (string) $currency;
-//    }
     public function exchangeRate($id)
     {
         $currency = Kursy::select('kurs')->where('waluta_id', $id)->latest()->first()->toArray();
@@ -174,11 +189,17 @@ class OfertaController extends Controller
         $data->kwotaPLN = $kwotaPLN;
         $data->save();
     }
-    public function kwotaPLN($amount, $currency)
+    public function checkStatusOpen($id)
     {
-        $currency = Kursy::select('kurs')->where('name', $currency)->latest()->first()->toArray();
-        $kwotaPLN = ($amount * $currency['kurs']);
+        $oferta =  Oferta::with('status')
+            ->where('ofertas.zapytania_id', $id)
+            ->orWhereHas('status', function ($query) {
+                $query->where('name', 'like', 'Przegrana');
+                $query->orWhere('name', 'like', 'Wygrana');
+            })->firstOrFail();
 
-        return (float) $kwotaPLN;
+        if ($oferta->count() > 0) {
+            return Redirect::route('oferta.edit', $oferta->id)->with('success', 'Zmień status oferty');
+        }
     }
 }

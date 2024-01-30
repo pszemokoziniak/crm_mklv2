@@ -10,9 +10,9 @@
           <option value="only">Archiwum</option>
         </select>
       </search-filter>
-      <Link class="btn-indigo" href="/oferta/create">
-        <span>Dodaj</span>
-      </Link>
+<!--      <Link class="btn-indigo" href="/oferta/create">-->
+<!--        <span>Dodaj</span>-->
+<!--      </Link>-->
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
