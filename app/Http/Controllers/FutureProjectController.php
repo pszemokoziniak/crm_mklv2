@@ -71,31 +71,8 @@ class FutureProjectController extends Controller
     {
         $data = FutureProject::create($request->all());
 
-        $this->storeActivityLog('Dodoano przyszły projekt', $data->id, $request->client_id, 'futureproject', 'zmiany', Auth::id());
+        $this->storeActivityLog('Dodano przyszły projekt', $data->id, $request->client_id, 'futureproject', 'zmiany', Auth::id());
 
-//        $walutaName = Kraj::where('id', $request->waluta)->pluck('waluta');
-//        (int) $kwotaPLN = (int) $request->kwota * (float) $this->exchangeRate($walutaName[0]);
-//        (float) $kurs = $this->exchangeRate($walutaName[0]);
-//        $data = new Zapytania();
-//        $data->id_zapyt = $request->id_zapyt;
-//        $data->user_otrzymal_id = $request->user_otrzymal_id;
-//        $data->data_otrzymania = $request->data_otrzymania;
-//        $data->data_zlozenia = $request->data_zlozenia;
-//        $data->client_id = $request->client_id;
-//        $data->nazwa_projektu = $request->nazwa_projektu;
-//        $data->miejscowosc = $request->miejscowosc;
-//        $data->kwotaPLN = $kwotaPLN;
-//        $data->kurs = $kurs;
-//        $data->kraj_id = $request->kraj_id;
-//        $data->zakres_id = $request->zakres_id;
-//        $data->user_opracowuje_id = $request->user_opracowuje_id;
-//        $data->start = $request->start;
-//        $data->end = $request->end;
-//        $data->kwota = $request->kwota;
-//        $data->waluta = $request->waluta;
-//        $data->opis = $request->opis;
-//        $data->user_id = $request->user_id;
-//        $data->save();
         return Redirect::route('futureproject')->with('success', 'Zapisano.');
     }
 

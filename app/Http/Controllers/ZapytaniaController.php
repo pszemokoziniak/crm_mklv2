@@ -95,8 +95,7 @@ class ZapytaniaController extends Controller
         $data->user_id = $request->user_id;
         $data->save();
 
-
-        ($data)??$this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
+        $this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
         Mail::send(new ZapytaniaMail($this->zapytaniaById($data->id)));
 

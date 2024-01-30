@@ -5,10 +5,11 @@
     <p class="text-center w-full p-2 text-indigo-600">Historia</p>
     <div class="grid grid-cols-5 gap-4">
       <div v-for="item in historia.data" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
-        <Link class="" :href="`/kontakt/${item.id}/edit`">
+        <Link class="" :href="`/${item.link_action}/${item.link_id}/edit`">
           <p class="p-1">{{item.action}}</p>
           <p class="p-1">{{item.client.nazwa}}</p>
           <p class="p-1 text-red-600">{{item.user.last_name}} {{item.user.first_name}}</p>
+          <p class="p-1">{{item.created_at}}</p>
         </Link>
       </div>
     </div>
