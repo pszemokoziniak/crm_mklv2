@@ -1,6 +1,8 @@
 <template>
   <h1 class="text-2xl font-bold p-1 mt-3">Zakres robót / Zapytania</h1>
-  <Bar :data="data" :options="options" />
+  <div class="w-3/4 h-100">
+    <Bar :data="data" :options="options" />
+  </div>
 </template>
 
 <script>

@@ -234,7 +234,9 @@ class StatsController extends Controller
             ->orWhere('oferta_statuses.name', 'Przegrana')
             ->groupBy('oferta_statuses.name', 'oferta_statuses.id')
             ->get();
-
+        if ($data) {
+            return [null, null];
+        }
         foreach ($data as $item) {
             $labels[] = $item->name;
             $amounts[] = $item->count;
