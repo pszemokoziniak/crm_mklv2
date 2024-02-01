@@ -14,16 +14,16 @@ class CreateKontaktPeopleTable extends Migration
     public function up()
     {
         Schema::create('kontakt_persons', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('first_name');
             $table->string('last_name');
             $table->string('position');
             $table->string('phone1');
             $table->string('phone2');
             $table->string('email');
-            $table->uuid('client_id')->nullable(false);
+            $table->bigInteger('client_id')->unsigned()->index()->nullable(false);
             $table->text('description');
-            $table->uuid('user_id');
+            $table->bigInteger('user_id')->unsigned()->index()->nullable(false);
             $table->foreign('client_id')->references('id')->on('clients');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();

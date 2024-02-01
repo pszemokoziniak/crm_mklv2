@@ -14,26 +14,26 @@ class CreateZapytaniasTable extends Migration
     public function up()
     {
         Schema::create('zapytanias', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('id_zapyt', 18);
-            $table->uuid('user_otrzymal_id')->nullable(false);
+            $table->bigInteger('user_otrzymal_id')->unsigned()->index()->nullable(false);
             $table->date('data_otrzymania')->nullable();
             $table->date('data_zlozenia')->nullable();
-            $table->uuid('client_id')->nullable(false);
+            $table->bigInteger('client_id')->unsigned()->nullable(false);
             $table->text('nazwa_projektu')->nullable();
             $table->string('preliminarz')->nullable();
             $table->string('miejscowosc', 100)->nullable();
-            $table->uuid('kraj_id')->nullable(false);
-            $table->uuid('zakres_id')->nullable(false);
-            $table->uuid('user_opracowuje_id')->nullable(false);
+            $table->bigInteger('kraj_id')->unsigned()->index()->nullable(false);
+            $table->bigInteger('zakres_id')->unsigned()->index()->nullable(false);
+            $table->bigInteger('user_opracowuje_id')->unsigned()->index()->nullable(false);
 
             $table->date('start')->nullable();
             $table->date('end')->nullable();
             $table->bigInteger('kwota')->nullable();
-            $table->uuid('waluta_id')->nullable();
+            $table->bigInteger('waluta_id')->nullable();
             $table->text('opis')->nullable();
             $table->string('miasto',50)->nullable();
-            $table->uuid('user_id')->nullable(false);
+            $table->bigInteger('user_id')->unsigned()->index()->nullable(false);
             $table->decimal('kurs', 8,4)->nullable();
             $table->decimal('kwotaPLN', 15,2)->nullable();
             $table->boolean('arch')->nullable();

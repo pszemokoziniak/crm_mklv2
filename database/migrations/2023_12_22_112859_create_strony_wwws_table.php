@@ -14,7 +14,7 @@ class CreateStronyWwwsTable extends Migration
     public function up()
     {
         Schema::create('strony_wwws', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('name');
             $table->string('link');
             $table->integer('click')->default(0);

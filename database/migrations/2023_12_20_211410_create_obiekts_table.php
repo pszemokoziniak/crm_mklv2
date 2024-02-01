@@ -14,7 +14,7 @@ class CreateObiektsTable extends Migration
     public function up()
     {
         Schema::create('objekts', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('name');
             $table->softDeletes();
             $table->timestamps();

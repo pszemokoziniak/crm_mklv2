@@ -15,9 +15,9 @@ class CreateArchiwumZapytaniasTable extends Migration
     {
         Schema::create('archiwum_zapytanias', function (Blueprint $table) {
             $table->id();
-            $table->uuid('zapytania_id');
+            $table->bigInteger('zapytania_id');
             $table->text('description');
-            $table->uuid('user_id');
+            $table->bigInteger('user_id');
             $table->timestamps();
         });
     }

@@ -14,7 +14,7 @@ class CreateFazasTable extends Migration
     public function up()
     {
         Schema::create('fazas', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('name');
             $table->softDeletes();
             $table->timestamps();

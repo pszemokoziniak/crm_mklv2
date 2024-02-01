@@ -24,6 +24,7 @@ use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\StronyWwwController;
+use App\Http\Controllers\UprawnieniaController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WalutaController;
 use App\Http\Controllers\ZadaniaController;
@@ -561,6 +562,36 @@ Route::delete('zakres/{zakres}', [ZakresController::class, 'destroy'])
 
 Route::put('zakres/{zakres}/restore', [ZakresController::class, 'restore'])
     ->name('zakres.restore')
+    ->middleware('auth');
+
+// Uprawnienia
+
+Route::get('uprawnienia', [UprawnieniaController::class, 'index'])
+    ->name('uprawnienia')
+    ->middleware('auth');
+
+Route::get('uprawnienia/create', [UprawnieniaController::class, 'create'])
+    ->name('uprawnienia.create')
+    ->middleware('auth');
+
+Route::post('uprawnienia', [UprawnieniaController::class, 'store'])
+    ->name('uprawnienia.store')
+    ->middleware('auth');
+
+Route::get('uprawnienia/{uprawnienia}/edit', [UprawnieniaController::class, 'edit'])
+    ->name('uprawnienia.edit')
+    ->middleware('auth');
+
+Route::post('uprawnienia/{uprawnienia}', [UprawnieniaController::class, 'update'])
+    ->name('uprawnienia.update')
+    ->middleware('auth');
+
+Route::delete('uprawnienia/{uprawnienia}', [UprawnieniaController::class, 'destroy'])
+    ->name('uprawnienia.destroy')
+    ->middleware('auth');
+
+Route::put('uprawnienia/{uprawnienia}/restore', [UprawnieniaController::class, 'restore'])
+    ->name('uprawnienia.restore')
     ->middleware('auth');
 
 // Waluta

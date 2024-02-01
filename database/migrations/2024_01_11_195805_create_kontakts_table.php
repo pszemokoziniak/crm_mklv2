@@ -14,14 +14,14 @@ class CreateKontaktsTable extends Migration
     public function up()
     {
         Schema::create('kontakts', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('client_id')->nullable(false);
+            $table->id();
+            $table->bigInteger('client_id')->unsigned()->index()->nullable(false);
             $table->date('call_time');
             $table->text('subject');
             $table->text('description');
-            $table->uuid('user_id')->nullable(false);
-            $table->uuid('kontakt_person_id')->nullable(false);
-            $table->uuid('zapytania_id')->nullable();
+            $table->bigInteger('user_id')->unsigned()->index()->nullable(false);
+            $table->bigInteger('kontakt_person_id')->unsigned()->index()->nullable(false);
+            $table->bigInteger('zapytania_id')->unsigned()->index()->nullable(false);
             $table->foreign('client_id')->references('id')->on('clients');
             $table->foreign('zapytania_id')->references('id')->on('zapytanias');
             $table->foreign('kontakt_person_id')->references('id')->on('kontakt_persons');

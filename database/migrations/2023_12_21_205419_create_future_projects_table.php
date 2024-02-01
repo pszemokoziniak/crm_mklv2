@@ -14,23 +14,23 @@ class CreateFutureProjectsTable extends Migration
     public function up()
     {
         Schema::create('future_projects', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->text('nazwa')->nullable();
             $table->string('miasto',50)->nullable();
-            $table->uuid('kraj_id')->nullable(false);
-            $table->uuid('objekt_id')->nullable(false);
-            $table->uuid('client_id')->nullable(false);
+            $table->bigInteger('kraj_id')->unsigned()->index()->nullable(false);
+            $table->bigInteger('objekt_id')->unsigned()->index()->nullable(false);
+            $table->bigInteger('client_id')->unsigned()->index()->nullable(false);
             $table->text('opis')->nullable();
             $table->date('start')->nullable();
             $table->date('end')->nullable();
-            $table->uuid('faza_id')->nullable(false);
+            $table->bigInteger('faza_id')->unsigned()->index()->nullable(false);
             $table->text('inwestor')->nullable(false);
             $table->text('dane_kontaktowe')->nullable();
             $table->date('data_kontakt')->nullable();
-            $table->uuid('user_id')->nullable(false);
+            $table->bigInteger('user_id')->unsigned()->index()->nullable(false);
             $table->boolean('arch')->nullable();
             $table->date('arch_time')->nullable();
-            $table->integer('arch_user')->nullable();
+            $table->bigInteger('arch_user')->nullable();
 
             $table->foreign('kraj_id')->references('id')->on('krajs');
             $table->foreign('objekt_id')->references('id')->on('objekts');

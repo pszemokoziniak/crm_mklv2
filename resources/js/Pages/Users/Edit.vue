@@ -17,9 +17,11 @@
           <text-input v-model="form.last_name" :error="form.errors.last_name" :disabled="disable" class="pb-8  w-full lg:w-1/2" label="Imię" />
           <text-input v-model="form.email" :error="form.errors.email" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
           <text-input v-model="form.password" :error="form.errors.password" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Hasło" />
-          <select-input v-model="form.owner" :error="form.errors.owner" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Owner">
-            <option :value="true">Yes</option>
-            <option :value="false">No</option>
+          <select-input v-model="form.owner" :error="form.errors.owner" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Uprawnienia">
+            <option :value="0">Administrator</option>
+            <option :value="Eksport">Eksport</option>
+            <option :value="Techniczny">Techniczny</option>
+            <option :value="Kierownictwo">Kierownictwo</option>
           </select-input>
           <file-input v-model="form.photo" :error="form.errors.photo" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" type="file" accept="image/*" label="Zdjęcie" />
         </div>

@@ -14,16 +14,16 @@ class CreateClientsTable extends Migration
     public function up()
     {
         Schema::create('clients', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('nazwa', 200);
             $table->string('ulica', 200)->nullable();
             $table->string('miasto', 200)->nullable();
             $table->string('www', 200)->nullable();
             $table->string('linkedIn', 200)->nullable();
             $table->text('message')->nullable();
-            $table->uuid('user_id')->nullable(false);
-            $table->uuid('kraj_id')->nullable(false);
-            $table->uuid('branza_id')->nullable(false);
+            $table->bigInteger('user_id')->unsigned()->index()->nullable(false);
+            $table->bigInteger('kraj_id')->unsigned()->index()->nullable(false);
+            $table->bigInteger('branza_id')->unsigned()->index()->nullable(false);
             $table->softDeletes();
             $table->timestamps();
         });

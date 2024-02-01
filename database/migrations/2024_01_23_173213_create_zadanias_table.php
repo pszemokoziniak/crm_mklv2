@@ -14,12 +14,12 @@ class CreateZadaniasTable extends Migration
     public function up()
     {
         Schema::create('zadanias', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('responsible_person_id')->nullable(false);
+            $table->id();
+            $table->bigInteger('responsible_person_id')->unsigned()->index()->nullable(false);
             $table->text('subject');
             $table->text('description');
             $table->date('deadline');
-            $table->uuid('user_id')->nullable(false);
+            $table->bigInteger('user_id')->unsigned()->index()->nullable(false);
             $table->foreign('user_id')->references('id')->on('users');
             $table->softDeletes();
             $table->timestamps();

@@ -14,22 +14,22 @@ class CreateOfertasTable extends Migration
     public function up()
     {
         Schema::create('ofertas', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->text('typ')->nullable(false);
-            $table->uuid('zapytania_id')->nullable(false);
-            $table->uuid('client_id')->nullable(false);
+            $table->bigInteger('zapytania_id')->unsigned()->index()->nullable(false);
+            $table->bigInteger('client_id')->unsigned()->index()->nullable(false);
             $table->date('data_wyslania')->nullable();
             $table->bigInteger('kwota')->nullable();
-            $table->uuid('waluta_id')->nullable();
+            $table->bigInteger('waluta_id')->index()->nullable(false);
             $table->decimal('kurs', 8, 4)->nullable();
             $table->float('kwotaPLN', 10,2)->nullable();
             $table->date('data_kontakt')->nullable();
-            $table->uuid('oferta_status_id')->nullable(false);
+            $table->bigInteger('oferta_status_id')->unsigned()->index()->nullable(false);
             $table->text('opis')->nullable();
-            $table->uuid('arch_user_id')->nullable();
+            $table->bigInteger('arch_user_id')->unsigned()->index()->nullable();
             $table->text('arch_text')->nullable();
             $table->date('arch_time')->nullable();
-            $table->uuid('user_id');
+            $table->bigInteger('user_id')->unsigned()->index()->nullable(false);
 
             $table->foreign('zapytania_id')->references('id')->on('zapytanias');
             $table->foreign('client_id')->references('id')->on('clients');

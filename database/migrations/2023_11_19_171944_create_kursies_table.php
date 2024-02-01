@@ -14,10 +14,10 @@ class CreateKursiesTable extends Migration
     public function up()
     {
         Schema::create('kursies', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('waluta_id');
+            $table->id();
+            $table->bigInteger('waluta_id');
             $table->float('kurs', '10', '4');
-            $table->uuid('user_id');
+            $table->bigInteger('user_id');
             $table->softDeletes();
             $table->timestamps();
         });
