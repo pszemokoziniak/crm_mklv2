@@ -66,8 +66,17 @@ class DataSeeder extends Seeder
         DB::table('objekts')->insert([
             'name' => 'Objekt1',
         ]);
-        DB::table('objekts')->insert([
-            'name' => 'Objekt2',
+        DB::table('uprawnienias')->insert([
+            'name' => 'Administrator',
+        ]);
+        DB::table('uprawnienias')->insert([
+            'name' => 'Kierownictwo',
+        ]);
+        DB::table('uprawnienias')->insert([
+            'name' => 'Techniczny',
+        ]);
+        DB::table('uprawnienias')->insert([
+            'name' => 'Export',
         ]);
     }
 }
