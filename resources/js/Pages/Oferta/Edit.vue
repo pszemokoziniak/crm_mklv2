@@ -12,7 +12,7 @@
         /
         <Link class="text-indigo-400 hover:text-indigo-600" :href="`/clients/${oferta.client_id}/edit`">{{clientById.nazwa}}</Link>
       </dix>
-      <form @submit.prevent="update">
+      <form @submit.prevent="update" :class=" (isActive) ? 'border-2 border-green-500' : ''">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <select-input v-model="form.zapytania_id" :error="form.errors.zapytania_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Zapytanie">
             <option v-for="item in zapytanie" :key="item.id" :value="item.id">{{ item.nazwa_projektu }} </option>
@@ -97,6 +97,7 @@ export default {
   data() {
     return {
       disable: true,
+      isActive: false,
       form: this.$inertia.form({
         id: this.oferta.id,
         zapytania_id: this.oferta.zapytania_id,
@@ -127,6 +128,7 @@ export default {
       }
     },
     disableForm() {
+      this.isActive=true
       let elems_input = document.getElementById('form').getElementsByTagName('input');
       for(let i = 0; i < elems_input.length; i++) {
         elems_input[i].disabled = false;

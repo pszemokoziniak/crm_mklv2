@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Uprawnienia;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -76,21 +77,21 @@ class UsersController extends Controller
                 'deleted_at' => $user->deleted_at,
                 'active' => $user->active,
             ],
+            'uprawnienia' => Uprawnienia::all(),
         ]);
     }
 
-    public function update(User $user)
+    public function update(User $user, Request $request)
     {
         if (App::environment('demo') && $user->isDemoUser()) {
             return Redirect::back()->with('error', 'Updating the demo user is not allowed.');
         }
-
         Request::validate([
             'first_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
             'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable'],
-            'owner' => ['required', 'boolean'],
+            'owner' => ['required'],
             'photo' => ['nullable', 'image'],
             'active' => ['nullable']
         ]);
@@ -105,7 +106,7 @@ class UsersController extends Controller
             $user->update(['password' => Request::get('password')]);
         }
 
-        return Redirect::back()->with('success', 'Użytkonik porawiony.');
+        return Redirect::back()->with('success', 'Użytkownik porawiony.');
     }
 
     public function destroy(User $user)

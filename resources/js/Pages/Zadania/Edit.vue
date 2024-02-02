@@ -7,7 +7,7 @@
     </h1>
     <trashed-message v-if="zadanie.deleted_at" class="mb-6" @restore="restore"> Zadanie zostało zarchiwizowane </trashed-message>
     <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="update">
+      <form @submit.prevent="update" :class=" (isActive) ? 'border-2 border-green-500' : ''">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <select-input v-model="form.responsible_person_id" :error="form.errors.responsible_person_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Osoba odpowiedzialna">
             <option v-for="item in users" :key="item.id" :value="item.id">{{ item.last_name }} {{ item.first_name }}</option>
@@ -59,6 +59,7 @@ export default {
   data() {
     return {
       disable: true,
+      isActive: false,
       form: this.$inertia.form({
         id: this.zadanie.id,
         responsible_person_id: this.zadanie.responsible_person_id,
@@ -84,6 +85,7 @@ export default {
       }
     },
     disableForm() {
+      this.isActive=true
       let elems_input = document.getElementById('form').getElementsByTagName('input');
       for(let i = 0; i < elems_input.length; i++) {
         elems_input[i].disabled = false;

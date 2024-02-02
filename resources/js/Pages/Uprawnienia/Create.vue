@@ -1,8 +1,8 @@
 <template>
   <div>
-    <Head title="Utwórz Zakres" />
+    <Head title="Utwórz Uprawnienie" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/zakres">Zakres</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/uprawnienia">Uprawnienia</Link>
       <span class="text-indigo-400 font-medium">/</span> Utwórz
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     store() {
-      this.form.post('/zakres')
+      this.form.post('/uprawnienia')
     },
   },
 }

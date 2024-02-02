@@ -7,7 +7,7 @@
     </h1>
     <trashed-message v-if="futureproject.deleted_at" class="mb-6" @restore="restore"> Zapytanie zostało usunięte </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="update">
+      <form @submit.prevent="update" :class=" (isActive) ? 'border-2 border-green-500' : ''">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.nazwa" :error="form.errors.nazwa" class="pb-8 pr-6 w-full lg:w-1/1" label="Nazwa projektu"/>
           <text-input v-model="form.miasto" :error="form.errors.miasto" class="pb-8 pr-6 w-full lg:w-1/2" label="Miejscowość"/>
@@ -78,6 +78,7 @@ export default {
   remember: 'form',
   data() {
     return {
+      isActive: false,
       form: this.$inertia.form({
         id: this.futureproject.id,
         nazwa: this.futureproject.nazwa,

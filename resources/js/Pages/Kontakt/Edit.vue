@@ -6,7 +6,7 @@
       <span class="text-indigo-400 font-medium">/</span>
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="update">
+      <form @submit.prevent="update" :class=" (isActive) ? 'border-2 border-green-500' : ''">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.subject" :error="form.errors.subject" class="pb-8 pr-6 w-full lg:w-1/2" label="Temat" />
           <TextareaInput v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" />
@@ -53,6 +53,7 @@ export default {
   remember: 'form',
   data() {
     return {
+      isActive: false,
       form: this.$inertia.form({
         subject: this.kontakt.subject,
         description: this.kontakt.description,

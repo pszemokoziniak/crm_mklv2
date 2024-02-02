@@ -8,7 +8,7 @@
     </h1>
     <trashed-message v-if="client.deleted_at" class="mb-6" @restore="restore"> Klient został usunięty </trashed-message>
     <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="update">
+      <form @submit.prevent="update" :class=" (isActive) ? 'border-2 border-green-500' : ''">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.nazwa" :error="form.errors.nazwa" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwa" />
           <text-input v-model="form.ulica" :error="form.errors.ulica" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Ulica" />
@@ -92,6 +92,7 @@ export default {
   data() {
     return {
       disable: true,
+      isActive: false,
       form: this.$inertia.form({
         nazwa: this.client.nazwa,
         ulica: this.client.ulica,

@@ -18,7 +18,7 @@
           Data archiwizacji: {{archiwumOpis[0].created_at}}
         </div>
       </div>
-      <form @submit.prevent="update">
+      <form @submit.prevent="update" :class=" (isActive) ? 'border-2 border-green-500' : ''">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <select-input v-model="form.user_otrzymal_id" :error="form.errors.user_otrzymal_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Otrzymał">
             <option :value="null" />
@@ -181,6 +181,7 @@ export default {
   data() {
     return {
       disable: true,
+      isActive: false,
       form: this.$inertia.form({
         id_zapyt: this.zapytania.id_zapyt,
         user_otrzymal_id: this.zapytania.user_otrzymal_id,
@@ -231,6 +232,7 @@ export default {
       this.form.get(`/zapytania/${this.zapytania.id}/deletewznowienie`)
     },
     disableForm() {
+      this.isActive=true
       let elems_input = document.getElementById('form').getElementsByTagName('input');
       for(let i = 0; i < elems_input.length; i++) {
         elems_input[i].disabled = false;

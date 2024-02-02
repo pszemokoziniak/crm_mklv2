@@ -11,17 +11,14 @@
     </div>
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore"> Ten użytkownik został zarchiwizowany. </trashed-message>
     <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="update">
+      <form @submit.prevent="update" :class=" (isActive) ? 'border-2 border-green-500' : ''">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.first_name" :error="form.errors.first_name" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwisko" />
           <text-input v-model="form.last_name" :error="form.errors.last_name" :disabled="disable" class="pb-8  w-full lg:w-1/2" label="Imię" />
           <text-input v-model="form.email" :error="form.errors.email" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
           <text-input v-model="form.password" :error="form.errors.password" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Hasło" />
           <select-input v-model="form.owner" :error="form.errors.owner" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Uprawnienia">
-            <option :value="0">Administrator</option>
-            <option :value="Eksport">Eksport</option>
-            <option :value="Techniczny">Techniczny</option>
-            <option :value="Kierownictwo">Kierownictwo</option>
+            <option v-for="item in uprawnienia" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
           <file-input v-model="form.photo" :error="form.errors.photo" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" type="file" accept="image/*" label="Zdjęcie" />
         </div>
@@ -90,11 +87,13 @@ export default {
   layout: Layout,
   props: {
     user: Object,
+    uprawnienia: Object,
   },
   remember: 'form',
   data() {
     return {
       disable: true,
+      isActive: false,
       form: this.$inertia.form({
         _method: 'put',
         first_name: this.user.first_name,
@@ -129,6 +128,7 @@ export default {
       this.$inertia.post(`/users/${this.user.id}/unblock`)
     },
     disableForm() {
+      this.isActive=true
       let elems_input = document.getElementById('form').getElementsByTagName('input');
       for(let i = 0; i < elems_input.length; i++) {
         elems_input[i].disabled = false;

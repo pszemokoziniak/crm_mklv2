@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Head title="Contacts" />
-    <h1 class="mb-8 text-3xl font-bold">Zakres</h1>
+    <Head title="Uprawnienia" />
+    <h1 class="mb-8 text-3xl font-bold">Uprawnienia</h1>
     <div class="flex items-center justify-between mb-6">
       <Link class="btn-indigo" href="/uprawnienia/create">
         <span>Dodaj</span>

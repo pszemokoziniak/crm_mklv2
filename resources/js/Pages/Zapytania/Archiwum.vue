@@ -68,6 +68,7 @@ export default {
       }
     },
     disableForm() {
+      this.isActive=true
       let elems_input = document.getElementById('form').getElementsByTagName('input');
       for(let i = 0; i < elems_input.length; i++) {
         elems_input[i].disabled = false;
