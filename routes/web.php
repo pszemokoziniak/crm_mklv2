@@ -323,8 +323,12 @@ Route::get('zapytania/{zapytania}/pdf', [ZapytaniaController::class, 'pdf'])
     ->name('zapytania.pdf')
     ->middleware('auth');
 
-Route::get('zapytania/{id}/archiwum', [ZapytaniaController::class, 'archiwum'])
-    ->name('zapytania.archiwum')
+Route::post('zapytania/{zapytania}/wznowienie', [ZapytaniaController::class, 'wznowienie'])
+    ->name('zapytania.wznowienie')
+    ->middleware('auth');
+
+Route::post('zapytania/{zapytania}/storeWznowienie', [ZapytaniaController::class, 'storeWznowienie'])
+    ->name('zapytania.wznowienie.store')
     ->middleware('auth');
 
 //  Mail Zapytania
@@ -334,9 +338,9 @@ Route::get('zapytania/{zapytania}/mail', [ZapytaniaController::class, 'mail'])
     ->middleware('auth');
 // Wznowinie zapytania
 
-Route::get('zapytania/{zapytania}/wznowienie', [ZapytaniaController::class, 'wznowienie'])
-    ->name('zapytania.wznowienie')
-    ->middleware('auth');
+//Route::get('zapytania/{zapytania}/wznowienie', [ZapytaniaController::class, 'wznowienie'])
+//    ->name('zapytania.wznowienie')
+//    ->middleware('auth');
 
 Route::get('zapytania/{zapytania}/deletewznowienie', [ZapytaniaController::class, 'deleteWznowienie'])
     ->name('zapytania.delete.wznowienie')

@@ -78,5 +78,13 @@ class DataSeeder extends Seeder
         DB::table('uprawnienias')->insert([
             'name' => 'Export',
         ]);
+        DB::table('walutas')->insert([
+            'name' => 'PLN',
+            'user_id' => 1,
+        ]);
+        DB::table('walutas')->insert([
+            'name' => 'EUR',
+            'user_id' => 4.1234,
+        ]);
     }
 }

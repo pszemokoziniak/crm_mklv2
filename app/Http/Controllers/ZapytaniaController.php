@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ArchiwumStoreRequest;
 use App\Http\Requests\ClientRequest;
 use App\Http\Requests\ContactStoreRequest;
+use App\Http\Requests\WznowienieStoreRequest;
 use App\Http\Requests\ZapytaniaStoreRequest;
 use App\Mail\ZapytaniaMail;
 use App\Models\ArchiwumZapytania;
@@ -151,16 +152,15 @@ class ZapytaniaController extends Controller
 
     public function destroy(Zapytania $zapytania)
     {
-//        ArchiwumZapytania::create($request->all());
         Oferta::where('zapytania_id', $zapytania->id)->delete();
 
         $zapytania->delete();
 
         return Redirect::route('zapytania.edit', $zapytania->id)->with('success', 'Zapytanie zarchiwizowane.');
     }
-    public function archiwum($id)
+    public function archiwum(Zapytania $zapytania)
     {
-        $zapytania = Zapytania::where('id', $id)->withTrashed()->get()->map->only('id', 'id_zapyt', 'nazwa_projektu');
+//        $zapytania = Zapytania::where('id', $id)->withTrashed()->get()->map->only('id', 'id_zapyt', 'nazwa_projektu');
 
         return Inertia::render('Zapytania/Archiwum', [
             'zapytania' => $zapytania,
@@ -224,8 +224,23 @@ class ZapytaniaController extends Controller
     }
     public function wznowienie(Zapytania $zapytania)
     {
+        return Inertia::render('Zapytania/Archiwum', [
+            'zapytania' => $zapytania,
+        ]);
+    }
+    public function storeWznowienie(Zapytania $zapytania, WznowienieStoreRequest $request)
+    {
+        $data = new ArchiwumZapytania();
+        $data->zapytania_id = $request->zapytania_id;
+        $data->description = $request->description;
+        $data->user_id = $request->user_id;
+        $data->save();
+
         $zapytania->wznowienie = 2;
         $zapytania->save();
+
+        return Redirect::route('zapytania.edit', $request->zapytania_id)->with('success', 'Wznowienie dodane.');
+
     }
     public function deleteWznowienie(Zapytania $zapytania)
     {

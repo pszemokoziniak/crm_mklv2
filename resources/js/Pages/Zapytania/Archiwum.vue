@@ -1,17 +1,15 @@
 <template>
   <div>
-    <Head title="Powód archiwizacji" />
+    <Head title="Wznowienie" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania[0].id}/edit`">{{zapytania[0].nazwa_projektu}} {{ zapytania[0].id_zapyt }}</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania.id}/edit`">{{zapytania.nazwa_projektu}} {{ zapytania.id_zapyt }}</Link>
     </h1>
     <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="destroy">
+      <form @submit.prevent="storeWznowienie">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-area v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full lg:w-1/1" label="Opisz powód archiwizacji" />
+          <text-area v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full lg:w-1/1" label="Opisz powód wznowienia" />
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-<!--          <button class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Archiwizuj</button>-->
-<!--          <button class="btn-indigo ml-auto" tabindex="-1" type="button">Zapisz</button>-->
           <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Zapisz</loading-button>
         </div>
       </form>
@@ -52,19 +50,17 @@ export default {
   data() {
     return {
       form: this.$inertia.form({
-        zapytania_id: this.zapytania[0].id,
+        zapytania_id: this.zapytania.id,
         description: '',
         user_id: this.$page.props.auth.user.id,
       }),
     }
   },
   methods: {
-    destroy() {
-      if (confirm('Czy chcesz zarchiwizować te zapytanie?')) {
-      // this.form.post('/zapytania')
+    storeWznowienie() {
+      if (confirm('Czy chcesz wznowić te zapytanie?')) {
 
-
-        this.form.post(`/zapytania/${this.zapytania[0].id}/destroy`)
+        this.form.post(`/zapytania/${this.zapytania.id}/storeWznowienie`)
       }
     },
     disableForm() {

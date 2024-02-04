@@ -61,6 +61,7 @@
           <button v-if="!zapytania.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Archiwizuj</button>
           <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Popraw zapytanie</loading-button>
         </div>
+      </form>
         <hr>
         <div v-if="!zapytania.deleted_at" class="grid gap-1 grid-cols-3 p-5">
           <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
@@ -130,7 +131,7 @@
           </table>
         </div>
 
-      </form>
+
     </div>
   </div>
 </template>
@@ -225,8 +226,11 @@ export default {
     mail() {
       this.form.get(`/zapytania/${this.zapytania.id}/mail`)
     },
+    // wznowienie() {
+    //   this.form.get(`/zapytania/${this.zapytania.id}/wznowienie`)
+    // },
     wznowienie() {
-      this.form.get(`/zapytania/${this.zapytania.id}/wznowienie`)
+      this.form.post(`/zapytania/${this.zapytania.id}/wznowienie`)
     },
     deleteWznowienie() {
       this.form.get(`/zapytania/${this.zapytania.id}/deletewznowienie`)

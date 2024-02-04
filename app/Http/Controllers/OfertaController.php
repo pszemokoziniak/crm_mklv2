@@ -68,7 +68,7 @@ class OfertaController extends Controller
     }
     public function createData(Zapytania $zapytania, Client $client)
     {
-        $oferta = $this->checkStatusOpen($zapytania->zapytania_id);
+        $oferta = $this->checkStatusOpen($zapytania->id);
 
         if ($oferta !== null) {
             return Redirect::route('oferta.edit', $oferta->id)->with('error', 'Nie można dodać nowej oferty, ponieważ do tego zapytania jest otwarta oferta ze statusem => Toczy się. Zmień status oferty');
