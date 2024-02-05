@@ -31,4 +31,22 @@ class Kontakt extends Model
     {
         return $this->belongsTo(KontaktPerson::class, 'kontakt_person_id', 'id');
     }
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where('subject', 'like', '%'.$search.'%')
+                ->orWhere('description', 'like', '%'.$search.'%')
+                ->orWhereHas('kontaktperson', function ($query) use ($search) {
+                    $query->where('first_name', 'like', '%'.$search.'%')
+                        ->orWhere('last_name', 'like', '%'.$search.'%');
+                })
+                ->orWhereHas('client', function ($query) use ($search) {
+                    $query->where('nazwa', 'like', '%'.$search.'%');
+                })
+                ->orWhereHas('user', function ($query) use ($search) {
+                    $query->where('first_name', 'like', '%'.$search.'%')
+                        ->orWhere('last_name', 'like', '%'.$search.'%');
+                });
+        });
+    }
 }

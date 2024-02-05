@@ -25,4 +25,10 @@ class ActivityLog extends Model
     {
         $query->orderBy('created_at', 'DESC');
     }
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where('action', 'like', '%'.$search.'%');
+        });
+    }
 }

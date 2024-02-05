@@ -9,6 +9,7 @@ use App\Models\Kontakt;
 use App\Models\Oferta;
 use App\Models\Zadania;
 use App\Models\Zapytania;
+use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -17,8 +18,10 @@ class DashboardController extends Controller
     {
         return Inertia::render('Dashboard/Index',
             [
+                'filters' => Request::all('search'),
                 'historia' => ActivityLog::with('client')
                     ->with('user')
+                    ->filter(Request::only('search'))
                     ->OrderByCreatedAt()
                     ->paginate(10)
                     ->withQueryString()
@@ -36,12 +39,14 @@ class DashboardController extends Controller
                 'kontakts' => Kontakt::with('client')
                     ->with('kontaktperson')
                     ->with('user')
+                    ->filter(Request::only('search'))
                     ->orderBy('call_time')
                     ->get(),
                 'zapytanias' => Zapytania::with('user')
                     ->with('client')
                     ->where('wznowienie', null)
                     ->orWhere('wznowienie', 2)
+                    ->filter(Request::only('search'))
 //                    ->withTrashed()
                     ->orderBy('data_zlozenia')
                     ->get(),
@@ -52,6 +57,7 @@ class DashboardController extends Controller
                     ->whereHas('ofertastatus', function ($query) {
                         $query->where('name', 'like', 'Toczy się');
                     })
+                    ->filter(Request::only('search'))
                     ->paginate(10)
                     ->withQueryString()
 //                    ->withTrashed()
@@ -66,10 +72,12 @@ class DashboardController extends Controller
                     ]),
                 'futureProjects' => FutureProject::with('user')
                     ->with('client')
+                    ->filter(Request::only('search'))
                     ->orderBy('data_kontakt')
                     ->get(),
                 'zadania' => Zadania::with('users')
                     ->with('user')
+                    ->filter(Request::only('search'))
                     ->orderBy('deadline')
                     ->get(),
             ]);
