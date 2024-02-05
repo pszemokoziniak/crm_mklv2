@@ -5,19 +5,7 @@
     <hr class="my-5">
     <h1 class="mb-8 text-3xl font-bold">Do zrobienia</h1>
     <div class="grid grid-cols-5 gap-4">
-      <div>
-        <p class="text-center w-full p-2 text-indigo-600">Klienci kontakty</p>
-        <div v-for="item in kontakts" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
-          <Link class="" :href="`/kontakt/${item.id}/edit`">
-            <p class="p-1">{{item.client.nazwa}}</p>
-            <p class="p-1">{{item.kontaktperson.last_name}} {{item.kontaktperson.first_name}}</p>
-            <p class="p-1">{{item.subject}}</p>
-            <p class="p-1">{{item.call_time}}</p>
-            <p class="p-1 text-red-600">{{item.user.last_name}} {{item.user.first_name}}</p>
-          </Link>
-        </div>
-      </div>
-      <div>
+      <div class="border-2 border-green-500">
         <p class="text-center w-full p-2 text-indigo-600">Zapytania</p>
         <div v-for="item in zapytanias" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
           <Link class="" :href="`/zapytania/${item.id}/edit`">
@@ -26,6 +14,18 @@
             <p class="p-1">{{item.client.nazwa}}</p>
             <p class="p-1">{{item.nazwa_projektu}}</p>
             <p class="p-1">{{item.data_zlozenia}}</p>
+            <p class="p-1 text-red-600">{{item.user.last_name}} {{item.user.first_name}}</p>
+          </Link>
+        </div>
+      </div>
+      <div>
+        <p class="text-center w-full p-2 text-indigo-600">Klienci kontakty</p>
+        <div v-for="item in kontakts" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
+          <Link class="" :href="`/kontakt/${item.id}/edit`">
+            <p class="p-1">{{item.client.nazwa}}</p>
+            <p class="p-1">{{item.kontaktperson.last_name}} {{item.kontaktperson.first_name}}</p>
+            <p class="p-1">{{item.subject}}</p>
+            <p class="p-1">{{item.call_time}}</p>
             <p class="p-1 text-red-600">{{item.user.last_name}} {{item.user.first_name}}</p>
           </Link>
         </div>
