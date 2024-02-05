@@ -42,6 +42,10 @@ class Zapytania extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function opracowuje(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_opracowuje_id', 'id');
+    }
 
     public function waluta(): BelongsTo
     {

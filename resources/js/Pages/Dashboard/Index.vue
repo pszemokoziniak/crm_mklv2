@@ -15,7 +15,7 @@
             <p class="p-1">{{item.client.nazwa}}</p>
             <p class="p-1">{{item.nazwa_projektu}}</p>
             <p class="p-1">{{item.data_zlozenia}}</p>
-            <p class="p-1 text-red-600">{{item.user.last_name}} {{item.user.first_name}}</p>
+            <p class="p-1 text-red-600">{{item.opracowuje.last_name}} {{item.opracowuje.first_name}}</p>
           </Link>
         </div>
       </div>

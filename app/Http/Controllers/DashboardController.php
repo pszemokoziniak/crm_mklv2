@@ -43,11 +43,11 @@ class DashboardController extends Controller
                     ->orderBy('call_time')
                     ->get(),
                 'zapytanias' => Zapytania::with('user')
+                    ->with('opracowuje')
                     ->with('client')
                     ->where('wznowienie', null)
                     ->orWhere('wznowienie', 2)
                     ->filter(Request::only('search'))
-//                    ->withTrashed()
                     ->orderBy('data_zlozenia')
                     ->get(),
                 'ofertas' => Oferta::with('user')
