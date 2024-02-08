@@ -11,6 +11,7 @@ use App\Mail\ZapytaniaMail;
 use App\Models\ArchiwumZapytania;
 use App\Models\Branza;
 use App\Models\Client;
+use App\Models\Email;
 use App\Models\Kraj;
 use App\Models\Kursy;
 use App\Models\Oferta;
@@ -98,7 +99,8 @@ class ZapytaniaController extends Controller
 
         $this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
-        Mail::send(new ZapytaniaMail($this->zapytaniaById($data->id)));
+        $emails = $this->getEmails();
+        Mail::send(new ZapytaniaMail($this->zapytaniaById($data->id), $emails));
 
         return Redirect::route('zapytania')->with('success', 'Zapisano. Mail wysłany');
     }
@@ -239,6 +241,9 @@ class ZapytaniaController extends Controller
         $zapytania->wznowienie = 2;
         $zapytania->save();
 
+        $emails = $this->getEmails();
+        Mail::send(new ZapytaniaMail($this->zapytaniaById($data->id), $emails));
+
         return Redirect::route('zapytania.edit', $request->zapytania_id)->with('success', 'Wznowienie dodane.');
 
     }
@@ -246,6 +251,14 @@ class ZapytaniaController extends Controller
     {
         $zapytania->wznowienie = 1;
         $zapytania->save();
+    }
+    public function getEmails()
+    {
+        $emails = Email::join('users', 'users.id', 'emails.user_id')
+            ->select('email')
+            ->where('emails.type_id', 1)
+            ->get()->pluck('email');
+        return $emails;
     }
 
 }

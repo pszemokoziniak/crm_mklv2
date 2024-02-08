@@ -16,9 +16,10 @@ class ZapytaniaMail extends Mailable
      *
      * @return void
      */
-    public function __construct($data)
+    public function __construct($data, $emails)
     {
         $this->data = $data;
+        $this->emails = $emails;
     }
 
     /**
@@ -30,9 +31,7 @@ class ZapytaniaMail extends Mailable
     {
         return $this
             ->from('crm@mkl.pl', 'CRM - MKLBAU')
-            ->to('pszemo.koziniak@gmail.com')
-//            ->cc('natalia.paldyna@mkl.pl')
-//            ->bcc('krzysztof.kielczykowski@mkl.pl')
+            ->to($this->emails)
             ->subject('Nowe zapytanie - '.$this->data->id_zapyt)
             ->view('zapytaniaPdf')
             ->with(['data' => $this->data]);

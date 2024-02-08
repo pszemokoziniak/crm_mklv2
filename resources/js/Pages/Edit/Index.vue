@@ -73,41 +73,13 @@
           </div>
         </div>
       </Link>
-
-<!--      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/calendar`">-->
-<!--        <div class="h-full lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">-->
-<!--          <div class="flex justify-center my-12">-->
-<!--            <img class="" src="/images/Kalendarz.png" alt="Kalendarz">-->
-<!--          </div>-->
-<!--          <div class="px-6 py-4">-->
-<!--            <div class="font-bold text-xl mb-2 flex justify-center">Kalendarz</div>-->
-<!--            <div class="flex justify-center text-blueMf-100 my-12 text-lg md:text-base lg:text-xs">Zobacz szczegóły</div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </Link>-->
-
-<!--      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/raporty/`">-->
-<!--        <div class="h-full lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">-->
-<!--          <div class="flex justify-center my-12">-->
-<!--            <img class="" src="/images/Raporty.png" width="69" height="75" alt="Raporty">-->
-<!--          </div>-->
-<!--          <div class="px-6 py-4">-->
-<!--            <div class="font-bold text-xl mb-2 flex justify-center">Raporty</div>-->
-<!--            <div class="flex justify-center text-blueMf-100 my-12 text-lg md:text-base lg:text-xs">Zobacz szczegóły</div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </Link>-->
-<!--      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/programy/detale?nazwa=PT&program=Program Krajowy`">-->
-<!--        <div class="h-full lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">-->
-<!--          <div class="flex justify-center my-12">-->
-<!--            <img class="" src="/images/RPD.png" width="69" height="75" alt="RPD">-->
-<!--          </div>-->
-<!--          <div class="px-6 py-4">-->
-<!--            <div class="font-bold text-xl mb-2 flex justify-center">Wspólny RPD</div>-->
-<!--            <div class="flex justify-center text-blueMf-100 my-12 text-lg md:text-base lg:text-xs">Zobacz szczegóły</div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </Link>-->
+      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/email/`">
+        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
+          <div class="px-6 py-4">
+            <div class="font-bold text-xl mb-2 flex justify-center">Email</div>
+          </div>
+        </div>
+      </Link>
     </div>
   </div>
 </template>

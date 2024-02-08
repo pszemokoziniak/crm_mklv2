@@ -84,7 +84,13 @@ class DataSeeder extends Seeder
         ]);
         DB::table('walutas')->insert([
             'name' => 'EUR',
-            'user_id' => 4.1234,
+            'user_id' => 1,
+        ]);
+        DB::table('emails_type')->insert([
+            'name' => 'Biuro',
+        ]);
+        DB::table('emails_type')->insert([
+            'name' => 'Kierownictwo',
         ]);
     }
 }

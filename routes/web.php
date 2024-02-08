@@ -9,6 +9,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EditController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\FazaController;
 use App\Http\Controllers\FutureProjectController;
 use App\Http\Controllers\ImagesController;
@@ -565,6 +566,36 @@ Route::delete('zakres/{zakres}', [ZakresController::class, 'destroy'])
     ->middleware('auth');
 
 Route::put('zakres/{zakres}/restore', [ZakresController::class, 'restore'])
+    ->name('zakres.restore')
+    ->middleware('auth');
+
+// Email
+
+Route::get('email', [EmailController::class, 'index'])
+    ->name('email')
+    ->middleware('auth');
+
+Route::get('email/create', [EmailController::class, 'create'])
+    ->name('email.create')
+    ->middleware('auth');
+
+Route::post('email', [EmailController::class, 'store'])
+    ->name('email.store')
+    ->middleware('auth');
+
+Route::get('email/{email}/edit', [EmailController::class, 'edit'])
+    ->name('email.edit')
+    ->middleware('auth');
+
+Route::post('email/{email}', [EmailController::class, 'update'])
+    ->name('email.update')
+    ->middleware('auth');
+
+Route::delete('email/{email}', [EmailController::class, 'destroy'])
+    ->name('email.destroy')
+    ->middleware('auth');
+
+Route::put('zakres/{zakres}/restore', [EmailController::class, 'restore'])
     ->name('zakres.restore')
     ->middleware('auth');
 
