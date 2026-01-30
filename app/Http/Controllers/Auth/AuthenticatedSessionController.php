@@ -3,26 +3,33 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class AuthenticatedSessionController extends Controller
 {
+    /**
+     * Display the login view.
+     *
+     * @return \Inertia\Response
+     */
     public function create()
     {
         return Inertia::render('Auth/Login');
     }
 
-    public function store(Request $request)
+    /**
+     * Handle an incoming authentication request.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(LoginRequest $request)
     {
-        // To MUSI się pojawić w logach lub na ekranie
-        dd($request->all());
-
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
@@ -33,10 +40,7 @@ class AuthenticatedSessionController extends Controller
             return Redirect::route('login')->withErrors(['email' => 'Konto zablokowane.']);
         }
 
-        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            return Redirect::route('login')->withErrors(['email' => 'Błędne hasło.']);
-        }
-
+        $request->authenticate();
         $request->session()->regenerate();
 
         $user->login_time = now();
@@ -45,11 +49,19 @@ class AuthenticatedSessionController extends Controller
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 
+    /**
+     * Destroy an authenticated session.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(Request $request)
     {
         Auth::guard('web')->logout();
+
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
+
         return redirect('/');
     }
 }
