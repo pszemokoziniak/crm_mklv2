@@ -34,10 +34,10 @@ services:
     container_name: crm-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-crm_database}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
-      MYSQL_USER: ${DB_USERNAME:-crm_user}
+      MYSQL_DATABASE: crm_database
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: crm_user
     ports:
       - "3306:3306"
     volumes:
