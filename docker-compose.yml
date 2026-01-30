@@ -38,7 +38,7 @@ services:
       MYSQL_PASSWORD: root
       MYSQL_USER: crm_user
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
     networks:
