@@ -30,19 +30,21 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
+        $user = User::where('email', $request->email)->first();
 
+        if (!$user) {
+            return Redirect::route('login')->withErrors(['email' => 'Nie ma takiego użytkownika.']);
+        }
 
-        $checkActiveStatus = User::where('email', $request->email)->get()->map->only('active')->pluck('active');
-        if ($checkActiveStatus[0] === 0) {
-            return Redirect::route('login')->with('error', 'Konto zablokowane.');
+        if ($user->active === 0) {
+            return Redirect::route('login')->withErrors(['email' => 'Konto zablokowane.']);
         }
 
         $request->authenticate();
         $request->session()->regenerate();
 
-        $login_time = User::where('email', $request->email)->first();
-        $login_time->login_time = now();
-        $login_time->save();
+        $user->login_time = now();
+        $user->save();
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }
