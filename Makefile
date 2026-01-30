@@ -5,15 +5,15 @@ all: up
 
 # Build and start containers
 up:
-	docker-compose up -d
+	docker compose up -d
 
 # Stop containers
 down:
-	docker-compose down
+	docker compose down
 
 # Rebuild and start containers
 build:
-	docker-compose up -d --build
+	docker compose up -d --build
 
 # Restart containers
 restart: down up
