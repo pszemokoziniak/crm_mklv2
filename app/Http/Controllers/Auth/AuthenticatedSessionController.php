@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
@@ -14,30 +13,19 @@ use Inertia\Inertia;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     *
-     * @return \Inertia\Response
-     */
     public function create()
     {
         return Inertia::render('Auth/Login');
     }
 
-    /**
-     * Handle an incoming authentication request.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function store(LoginRequest $request)
+    public function store(Request $request)
     {
-        // DEBUG: Logujemy co przychodzi
-        Log::info('Próba logowania:', ['email' => $request->email]);
+        // To MUSI się pojawić w logach lub na ekranie
+        dd($request->all());
 
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            Log::warning('Użytkownik nie znaleziony w bazie:', ['email' => $request->email]);
             return Redirect::route('login')->withErrors(['email' => 'Nie ma takiego użytkownika.']);
         }
 
@@ -46,7 +34,6 @@ class AuthenticatedSessionController extends Controller
         }
 
         if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            Log::warning('Błędne hasło dla:', ['email' => $request->email]);
             return Redirect::route('login')->withErrors(['email' => 'Błędne hasło.']);
         }
 
@@ -58,19 +45,11 @@ class AuthenticatedSessionController extends Controller
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 
-    /**
-     * Destroy an authenticated session.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function destroy(Request $request)
     {
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
-
         return redirect('/');
     }
 }
