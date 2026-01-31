@@ -2,11 +2,6 @@
 
 Clone the repo locally:
 
-```sh
-git clone https://github.com/inertiajs/pingcrm.git pingcrm
-cd pingcrm
-```
-
 Install PHP dependencies:
 
 ```sh
@@ -61,14 +56,8 @@ Run the dev server (the output will give the address):
 php artisan serve
 ```
 
-You're ready to go! Visit Ping CRM in your browser, and login with:
-
-- **Username:** johndoe@example.com
-- **Password:** secret
 
 ## Running tests
-
-To run the Ping CRM tests, run:
 
 ```
 phpunit
