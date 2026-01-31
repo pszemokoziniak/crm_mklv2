@@ -2,47 +2,44 @@
 
 namespace Database\Seeders;
 
-use App\Models\Account;
-use App\Models\Contact;
-use App\Models\Organization;
-use App\Models\User;
-use App\Models\Zakres;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use App\Models\Account;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     *
-     * @return void
-     */
     public function run()
     {
-        $account = Account::create(['name' => 'MKL Spółka z o.o.']);
+        Schema::disableForeignKeyConstraints();
 
-        User::factory()->create([
-            'account_id' => $account->id,
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'email' => 'johndoe@example.com',
-            'password' => 'secret',
-            'owner' => true,
-            'active' => 1,
-        ]);
+        DB::table('users')->truncate();
+        DB::table('accounts')->truncate(); // Czyścimy konta
+        DB::table('branzas')->truncate();
+        DB::table('krajs')->truncate();
+        DB::table('zakres')->truncate();
+        DB::table('oferta_statuses')->truncate();
+        DB::table('walutas')->truncate();
+        DB::table('kursies')->truncate();
+        DB::table('fazas')->truncate();
+        DB::table('objekts')->truncate();
+        DB::table('clients')->truncate();
 
-        User::factory(5)->create(['account_id' => $account->id, 'active' => 0]);
+        Schema::enableForeignKeyConstraints();
 
-//        $organizations = Organization::factory(100)
-//            ->create(['account_id' => $account->id]);
-
-//        Contact::factory(100)
-//            ->create(['account_id' => $account->id])
-//            ->each(function ($contact) use ($organizations) {
-//                $contact->update(['organization_id' => $organizations->random()->id]);
-//            });
+        // Tworzymy domyślne konto
+        Account::create(['id' => 1, 'name' => 'MKL CRM']);
 
         $this->call([
-            DataSeeder::class,
+            LegacyUserSeeder::class,
+            LegacyBranzaSeeder::class,
+            LegacyWalutaSeeder::class,
+            LegacyKrajSeeder::class,
+            LegacyZakresSeeder::class,
+            LegacyOfertaStatusSeeder::class,
+            LegacyKursySeeder::class,
+            LegacyFazaSeeder::class,
+            LegacyObjektSeeder::class,
         ]);
     }
 }

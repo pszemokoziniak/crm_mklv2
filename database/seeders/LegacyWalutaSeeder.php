@@ -10,16 +10,14 @@ class LegacyWalutaSeeder extends Seeder
 {
     public function run()
     {
-        // Pobieramy unikalne waluty ze starej tabeli krajów
-        $oldWaluty = DB::connection('old_crm')->table('mkl_kraje')->select('waluta')->distinct()->get();
+        $oldWaluty = DB::connection('old_crm')->table('mkl_waluty')->get();
 
         foreach ($oldWaluty as $oldWaluta) {
-            if (empty($oldWaluta->waluta)) continue;
-
             Waluta::updateOrCreate(
-                ['name' => $oldWaluta->waluta],
+                ['id' => $oldWaluta->id],
                 [
-                    'user_id' => 1, // Domyślny admin
+                    'name' => strtoupper(trim($oldWaluta->waluta)),
+                    'user_id' => 1,
                 ]
             );
         }

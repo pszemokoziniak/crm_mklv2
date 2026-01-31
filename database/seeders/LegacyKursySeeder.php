@@ -14,19 +14,34 @@ class LegacyKursySeeder extends Seeder
         $oldKursy = DB::connection('old_crm')->table('mkl_kursy')->get();
 
         foreach ($oldKursy as $oldKurs) {
-            $waluta = Waluta::where('name', $oldKurs->waluta)->first();
+            $walutaId = null;
 
-            if (!$waluta) {
-                // Jeśli nie ma waluty, stwórzmy ją w locie
-                $waluta = Waluta::create(['name' => $oldKurs->waluta, 'user_id' => 1]);
+            if (is_numeric($oldKurs->waluta)) {
+                // Jeśli to ID, szukamy czy mamy taką walutę
+                $waluta = Waluta::find($oldKurs->waluta);
+                if ($waluta) {
+                    $walutaId = $waluta->id;
+                }
+            } else {
+                // Jeśli to nazwa (np. "PLN"), szukamy po nazwie
+                $waluta = Waluta::where('name', strtoupper(trim($oldKurs->waluta)))->first();
+                if ($waluta) {
+                    $walutaId = $waluta->id;
+                }
             }
 
-            Kursy::create([
-                'waluta_id' => $waluta->id,
-                'kurs' => $oldKurs->kurs,
-                'user_id' => 1, // Domyślny admin
-                'created_at' => $oldKurs->time,
-            ]);
+            // Jeśli znaleźliśmy walutę, dodajemy kurs
+            if ($walutaId) {
+                Kursy::create([
+                    'waluta_id' => $walutaId,
+                    'kurs' => $oldKurs->kurs,
+                    'user_id' => 1,
+                    'created_at' => $oldKurs->time,
+                ]);
+            } else {
+                // Log błędu dla Ciebie, żebyś widział co pominął
+                echo "Pominięto kurs ID {$oldKurs->id} - nie znaleziono waluty: {$oldKurs->waluta}\n";
+            }
         }
     }
 }

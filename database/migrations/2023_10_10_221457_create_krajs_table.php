@@ -16,9 +16,11 @@ class CreateKrajsTable extends Migration
         Schema::create('krajs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('waluta');
+            $table->unsignedBigInteger('waluta_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('waluta_id')->references('id')->on('walutas');
         });
     }
 

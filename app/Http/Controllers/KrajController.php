@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EditRequest;
-use App\Models\Branza;
 use App\Models\Kraj;
+use App\Models\Waluta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -14,18 +14,30 @@ class KrajController extends Controller
     public function index()
     {
         return Inertia::render('Kraj/Index', [
-            'krajs' => Kraj::get(),
+            'krajs' => Kraj::with('waluta')->get()->map(function ($kraj) {
+                return [
+                    'id' => $kraj->id,
+                    'name' => $kraj->name,
+                    'waluta' => $kraj->waluta ? $kraj->waluta->name : '-',
+                    'deleted_at' => $kraj->deleted_at,
+                ];
+            }),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Kraj/Create');
+        return Inertia::render('Kraj/Create', [
+            'walutas' => Waluta::all()->map->only('id', 'name'),
+        ]);
     }
 
-    public function store(EditRequest $request)
+    public function store(Request $request)
     {
-        Kraj::create($request->all());
+        Kraj::create([
+            'name' => $request->name,
+            'waluta_id' => $request->waluta_id,
+        ]);
 
         return Redirect::route('kraj')->with('success', 'Kraj dodany.');
     }
@@ -36,18 +48,19 @@ class KrajController extends Controller
             'kraj' => [
                 'id' => $kraj->id,
                 'name' => $kraj->name,
-                'waluta' => $kraj->waluta,
+                'waluta_id' => $kraj->waluta_id,
                 'deleted_at' => $kraj->deleted_at,
             ],
+            'walutas' => Waluta::all()->map->only('id', 'name'),
         ]);
     }
 
-    public function update(EditRequest $request)
+    public function update(Request $request)
     {
-        Kraj::find($request->id)->update(
-            ['name' => $request->name, 'waluta' => $request->waluta],
-//            ['waluta' => $request->waluta],
-        );
+        Kraj::find($request->id)->update([
+            'name' => $request->name,
+            'waluta_id' => $request->waluta_id,
+        ]);
 
         return Redirect::route('kraj')->with('success', 'Poprawione.');
     }
