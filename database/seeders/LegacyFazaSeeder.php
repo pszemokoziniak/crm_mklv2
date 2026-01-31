@@ -10,16 +10,13 @@ class LegacyFazaSeeder extends Seeder
 {
     public function run()
     {
-        $oldFazy = DB::connection('old_crm')->table('fazas')->get();
+        $oldFazy = DB::connection('old_crm')->table('mkl_fazaProjekt')->get();
 
         foreach ($oldFazy as $oldFaza) {
             Faza::updateOrCreate(
                 ['id' => $oldFaza->id],
                 [
-                    'name' => $oldFaza->name,
-                    'created_at' => $oldFaza->created_at,
-                    'updated_at' => $oldFaza->updated_at,
-                    'deleted_at' => $oldFaza->deleted_at,
+                    'name' => $oldFaza->faza,
                 ]
             );
         }
