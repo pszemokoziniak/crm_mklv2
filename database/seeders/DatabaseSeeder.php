@@ -13,8 +13,8 @@ class DatabaseSeeder extends Seeder
     {
         Schema::disableForeignKeyConstraints();
 
-        DB::table('users')->truncate();
-        DB::table('accounts')->truncate(); // Czyścimy konta
+//        DB::table('users')->truncate();
+        DB::table('accounts')->truncate();
         DB::table('branzas')->truncate();
         DB::table('krajs')->truncate();
         DB::table('zakres')->truncate();
@@ -27,19 +27,19 @@ class DatabaseSeeder extends Seeder
 
         Schema::enableForeignKeyConstraints();
 
-        // Tworzymy domyślne konto
         Account::create(['id' => 1, 'name' => 'MKL CRM']);
 
         $this->call([
-            LegacyUserSeeder::class,
+//            LegacyUserSeeder::class,
             LegacyBranzaSeeder::class,
             LegacyWalutaSeeder::class,
-            LegacyKrajSeeder::class,
+//            LegacyKrajSeeder::class,
             LegacyZakresSeeder::class,
             LegacyOfertaStatusSeeder::class,
             LegacyKursySeeder::class,
             LegacyFazaSeeder::class,
             LegacyObjektSeeder::class,
+            LegacyClientSeeder::class,
         ]);
     }
 }

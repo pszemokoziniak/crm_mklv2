@@ -32,14 +32,12 @@
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/clients/${item.id}/edit`" tabindex="-1">
-              <div v-if="item.branza">
-                {{ item.branza.name }}
-              </div>
+              {{ item.branza }}
             </Link>
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/clients/${item.id}/edit`" tabindex="-1">
-              {{ item.kraj.name }}
+              {{ item.kraj }}
             </Link>
           </td>
           <td class="border-t">
@@ -49,7 +47,7 @@
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/clients/${item.id}/edit`" tabindex="-1">
-              {{ item.user.last_name }} {{ item.user.first_name }}<br>{{ item.created_at }}
+              {{ item.user }}<br>{{ item.created_at }}
             </Link>
           </td>
           <td class="w-px border-t">

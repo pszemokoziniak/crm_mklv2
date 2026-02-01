@@ -23,9 +23,7 @@ class ClientController extends Controller
     {
         return Inertia::render('Clients/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'clients' => Client::with('branza')
-                ->with('user')
-                ->with('kraj')
+            'clients' => Client::with(['branza', 'user', 'kraj'])
                 ->orderByCreatedAt()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
@@ -35,13 +33,13 @@ class ClientController extends Controller
                     'nazwa' => $client->nazwa,
                     'ulica' => $client->ulica,
                     'miasto' => $client->miasto,
-                    'kraj' => $client->kraj ? $client->kraj : null,
+                    'kraj' => $client->kraj ? $client->kraj->name : '-',
                     'www' => $client->www,
                     'linkedIn' => $client->linkedIn,
-                    'branza' => $client->branza ? $client->branza : null,
-                    'user' => $client->user ? $client->user : null,
+                    'branza' => $client->branza ? $client->branza->name : '-',
+                    'user' => $client->user ? (trim($client->user->first_name) != 'N/A' ? $client->user->first_name . ' ' . $client->user->last_name : $client->user->first_name) : '-',
                     'user_id' => $client->user_id,
-                    'created_at' => date($client->created_at)
+                    'created_at' => $client->created_at->format('Y-m-d H:i:s')
                 ]),
         ]);
     }
