@@ -24,12 +24,15 @@ class ClientRequest extends FormRequest
     public function rules()
     {
         return [
-            'nazwa' => ['required']
+            'nazwa' => ['required'],
+            'user_id' => ['required'],
+            'kraj_id' => ['required'],
+            'branza_id' => ['required'],
         ];
     }
     public function messages() {
         return [
-            'required'  => 'Polejest wymagane.',
+            'required'  => 'Pole jest wymagane.',
             'unique' => 'Nazwa użyta',
             'numeric' => 'Pole może zawierać tylko cyfry',
         ];

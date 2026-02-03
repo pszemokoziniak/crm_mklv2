@@ -23,7 +23,7 @@ class ClientController extends Controller
     {
         return Inertia::render('Clients/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'clients' => Client::with(['branza', 'user', 'kraj'])
+            'clients' => Client::with(['branza', 'user', 'kraj', 'creator'])
                 ->orderByCreatedAt()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
@@ -39,6 +39,7 @@ class ClientController extends Controller
                     'branza' => $client->branza ? $client->branza->name : '-',
                     'user' => $client->user ? (trim($client->user->first_name) != 'N/A' ? $client->user->first_name . ' ' . $client->user->last_name : $client->user->first_name) : '-',
                     'user_id' => $client->user_id,
+                    'created_by' => $client->creator ? $client->creator->first_name . ' ' . $client->creator->last_name : '-',
                     'created_at' => $client->created_at->format('Y-m-d H:i:s')
                 ]),
         ]);
@@ -54,7 +55,7 @@ class ClientController extends Controller
 
     public function store(ClientRequest $request)
     {
-        $data = Client::create($request->all());
+        $data = Client::create(array_merge($request->all(), ['created_by' => Auth::id()]));
 
         $this->storeActivityLog('Dodano klienta', $data->id, $data->id, 'clients', 'zmiany', Auth::id());
 

@@ -13,17 +13,30 @@ class LegacyKrajSeeder extends Seeder
     {
         $oldKraje = DB::connection('old_crm')->table('mkl_kraje')->get();
 
+        $walutaMapping = [
+            'EUR' => 1,
+            'GBP' => 2,
+            'PLN' => 3,
+            'USD' => 4,
+        ];
+
         foreach ($oldKraje as $oldKraj) {
-            // Sprawdzamy, czy waluta o tym ID istnieje w nowej bazie
-            $walutaId = $oldKraj->idWal;
-            if (!Waluta::find($walutaId)) {
-                $walutaId = null; // Jeśli nie ma takiej waluty, ustawiamy null
+            // W starej tabeli pole z walutą (string) to idWal
+            $oldWalutaName = strtoupper(trim($oldKraj->idWal ?? ''));
+
+            // Mapujemy na ID nowej waluty (int)
+            $walutaId = $walutaMapping[$oldWalutaName] ?? null;
+
+            // Jeśli nie znaleziono w mapowaniu, spróbujmy wyszukać w bazie po nazwie
+            if (!$walutaId && $oldWalutaName) {
+                $waluta = Waluta::where('name', $oldWalutaName)->first();
+                $walutaId = $waluta ? $waluta->id : null;
             }
 
+            // Skoro $oldKraj->id nie istnieje, używamy nazwy kraju jako klucza
             Kraj::updateOrCreate(
-                ['id' => $oldKraj->idWal],
+                ['name' => $oldKraj->kraj],
                 [
-                    'name' => $oldKraj->kraj,
                     'waluta_id' => $walutaId,
                 ]
             );

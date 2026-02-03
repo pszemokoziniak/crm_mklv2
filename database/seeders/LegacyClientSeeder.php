@@ -14,11 +14,10 @@ class LegacyClientSeeder extends Seeder
         $oldClients = DB::connection('old_crm')->table('mkl_klienci')->get();
 
         foreach ($oldClients as $oldClient) {
-            // 1. Mapowanie użytkownika
-            $user = User::where('email', $oldClient->dodal_klient)->first();
-            $userId = $user ? $user->id : 1; // Jeśli nie znaleziono, przypisz do pierwszego (wymagane)
+            // Mapowanie użytkownika - dodal_klient to ID użytkownika (int)
+            $userId = $oldClient->dodal_klient ?: 1;
 
-            // 2. Mapowanie kraju i branży (kopiujemy ID 1 do 1)
+            // Mapowanie kraju i branży (kopiujemy ID 1 do 1)
             $krajId = $oldClient->kraj_firmy ?: 1; // Jeśli puste, dajemy 1 (wymagane)
             $branzaId = $oldClient->branza_firmy ?: 1; // Jeśli puste, dajemy 1 (wymagane)
 
@@ -32,6 +31,7 @@ class LegacyClientSeeder extends Seeder
                     'linkedIn' => $oldClient->linkedIn_firmy,
                     'message' => $oldClient->message_kontakt,
                     'user_id' => $userId,
+                    'created_by' => $userId,
                     'kraj_id' => $krajId,
                     'branza_id' => $branzaId,
                     'created_at' => $oldClient->rejestr_klient,

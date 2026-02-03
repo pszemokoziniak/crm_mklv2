@@ -8,7 +8,7 @@
     </h1>
     <trashed-message v-if="client.deleted_at" class="mb-6" @restore="restore"> Klient został usunięty </trashed-message>
     <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="update" :class=" (isActive) ? 'border-2 border-green-500' : ''">
+      <form :class=" (isActive) ? 'border-2 border-green-500' : ''" @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.nazwa" :error="form.errors.nazwa" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwa" />
           <text-input v-model="form.ulica" :error="form.errors.ulica" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Ulica" />
@@ -17,35 +17,50 @@
             <option :value="null" />
             <option v-for="item in kraj" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
-          <text-input v-model="form.www" :error="form.errors.www" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="WWW" />
-          <text-input v-model="form.linkedIn" :error="form.errors.linkedIn" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="LinkedIn" />
+          <div class="pb-8 pr-6 w-full lg:w-1/2">
+            <div class="flex items-center justify-between">
+              <label class="form-label">WWW:</label>
+              <a v-if="form.www" :href="formatUrl(form.www)" target="_blank" class="text-indigo-600 hover:underline text-sm mb-1">Otwórz &rarr;</a>
+            </div>
+            <text-input v-model="form.www" :error="form.errors.www" :disabled="disable" />
+          </div>
+          <div class="pb-8 pr-6 w-full lg:w-1/2">
+            <div class="flex items-center justify-between">
+              <label class="form-label">LinkedIn:</label>
+              <a v-if="form.linkedIn" :href="formatUrl(form.linkedIn)" target="_blank" class="text-indigo-600 hover:underline text-sm mb-1">Otwórz &rarr;</a>
+            </div>
+            <text-input v-model="form.linkedIn" :error="form.errors.linkedIn" :disabled="disable" />
+          </div>
           <select-input v-model="form.branza_id" :error="form.errors.branza_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Branża">
             <option :value="null" />
             <option v-for="item in branza" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
-          <select-input v-model="form.user_id" :error="form.errors.user_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Użytkownik">
+          <select-input
+            v-model="form.user_id" :error="form.errors.user_id" :disabled="disable"
+            class="pb-8 pr-6 w-full lg:w-1/2" label="Opiekun"
+          >
             <option :value="null" />
             <option v-for="item in user" :key="item.id" :value="item.id">{{ item.first_name }} {{ item.last_name }}</option>
           </select-input>
           <text-area-input v-model="form.message" :error="form.errors.message" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/1" label="Informacje" />
         </div>
-        <hr>
+        <hr />
         <div class="grid gap-1 grid-cols-3 p-5">
           <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 cursor-default" @click="disableForm">
             <div class="group flex items-center py-3 cursor-pointer" @click="disableForm">
-              <icon name="edit" class="mr-2 w-4 h-4 inline"/>
+              <icon name="edit" class="mr-2 w-4 h-4 inline" />
               <div class="">Edytuj dane</div>
             </div>
           </div>
           <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
             <Link class="group flex items-center py-3" :href="`/kontaktperson/${client_id}/index`">
-              <icon name="addPerson" class="mr-2 w-4 h-4 inline"/>
+              <icon name="addPerson" class="mr-2 w-4 h-4 inline" />
               <div class="">Osoby kontaktowe</div>
             </Link>
           </div>
           <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">
             <Link class="group flex items-center py-3" :href="`/kontakt/${client_id}/index`">
-              <icon name="addContact" class="mr-2 w-4 h-4 inline"/>
+              <icon name="addContact" class="mr-2 w-4 h-4 inline" />
               <div class="">Kontakty</div>
             </Link>
           </div>
@@ -67,7 +82,7 @@ import TextAreaInput from '@/Shared/TextareaInput.vue'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
-import Icon from "@/Shared/Icon.vue";
+import Icon from '@/Shared/Icon.vue'
 
 export default {
   components: {
@@ -86,6 +101,7 @@ export default {
     branza: Object,
     kraj: Object,
     user: Object,
+    // eslint-disable-next-line vue/prop-name-casing
     client_id: String,
   },
   remember: 'form',
@@ -122,18 +138,25 @@ export default {
       }
     },
     disableForm() {
-      let elems_input = document.getElementById('form').getElementsByTagName('input');
+      let elems_input = document.getElementById('form').getElementsByTagName('input')
       for(let i = 0; i < elems_input.length; i++) {
-        elems_input[i].disabled = false;
+        elems_input[i].disabled = false
       }
-      let elems_select = document.getElementById('form').getElementsByTagName('select');
+      let elems_select = document.getElementById('form').getElementsByTagName('select')
       for(let i = 0; i < elems_select.length; i++) {
-        elems_select[i].disabled = false;
+        elems_select[i].disabled = false
       }
     },
     contactPerson() {
       this.form.get(`/kontaktperson/${this.client.id}/index`)
-    }
+    },
+    formatUrl(url) {
+      if (!url) return ''
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url
+      }
+      return `https://${url}`
+    },
   },
 }
 </script>

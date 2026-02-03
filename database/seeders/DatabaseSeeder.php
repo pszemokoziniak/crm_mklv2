@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
 //        DB::table('users')->truncate();
         DB::table('accounts')->truncate();
         DB::table('branzas')->truncate();
-        DB::table('krajs')->truncate();
+//        DB::table('krajs')->truncate();
         DB::table('zakres')->truncate();
         DB::table('oferta_statuses')->truncate();
         DB::table('walutas')->truncate();
