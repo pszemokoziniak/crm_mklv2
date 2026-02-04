@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Head title="Utwórz oferta" />
+    <Head title="Nowa oferta" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-indigo-400 hover:text-indigo-600" href="/oferta">Oferty</Link>
       <span class="text-indigo-400 font-medium">/</span> Utwórz
@@ -11,29 +11,37 @@
           <select-input v-model="form.zapytania_id" :error="form.errors.zapytania_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Zapytanie">
             <option v-for="item in zapytanie" :key="item.id" :value="item.id">{{ item.nazwa_projektu }} </option>
           </select-input>
-          <select-input v-model="form.typ" :error="form.errors.typ" class="pb-8 pr-6 w-full lg:w-1/2" label="Oferuje / Kontrakt">
+
+          <select-input v-model="form.typ" :error="form.errors.typ" class="pb-8 pr-6 w-full lg:w-1/2" label="Typ">
             <option :value="null" />
-            <option :value="'Klient oferuje'">Klient oferuje</option>
-            <option :value="'Klienta ma kontakt'">Klienta ma kontakt</option>
+            <option value="Klient oferuje">Klient oferuje</option>
+            <option value="Klienta ma kontakt">Klienta ma kontakt</option>
           </select-input>
+
           <select-input v-model="form.client_id" :error="form.errors.client_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Klient">
             <option v-for="item in clients" :key="item.id" :value="item.id">{{ item.nazwa }} </option>
           </select-input>
-          <text-input v-model="form.data_wyslania" :error="form.errors.data_wyslania" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Ofertę wysłano" />
+
+          <text-input v-model="form.data_wyslania" :error="form.errors.data_wyslania" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data wysłania" />
+
           <text-input v-model="form.kwota" :error="form.errors.kwota" type="number" class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
+
           <select-input v-model="form.waluta_id" :error="form.errors.waluta_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
             <option :value="null" />
             <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
+
           <text-input v-model="form.data_kontakt" :error="form.errors.data_kontakt" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
+
           <select-input v-model="form.oferta_status_id" :error="form.errors.oferta_status_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Status">
             <option :value="null" />
             <option v-for="item in statuses" :key="item.id" :value="item.id">{{ item.name }} </option>
           </select-input>
-          <text-area v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" />
+
+          <text-area-input v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full" label="Opis" />
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Zapisz</loading-button>
+          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Utwórz ofertę</loading-button>
         </div>
       </form>
     </div>
@@ -44,7 +52,7 @@
 import { Head, Link} from '@inertiajs/inertia-vue3'
 import Layout from '@/Shared/Layout'
 import TextInput from '@/Shared/TextInput'
-import TextArea from '@/Shared/TextareaInput.vue'
+import TextAreaInput from '@/Shared/TextareaInput.vue'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 
@@ -55,27 +63,24 @@ export default {
     LoadingButton,
     SelectInput,
     TextInput,
-    TextArea,
+    TextAreaInput,
   },
   layout: Layout,
   props: {
     zapytanie: Object,
-    typs: Array,
     clients: Object,
-    users: Object,
     statuses: Object,
-    krajs: Object,
     waluta: Object,
-    clientById: String,
-    zapytaniaById: String,
+    clientById: [String, Number],
+    zapytaniaById: [String, Number],
   },
   remember: 'form',
   data() {
     return {
       form: this.$inertia.form({
-        zapytania_id: this.zapytaniaById?this.zapytaniaById:'',
+        zapytania_id: this.zapytaniaById || '',
         typ: '',
-        client_id: this.clientById?this.clientById:'',
+        client_id: this.clientById || '',
         data_wyslania: '',
         kwota: '',
         waluta_id: '',
