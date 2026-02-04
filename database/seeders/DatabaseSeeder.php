@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
 //        DB::table('users')->truncate();
         DB::table('accounts')->truncate();
         DB::table('branzas')->truncate();
-//        DB::table('krajs')->truncate();
+        DB::table('krajs')->truncate();
         DB::table('zakres')->truncate();
         DB::table('oferta_statuses')->truncate();
         DB::table('walutas')->truncate();
@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         DB::table('fazas')->truncate();
         DB::table('objekts')->truncate();
         DB::table('clients')->truncate();
+        DB::table('zapytanias')->truncate();
 
         Schema::enableForeignKeyConstraints();
 
@@ -33,13 +34,14 @@ class DatabaseSeeder extends Seeder
 //            LegacyUserSeeder::class,
             LegacyBranzaSeeder::class,
             LegacyWalutaSeeder::class,
-//            LegacyKrajSeeder::class,
+            LegacyKrajSeeder::class,
             LegacyZakresSeeder::class,
             LegacyOfertaStatusSeeder::class,
             LegacyKursySeeder::class,
             LegacyFazaSeeder::class,
             LegacyObjektSeeder::class,
             LegacyClientSeeder::class,
+            LegacyZapytaniaSeeder::class,
         ]);
     }
 }

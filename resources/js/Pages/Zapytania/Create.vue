@@ -1,11 +1,17 @@
 <template>
   <div>
-    <Head title="Create Contact" />
+    <Head title="Nowe zapytanie" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-indigo-400 hover:text-indigo-600" href="/zapytania">Zapytania</Link>
-      <span class="text-indigo-400 font-medium">/</span> Utwórz
+      <span class="text-gray-400 font-medium"> /</span> Nowe zapytanie
     </h1>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div class="max-w-5xl bg-white rounded-md shadow overflow-hidden">
+      <div class="px-8 py-6 border-b border-gray-100 bg-gray-50/50">
+        <div class="text-xl font-bold text-gray-800">
+          Formularz nowego zapytania
+          <span class="text-sm font-normal text-gray-500 ml-2">(Numer: {{ id_zapyt }})</span>
+        </div>
+      </div>
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <select-input v-model="form.user_otrzymal_id" :error="form.errors.user_otrzymal_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Otrzymał">
@@ -19,11 +25,11 @@
             <option v-for="item in clients" :key="item.id" :value="item.id">{{ item.nazwa }}</option>
           </select-input>
           <text-input v-model="form.nazwa_projektu" :error="form.errors.nazwa_projektu" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwa projektu" />
-          <select-input v-model="form.preliminarz" :error="form.errors.preliminarz" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Preliminarz">
+          <select-input v-model="form.preliminarz" :error="form.errors.preliminarz" class="pb-8 pr-6 w-full lg:w-1/2" label="Preliminarz">
             <option value="Tak">Tak</option>
             <option value="Nie">Nie</option>
           </select-input>
-          <text-input v-model="form.miejscowosc" :error="form.errors.miejscowosc" class="pb-8 pr-6 w-full lg:w-1/2" label="Miejscowść" />
+          <text-input v-model="form.miejscowosc" :error="form.errors.miejscowosc" class="pb-8 pr-6 w-full lg:w-1/2" label="Miejscowość" />
           <select-input v-model="form.kraj_id" :error="form.errors.kraj_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Kraj">
             <option :value="null" />
             <option v-for="item in kraj" :key="item.id" :value="item.id">{{ item.name }}</option>
@@ -37,16 +43,16 @@
             <option v-for="item in users" :key="item.id" :value="item.id">{{ item.last_name }} {{ item.first_name }}</option>
           </select-input>
           <text-input v-model="form.start" :error="form.errors.start" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany termin rozpoczęcia" />
-          <text-input v-model="form.end" :error="form.errors.end" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany termin zakończenia realizacji" />
+          <text-input v-model="form.end" :error="form.errors.end" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany termin zakończenia" />
           <text-input v-model="form.kwota" :error="form.errors.kwota" type="number" class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
           <select-input v-model="form.waluta_id" :error="form.errors.waluta_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
             <option :value="null" />
             <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
-          <text-area v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" />
+          <text-area v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full" label="Opis" />
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Zapisz</loading-button>
+          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Utwórz zapytanie</loading-button>
         </div>
       </form>
     </div>
@@ -84,20 +90,20 @@ export default {
     return {
       form: this.$inertia.form({
         id_zapyt: this.id_zapyt,
-        user_otrzymal_id: '',
+        user_otrzymal_id: null,
         data_otrzymania: '',
         data_zlozenia: '',
-        client_id: '',
+        client_id: null,
         nazwa_projektu: '',
-        preliminarz: '',
+        preliminarz: 'Nie',
         miejscowosc: '',
-        kraj_id: '',
-        zakres_id: '',
-        user_opracowuje_id: '',
+        kraj_id: null,
+        zakres_id: null,
+        user_opracowuje_id: null,
         start: '',
         end: '',
         kwota: '',
-        waluta_id: '',
+        waluta_id: null,
         opis: '',
         user_id: this.$page.props.auth.user.id,
       }),
