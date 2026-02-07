@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OfertaStoreRequest;
-use App\Http\Requests\ZapytaniaStoreRequest;
-use App\Models\Branza;
 use App\Models\Client;
 use App\Models\Kraj;
 use App\Models\Kursy;
@@ -14,8 +12,7 @@ use App\Models\User;
 use App\Models\Waluta;
 use App\Models\Zakres;
 use App\Models\Zapytania;
-use Carbon\Carbon;
-//use Illuminate\Http\Request;
+use App\Models\Branza;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -25,16 +22,12 @@ use App\Traits\StoreActivityLog;
 class OfertaController extends Controller
 {
     use StoreActivityLog;
+
     public function index()
     {
         return Inertia::render('Oferta/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'ofertas' => Oferta::with('client')
-                ->with('user')
-                ->with('kraj')
-                ->with('zapytania')
-                ->with('status')
-                ->with('waluta')
+            'ofertas' => Oferta::with(['client', 'user', 'zapytania', 'status', 'waluta'])
                 ->OrderByCreatedAt()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
@@ -42,158 +35,145 @@ class OfertaController extends Controller
                 ->through(fn ($oferta) => [
                     'id' => $oferta->id,
                     'typ' => $oferta->typ,
-                    'client' => $oferta->client ? $oferta->client : null,
-                    'zapytania' => $oferta->zapytania ? $oferta->zapytania : null,
+                    'client' => $oferta->client,
+                    'zapytania' => $oferta->zapytania,
                     'kwota' => $oferta->kwota,
-                    'waluta' => $oferta->waluta ? $oferta->waluta : null,
-//                    'kraj' => Kraj::where('id', $oferta->zapytania->kraj_id)->firstOrFail(),
-                    'status' => $oferta->status ? $oferta->status : null,
-                    'user' => $oferta->user ? $oferta->user : null,
+                    'kwotaPLN' => $oferta->kwotaPLN,
+                    'waluta' => $oferta->waluta,
+                    'status' => $oferta->status,
+                    'user' => $oferta->user,
                     'deleted_at' => $oferta->deleted_at,
-                    'created_at' => date($oferta->created_at)
+                    'created_at' => $oferta->created_at->format('Y-m-d')
                 ])
         ]);
     }
+
     public function create()
     {
         return Inertia::render('Oferta/Create', [
-            'zapytanie' => Zapytania::get()->map->only('id', 'nazwa_projektu'),
-            'typs' => ['Klient oferuje', 'Klient na kontrakt'],
-            'clients' => Client::get()->map->only('id', 'nazwa'),
-            'users' => User::get()->map->only('id', 'first_name', 'last_name'),
-            'statuses' => OfertaStatus::get()->map->only('id', 'name'),
-            'krajs' => Kraj::get()->map->only('id', 'waluta'),
-            'waluta' => Waluta::get()->map->only('id', 'name'),
+            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->get(),
+            'clients' => Client::select('id', 'nazwa')->get(),
+            'users' => User::select('id', 'first_name', 'last_name')->get(),
+            'statuses' => OfertaStatus::select('id', 'name')->get(),
+            'waluta' => Waluta::select('id', 'name')->get(),
         ]);
     }
+
     public function createData(Zapytania $zapytania, Client $client)
     {
         $oferta = $this->checkStatusOpen($zapytania->id);
 
         if ($oferta !== null) {
-            return Redirect::route('oferta.edit', $oferta->id)->with('error', 'Nie można dodać nowej oferty, ponieważ do tego zapytania jest otwarta oferta ze statusem => Toczy się. Zmień status oferty');
+            return Redirect::route('oferta.edit', $oferta->id)->with('error', 'Nie można dodać nowej oferty, ponieważ do tego zapytania jest otwarta oferta ze statusem => Toczy się.');
         }
 
         return Inertia::render('Oferta/Create', [
-            'zapytanie' => Zapytania::get()->map->only('id', 'nazwa_projektu'),
-            'typs' => ['Klient oferuje', 'Klient na kontrakt'],
-            'clients' => Client::get()->map->only('id', 'nazwa'),
-            'users' => User::get()->map->only('id', 'first_name', 'last_name'),
-            'statuses' => OfertaStatus::get()->map->only('id', 'name'),
-            'krajs' => Kraj::get()->map->only('id', 'waluta'),
-            'waluta' => Waluta::get()->map->only('id', 'name'),
+            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->get(),
+            'clients' => Client::select('id', 'nazwa')->get(),
+            'statuses' => OfertaStatus::select('id', 'name')->get(),
+            'waluta' => Waluta::select('id', 'name')->get(),
             'zapytaniaById' => $zapytania->id,
             'clientById' => $client->id,
         ]);
     }
+
     public function store(OfertaStoreRequest $request)
     {
-            $kurs = $this->changeRate($request->waluta_id, $request->kwota);
+        $kursData = $this->changeRate($request->waluta_id, $request->kwota);
 
-            $data = new Oferta();
-            $data->zapytania_id = $request->zapytania_id;
-            $data->typ = $request->typ;
-            $data->client_id = $request->client_id;
-            $data->data_wyslania = $request->data_wyslania;
-            $data->kwota = $request->kwota;
-            $data->waluta_id = $request->waluta_id;
-            $data->kurs = $kurs[0];
-            $data->kwotaPLN = $kurs[1];
-            $data->data_kontakt = $request->data_kontakt;
-            $data->oferta_status_id = $request->oferta_status_id;
-            $data->opis = $request->opis;
-            $data->user_id = $request->user_id;
-            $data->save();
+        $oferta = Oferta::create(array_merge($request->validated(), [
+            'kurs' => $kursData[0],
+            'kwotaPLN' => $kursData[1],
+            'user_id' => Auth::id(),
+        ]));
 
-            $this->storeActivityLog('Nowa oferta', $data->id, $request->client_id, 'oferta', 'zmiany', Auth::id());
+        $this->storeActivityLog('Nowa oferta', $oferta->id, $request->client_id, 'oferta', 'zmiany', Auth::id());
 
-            $data = Zapytania::find($request->zapytania_id);
-            $data->wznowienie = 1;
-            $data->save();
+        Zapytania::where('id', $request->zapytania_id)->update(['wznowienie' => 1]);
 
-            return Redirect::route('oferta')->with('success', 'Zapisano.');
+        $redirect = Redirect::route('oferta')->with('success', 'Zapisano ofertę.');
+
+        if ($kursData[2] === false) {
+            $redirect->with('error', 'Uwaga: Nie znaleziono aktualnego kursu waluty w bazie. Użyto przelicznika 1.0.');
+        }
+
+        return $redirect;
     }
 
     public function edit(Oferta $oferta)
     {
         return Inertia::render('Oferta/Edit', [
-            'oferta' => [
-                'id' => $oferta->id,
-                'zapytania_id' => $oferta->zapytania_id,
-                'typ' => $oferta->typ,
-                'client_id' => $oferta->client_id,
-                'data_wyslania' => $oferta->data_wyslania,
-                'kwota' => $oferta->kwota,
-                'waluta_id' => $oferta->waluta_id,
-                'data_kontakt' => $oferta->data_kontakt,
-                'oferta_status_id' => $oferta->oferta_status_id,
-                'opis' => $oferta->opis,
-                'user_id' => $oferta->user_id,
-                'deleted_at' => $oferta->deleted_at,
-            ],
-            'branzas' => Branza::get(),
-            'krajs' => Kraj::get(),
-            'users' => User::get(),
-            'zakres' => Zakres::get(),
-            'clients' => Client::get(),
+            'oferta' => $oferta,
+            'clients' => Client::select('id', 'nazwa')->get(),
             'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->withTrashed()->get(),
-            'clientById' => Client::select('id', 'nazwa')->where('id', $oferta->client_id)->withTrashed()->firstOrFail(),
-            'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->firstOrFail(),
-            'statuses' => OfertaStatus::get()->map->only('id', 'name'),
-            'waluta' => Waluta::get()->map->only('id', 'name'),
+            'clientById' => Client::select('id', 'nazwa')->where('id', $oferta->client_id)->withTrashed()->first(),
+            'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->first(),
+            'statuses' => OfertaStatus::select('id', 'name')->get(),
+            'waluta' => Waluta::select('id', 'name')->get(),
         ]);
     }
 
     public function update(Oferta $oferta, OfertaStoreRequest $request)
     {
-        $oferta->update($request->all());
-        $this->saveRate($oferta->id, $request->kurs, $request->kwota);
+        $kursData = $this->changeRate($request->waluta_id, $request->kwota);
+
+        $oferta->update(array_merge($request->validated(), [
+            'kurs' => $kursData[0],
+            'kwotaPLN' => $kursData[1],
+        ]));
+
         $this->storeActivityLog('Poprawiono ofertę', $oferta->id, $request->client_id, 'oferta', 'zmiany', Auth::id());
 
-        return Redirect::route('oferta')->with('success', 'Oferta poprawiona.');
+        $redirect = Redirect::route('oferta')->with('success', 'Oferta poprawiona.');
+
+        if ($kursData[2] === false) {
+            $redirect->with('error', 'Uwaga: Nie znaleziono aktualnego kursu waluty w bazie. Użyto przelicznika 1.0.');
+        }
+
+        return $redirect;
     }
 
     public function destroy(Oferta $oferta)
     {
         $oferta->delete();
-
         return Redirect::back()->with('success', 'Oferta zarchiwizowana.');
     }
 
     public function restore(Oferta $oferta)
     {
         $oferta->restore();
-
         return Redirect::back()->with('success', 'Oferta przywrócona');
     }
-    public function exchangeRate($id)
-    {
-        $currency = Kursy::select('kurs')->where('waluta_id', $id)->latest()->first()->toArray();
-        return (string) $currency['kurs'];
-    }
-    public function changeRate($waluta, $kwota)
-    {
-        $waluta = Waluta::where('id', $waluta)->pluck('id');
-        $kurs = $this->exchangeRate($waluta[0]);
-        $kwotaPLN = (float) $kwota * (float) $kurs;
 
-        return [(float) $kurs, (float) $kwotaPLN];
-    }
-    public function saveRate($id, $kurs, $kwotaPLN)
+    public function exchangeRate($walutaId)
     {
-        $data = Oferta::find($id);
-        $data->kurs = (float) $kurs;
-        $data->kwotaPLN = $kwotaPLN;
-        $data->save();
+        $kurs = Kursy::where('waluta_id', $walutaId)->latest()->first();
+        if ($kurs) {
+            return [(float) $kurs->kurs, true];
+        }
+        return [1.0, false];
     }
+
+    public function changeRate($walutaId, $kwota)
+    {
+        $waluta = Waluta::find($walutaId);
+
+        // Jeśli waluta to PLN, nie pokazujemy błędu o braku kursu
+        if ($waluta && $waluta->name === 'PLN') {
+            return [1.0, (float) $kwota, true];
+        }
+
+        [$kurs, $found] = $this->exchangeRate($walutaId);
+        $kwotaPLN = (float) $kwota * $kurs;
+
+        return [$kurs, $kwotaPLN, $found];
+    }
+
     public function checkStatusOpen($id)
     {
-        return Oferta::with('status')
-            ->where('zapytania_id', $id)
+        return Oferta::where('zapytania_id', $id)
             ->whereHas('status', function ($query) {
                 $query->where('name', 'like', 'Toczy się');
-//                $query->orWhere('name', 'like', 'Wygrana');
             })->first();
-
     }
 }

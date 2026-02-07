@@ -13,49 +13,37 @@ class LegacyKrajSeeder extends Seeder
         DB::table('krajs')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Pobieramy wszystko, upewniając się że id też (jeśli istnieje)
         $oldKraje = DB::connection('old_crm')->select("SELECT * FROM mkl_kraje");
 
         foreach ($oldKraje as $oldKraj) {
             $data = (array)$oldKraj;
 
-            // Jeśli 'id' nadal nie ma w obiekcie, spróbujemy go znaleźć w tablicy (case-insensitive)
-            $id = null;
-            foreach ($data as $key => $value) {
-                if (strtolower($key) == 'id' || strtolower($key) == 'id_kraj') {
-                    $id = $value;
-                    break;
-                }
-            }
-
-            // Jeśli nadal nie ma ID, a mamy 34 rekordy, użyjemy nazwy jako klucza do znalezienia ID w zapytaniach?
-            // Nie, spróbujmy założyć, że ID to po prostu kolejny numer, jeśli go nie ma (ale to ryzykowne).
-            // Jednak najpierw sprawdźmy czy 'kraj' ma polskie znaki.
+            $id = $data['idWal'] ?? null;
             $name = $data['kraj'] ?? null;
 
             if ($name) {
-                // Naprawa kodowania (Słowacja itp)
-                $name = iconv('ISO-8859-2', 'UTF-8//IGNORE', $name);
+                // Próba naprawy kodowania z UTF-8 (jeśli błędnie odczytane jako ISO) lub bezpośrednio z ISO-8859-2
+                // "Ĺotwa" sugeruje, że UTF-8 zostało zinterpretowane jako Windows-1252/ISO-8859-1
+                // Najpierw spróbujmy mb_convert_encoding dla typowych problemów z polskimi znakami
 
-                // Jeśli ID nadal nie znaleziono, a wiemy że zapytania mają kraj_id,
-                // to może idWal jest tym kluczem? (mało prawdopodobne)
-                // Wstawiamy z autoincrement jeśli nie ma ID, ale wypiszemy to.
-                if ($id) {
-                    DB::table('krajs')->insert([
-                        'id'         => $id,
-                        'name'       => trim($name),
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+                if (mb_detect_encoding($name, 'UTF-8', true) === false) {
+                    $name = iconv('ISO-8859-2', 'UTF-8//IGNORE', $name);
                 } else {
-                    // Jeśli nie ma ID w tabeli, to może jest to tabela bez klucza?
-                    // Wstawiamy i liczymy na to, że ID się nadadzą (ale to nie zadziała dla relacji)
-                    DB::table('krajs')->insert([
-                        'name'       => trim($name),
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+                    // Jeśli to "Ĺotwa", to znaczy że mamy podwójne kodowanie (UTF8 odczytane jako ISO i znów do UTF8)
+                    // Spróbujmy to odkręcić:
+                    $converted = mb_convert_encoding($name, 'ISO-8859-1', 'UTF-8');
+                    if (mb_detect_encoding($converted, 'UTF-8', true) === false) {
+                         $name = mb_convert_encoding($converted, 'UTF-8', 'ISO-8859-2');
+                    }
                 }
+
+                DB::table('krajs')->insert([
+                    'id'         => $id,
+                    'name'       => trim($name),
+                    'waluta_id'  => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
             }
         }
 

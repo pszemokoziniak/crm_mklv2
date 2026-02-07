@@ -13,6 +13,7 @@ class FutureProject extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $guarded = [];
 
     public function resolveRouteBinding($value, $field = null)
     {

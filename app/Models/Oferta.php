@@ -13,6 +13,7 @@ class Oferta extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $guarded = [];
 
     protected $casts = [
         'created_at' => 'date:Y-m-d',
