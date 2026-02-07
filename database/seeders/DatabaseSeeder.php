@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
         DB::table('zapytanias')->truncate();
         DB::table('ofertas')->truncate();
         DB::table('future_projects')->truncate();
+        DB::table('linkedins')->truncate();
+        DB::table('strony_wwws')->truncate();
+        DB::table('kontakts')->truncate();
 
         Schema::enableForeignKeyConstraints();
 
@@ -46,6 +49,9 @@ class DatabaseSeeder extends Seeder
             LegacyZapytaniaSeeder::class,
             LegacyOfertaSeeder::class,
             LegacyFutureProjectSeeder::class,
+            LegacyLinkedinSeeder::class,
+            LegacyStronyWwwSeeder::class,
+            LegacyKontaktSeeder::class,
         ]);
     }
 }

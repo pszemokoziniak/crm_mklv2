@@ -7,13 +7,30 @@ use App\Models\StronyWww;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Request as RequestFacade;
 
 class StronyWwwController extends Controller
 {
     public function index()
     {
         return Inertia::render('StronyWww/Index', [
-            'stronywww' => StronyWww::get(),
+            'filters' => RequestFacade::all('search'),
+            'stronywww' => StronyWww::query()
+                ->when(RequestFacade::input('search'), function ($query, $search) {
+                    $query->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('link', 'like', '%'.$search.'%');
+                })
+                ->orderByDesc('updated_at')
+                ->paginate(10)
+                ->withQueryString()
+                ->through(fn ($item) => [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'link' => $item->link,
+                    'click' => $item->click,
+                    'updated_at' => $item->updated_at ? $item->updated_at->format('Y-m-d H:i') : null,
+                    'deleted_at' => $item->deleted_at,
+                ]),
         ]);
     }
 
@@ -24,7 +41,6 @@ class StronyWwwController extends Controller
 
     public function store(EditRequest $request)
     {
-//        StronyWww::create($request->all());
         $data = new StronyWww();
         $data->name = $request->name;
         $data->link = $request->link;
@@ -61,14 +77,12 @@ class StronyWwwController extends Controller
 
         return Redirect::route('stronywww')->with('success', 'Usunięte.');
     }
+
     public function click(StronyWww $stronyWww)
     {
-        $click = ($stronyWww->click)+1;
-        StronyWww::find($stronyWww->id)->update([
-            'click' => $click
-        ]);
+        $stronyWww->increment('click');
 
-        return Redirect::away((str_contains($stronyWww->link, 'https://'))?$stronyWww->link:'https://'.$stronyWww->link);
+        return Redirect::away((str_contains($stronyWww->link, 'http')) ? $stronyWww->link : 'https://' . $stronyWww->link);
     }
 
     public function restore(StronyWww $stronyWww)

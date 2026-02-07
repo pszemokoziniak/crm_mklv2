@@ -2,15 +2,11 @@
   <div>
     <Head title="Kontakty" />
     <div class="flex items-center justify-between mb-6">
-      <h1 class="mb-8 text-3xl font-bold">Kontakty /
+      <h1 class="mb-8 text-3xl font-bold"> Kontakty /
         <Link class="text-indigo-400 hover:text-indigo-600" :href="`/kontaktperson/${client_id}/index`">
           <span>Osoby kontaktowe</span>
         </Link>
       </h1>
-<!--      <Link class="btn-indigo" :href="`/kontakt/create/${client_id}`">-->
-<!--        <span>Dodaj</span>-->
-<!--        <span class="hidden md:inline">&nbsp;Kontak</span>-->
-<!--      </Link>-->
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
@@ -22,92 +18,62 @@
         </tr>
         <tr v-for="item in kontakt" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/kontakt/${item.kontaktperson.id}/edit`">
+            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/kontakt/${item.id}/edit`">
               {{ item.subject }}
               <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
             </Link>
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
-              {{ item.description }}
+              <div class="max-w-xs truncate">
+                {{ item.description }}
+              </div>
             </Link>
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
-              {{ item.kontaktperson.last_name }} {{ item.kontaktperson.first_name }}
+              <span v-if="item.kontaktperson">
+                {{ item.kontaktperson.last_name }} {{ item.kontaktperson.first_name }}
+              </span>
+              <span v-else class="text-gray-400">Brak osoby</span>
             </Link>
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
-              {{ item.call_time }}
+              {{ item.call_date }} {{ item.call_time }}
             </Link>
           </td>
-
-<!--          <td class="border-t">-->
-<!--            <Link class="flex items-center px-6 py-4" :href="`/kontakt/${item.id}/edit`" tabindex="-1">-->
-<!--              <div v-if="item.zapytania">-->
-<!--                {{ item.zapytania.nazwa_projektu }}-->
-<!--              </div>-->
-<!--            </Link>-->
-<!--          </td>-->
           <td class="w-px border-t">
             <Link class="flex items-center px-4" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
-              <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
+              <svg class="block w-6 h-6 fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <polygon points="12.95 10.707 13.657 10 8 4.343 6.586 5.757 10.828 10 6.586 14.243 8 15.657 12.95 10.707" />
+              </svg>
             </Link>
           </td>
         </tr>
         <tr v-if="kontakt.length === 0">
-          <td class="px-6 py-4 border-t" colspan="4">Nie znaleziono.</td>
+          <td class="px-6 py-4 border-t" colspan="5">Nie znaleziono.</td>
         </tr>
       </table>
     </div>
-<!--    <pagination class="mt-6" :links="kontakt.links" />-->
   </div>
 </template>
 
 <script>
 import { Head, Link } from '@inertiajs/inertia-vue3'
 import Icon from '@/Shared/Icon'
-import pickBy from 'lodash/pickBy'
 import Layout from '@/Shared/Layout'
-import throttle from 'lodash/throttle'
-import mapValues from 'lodash/mapValues'
-import Pagination from '@/Shared/Pagination'
-import SearchFilter from '@/Shared/SearchFilter'
 
 export default {
   components: {
     Head,
     Icon,
     Link,
-    Pagination,
-    SearchFilter,
   },
   layout: Layout,
   props: {
-    kontakt: Object,
-    client_id: String,
-  },
-  data() {
-    return {
-      form: {
-        // search: this.filters.search,
-        // trashed: this.filters.trashed,
-      },
-    }
-  },
-  // watch: {
-  //   form: {
-  //     deep: true,
-  //     handler: throttle(function () {
-  //       this.$inertia.get('/contacts', pickBy(this.form), { preserveState: true })
-  //     }, 150),
-  //   },
-  // },
-  methods: {
-    reset() {
-      this.form = mapValues(this.form, () => null)
-    },
+    kontakt: Array,
+    client_id: [String, Number],
   },
 }
 </script>

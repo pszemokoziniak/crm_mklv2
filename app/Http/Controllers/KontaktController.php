@@ -21,6 +21,7 @@ class KontaktController extends Controller
                 ->with('oferta')
                 ->with('kontaktperson')
                 ->where('client_id', $client_id)
+                ->orderBy('call_date', 'desc')
                 ->get(),
             'client_id' => $client_id,
         ]);
@@ -28,9 +29,7 @@ class KontaktController extends Controller
         public function create(Client $client, $kontaktPerson)
     {
         return Inertia::render('Kontakt/Create', [
-//            'clients' => Client::get(),
             'zapytanias' => Zapytania::withTrashed()->get(),
-//            'ofertas' => Oferta::get(),
             'client_id' => $client->id,
             'kontaktPersons' => KontaktPerson::where('client_id', $client->id)->get(),
             'kontaktPerson' => KontaktPerson::where('id', $kontaktPerson)->firstOrFail(),
@@ -49,8 +48,10 @@ class KontaktController extends Controller
                 'id' => $kontakt->id,
                 'subject' => $kontakt->subject,
                 'description' => $kontakt->description,
+                'call_date' => $kontakt->call_date,
                 'call_time' => $kontakt->call_time,
                 'zapytania_id' => $kontakt->zapytania_id,
+                'kontakt_id' => $kontakt->kontakt_id,
                 'deleted_at' => $kontakt->deleted_at,
             ],
             'zapytanias' => Zapytania::get()->map->only('id', 'nazwa_projektu'),
