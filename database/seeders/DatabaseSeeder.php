@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         DB::table('fazas')->truncate();
         DB::table('objekts')->truncate();
         DB::table('clients')->truncate();
+        DB::table('kontakt_persons')->truncate();
         DB::table('zapytanias')->truncate();
         DB::table('ofertas')->truncate();
         DB::table('future_projects')->truncate();
@@ -46,6 +47,7 @@ class DatabaseSeeder extends Seeder
             LegacyFazaSeeder::class,
             LegacyObjektSeeder::class,
             LegacyClientSeeder::class,
+            LegacyKontaktPersonSeeder::class,
             LegacyZapytaniaSeeder::class,
             LegacyOfertaSeeder::class,
             LegacyFutureProjectSeeder::class,

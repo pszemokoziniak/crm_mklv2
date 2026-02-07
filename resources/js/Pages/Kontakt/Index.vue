@@ -2,9 +2,10 @@
   <div>
     <Head title="Kontakty" />
     <div class="flex items-center justify-between mb-6">
-      <h1 class="mb-8 text-3xl font-bold"> Kontakty /
+      <h1 class="mb-8 text-3xl font-bold">
+        Kontakty /
         <Link class="text-indigo-400 hover:text-indigo-600" :href="`/kontaktperson/${client_id}/index`">
-          <span>Osoby kontaktowe</span>
+          <span />
         </Link>
       </h1>
     </div>

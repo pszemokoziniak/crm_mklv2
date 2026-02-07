@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
-use App\Models\Kontakt;
 use App\Models\KontaktPerson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class KontaktPersonController extends Controller
@@ -19,9 +17,10 @@ class KontaktPersonController extends Controller
                 ->where('client_id', $client_id)
                 ->get(),
             'client_id' => $client_id,
-            'client' => Client::where('id', $client_id)->get()->map->only('nazwa'),
+            'client' => Client::where('id', $client_id)->get()->map->only('id', 'nazwa'),
         ]);
     }
+
     public function create(Client $client)
     {
         return Inertia::render('KontaktPerson/Create', [
@@ -29,12 +28,14 @@ class KontaktPersonController extends Controller
             'client_id' => $client->id,
         ]);
     }
+
     public function store(Request $request)
     {
         KontaktPerson::create($request->all());
 
         return redirect()->route('kontaktperson', [$request->client_id])->with('success', 'Osoba kontaktowa dodana.');
     }
+
     public function edit(KontaktPerson $kontaktPerson)
     {
         return Inertia::render('KontaktPerson/Edit', [
@@ -46,10 +47,10 @@ class KontaktPersonController extends Controller
                 'phone1' => $kontaktPerson->phone1,
                 'phone2' => $kontaktPerson->phone2,
                 'email' => $kontaktPerson->email,
+                'miasto' => $kontaktPerson->miasto,
                 'client_id' => $kontaktPerson->client_id,
                 'description' => $kontaktPerson->description,
                 'user_id' => $kontaktPerson->user_id,
-                'deleted_at' => $kontaktPerson->deleted_at,
             ],
         ]);
     }
@@ -66,12 +67,5 @@ class KontaktPersonController extends Controller
         $kontaktPerson->delete();
 
         return Redirect::route('kontaktperson', $kontaktPerson->client_id)->with('success', 'Usunięte.');
-    }
-
-    public function restore(KontaktPerson $faza)
-    {
-        $faza->restore();
-
-        return Redirect::back()->with('success', 'Przywrócono.');
     }
 }
