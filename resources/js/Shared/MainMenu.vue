@@ -1,87 +1,17 @@
 <template>
-  <div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/">
-        <icon name="home" class="mr-2 w-4 h-4" :class="isUrl('') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Home</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/clients">
-        <icon name="clients" class="mr-2 w-4 h-4" :class="isUrl('clients') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('clients') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Klienci</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/zapytania">
-        <icon name="zapytania" class="mr-2 w-4 h-4" :class="isUrl('contacts') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('zapytania') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Zapytania</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/oferta">
-        <icon name="oferty" class="mr-2 w-4 h-4" :class="isUrl('oferta') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('oferta') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Oferty</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/zadania">
-        <icon name="tasks" class="mr-2 w-4 h-4" :class="isUrl('zadania') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('zadania') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Zadania</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/calendar">
-        <icon name="calendar" class="mr-2 w-4 h-4" :class="isUrl('calendar') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('calendar') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Kalendarz</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/futureproject">
-        <icon name="future" class="mr-2 w-4 h-4" :class="isUrl('futureproject') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('futureproject') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Przyszłe projekty</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/linkedin">
-        <icon name="linkedin" class="mr-2 w-4 h-4" :class="isUrl('linkedin') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('linkedin') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">LinkedIn</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/stronywww">
-        <icon name="www" class="mr-2 w-4 h-4" :class="isUrl('stronywww') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('stronywww') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Linki www</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/stats">
-        <icon name="statystyki" class="mr-2 w-4 h-4" :class="isUrl('stats') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('stats') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Statystyki</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/edit">
-        <icon name="edit" class="mr-2 w-4 h-4" :class="isUrl('edit') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('edit') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Edit</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/users">
-        <icon name="users" class="mr-2 w-4 h-4" :class="isUrl('users') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('users') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Użytkownikcy</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/activity">
-        <icon name="historia" class="mr-2 w-4 h-4" :class="isUrl('activity') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('activity') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Historia</div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/backup">
-        <icon name="backup" class="mr-2 w-4 h-4" :class="isUrl('backup') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('backup') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">BackUp</div>
+  <div class="space-y-1">
+    <div v-for="item in menuItems" :key="item.href">
+      <Link
+        class="group flex items-center px-4 py-3 rounded-lg transition-all duration-200"
+        :href="item.href"
+        :class="isUrl(item.activeRule) ? 'bg-indigo-900 text-white shadow-inner' : 'text-indigo-100 hover:bg-indigo-700 hover:text-white'"
+      >
+        <icon
+          :name="item.icon"
+          class="mr-3 w-5 h-5 transition-colors duration-200"
+          :class="isUrl(item.activeRule) ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'"
+        />
+        <div class="font-medium">{{ item.label }}</div>
       </Link>
     </div>
   </div>
@@ -95,6 +25,26 @@ export default {
   components: {
     Icon,
     Link,
+  },
+  data() {
+    return {
+      menuItems: [
+        { label: 'Home', href: '/', icon: 'home', activeRule: '' },
+        { label: 'Klienci', href: '/clients', icon: 'clients', activeRule: 'clients' },
+        { label: 'Zapytania', href: '/zapytania', icon: 'zapytania', activeRule: 'zapytania' },
+        { label: 'Oferty', href: '/oferta', icon: 'oferty', activeRule: 'oferta' },
+        { label: 'Zadania', href: '/zadania', icon: 'tasks', activeRule: 'zadania' },
+        { label: 'Kalendarz', href: '/calendar', icon: 'calendar', activeRule: 'calendar' },
+        { label: 'Przyszłe projekty', href: '/futureproject', icon: 'future', activeRule: 'futureproject' },
+        { label: 'LinkedIn', href: '/linkedin', icon: 'linkedin', activeRule: 'linkedin' },
+        { label: 'Linki www', href: '/stronywww', icon: 'www', activeRule: 'stronywww' },
+        { label: 'Statystyki', href: '/stats', icon: 'statystyki', activeRule: 'stats' },
+        { label: 'Ustawienia', href: '/edit', icon: 'edit', activeRule: 'edit' },
+        { label: 'Użytkownicy', href: '/users', icon: 'users', activeRule: 'users' },
+        { label: 'Historia', href: '/activity', icon: 'historia', activeRule: 'activity' },
+        { label: 'BackUp', href: '/backup', icon: 'backup', activeRule: 'backup' },
+      ]
+    }
   },
   methods: {
     isUrl(...urls) {

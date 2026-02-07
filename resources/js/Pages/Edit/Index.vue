@@ -1,83 +1,16 @@
 <template>
-<!--  <div class="md:flex md:flex-grow md:overflow-hidden">-->
-<!--    <edit-menu class="hidden flex-shrink-0 p-12 w-56 bg-indigo-800 overflow-y-auto md:block" />-->
-<!--    <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto" scroll-region>-->
-<!--      <flash-messages />-->
-<!--      <slot />-->
-<!--    </div>-->
-<!--  </div>-->
-
-  <div class="w-full">
-    <Head title="Edit" />
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:gap-1 lg:gap-3 md:mx-10 lg:mx-20 lg:my-auto">
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/branza/`">
-        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Branże</div>
-          </div>
+  <div>
+    <Head title="Ustawienia" />
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-gray-800">Ustawienia systemowe</h1>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <Link v-for="item in menuItems" :key="item.href" :href="item.href" class="flex items-center p-5 bg-white rounded-xl shadow-sm border border-gray-200 hover:border-indigo-500 hover:shadow-md transition-all duration-200 group">
+        <div class="flex-shrink-0 p-3 rounded-lg bg-indigo-50 group-hover:bg-indigo-600 transition-colors duration-200">
+          <icon :name="item.icon" class="w-6 h-6 fill-indigo-600 group-hover:fill-white" />
         </div>
-      </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/kraj/`">
-        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Kraj</div>
-          </div>
-        </div>
-      </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/zakres/`">
-        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Zakres</div>
-          </div>
-        </div>
-      </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/ofertastatus/`">
-        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Oferty Status</div>
-          </div>
-        </div>
-      </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/kursy/`">
-        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Kursy</div>
-          </div>
-        </div>
-      </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/faza/`">
-        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Faza projektu</div>
-          </div>
-        </div>
-      </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/objekt/`">
-        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Objekt projektu</div>
-          </div>
-        </div>
-      </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/waluta/`">
-        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Waluta</div>
-          </div>
-        </div>
-      </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/uprawnienia/`">
-        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Uprawnienia</div>
-          </div>
-        </div>
-      </Link>
-      <Link class="block mt-4 lg:inline-block lg:mt-0" :href="`/email/`">
-        <div class="h-50 lg:max-w-md sm:mx-10 md:mx-5 lg:mx-2 rounded border border-greyMf-200 overflow-hidden shadow-lg">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2 flex justify-center">Email</div>
-          </div>
+        <div class="ml-4">
+          <span class="text-lg font-semibold text-gray-700 group-hover:text-indigo-900">{{ item.label }}</span>
         </div>
       </Link>
     </div>
@@ -87,18 +20,30 @@
 <script>
 import { Head, Link } from '@inertiajs/inertia-vue3'
 import Layout from '@/Shared/Layout'
-import EditMenu from '@/Shared/EditMenu'
-import MainMenu from "@/Shared/MainMenu.vue";
-import FlashMessages from "@/Shared/FlashMessages.vue";
-// import Icon from '@/Shared/Icon'
+import Icon from '@/Shared/Icon'
 
 export default {
   components: {
-    FlashMessages, MainMenu,
     Head,
-    EditMenu,
-    Link
+    Link,
+    Icon,
   },
   layout: Layout,
+  data() {
+    return {
+      menuItems: [
+        { label: 'Branże', href: '/branza/', icon: 'office' },
+        { label: 'Kraj', href: '/kraj/', icon: 'home' },
+        { label: 'Zakres', href: '/zakres/', icon: 'tasks' },
+        { label: 'Oferty Status', href: '/ofertastatus/', icon: 'oferty' },
+        { label: 'Kursy', href: '/kursy/', icon: 'statystyki' },
+        { label: 'Faza projektu', href: '/faza/', icon: 'future' },
+        { label: 'Objekt projektu', href: '/objekt/', icon: 'office' },
+        { label: 'Waluta', href: '/waluta/', icon: 'oferty' },
+        { label: 'Uprawnienia', href: '/uprawnienia/', icon: 'users' },
+        { label: 'Email', href: '/email/', icon: 'mail' },
+      ],
+    }
+  },
 }
 </script>
