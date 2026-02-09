@@ -7,7 +7,6 @@
         <tr class="text-left font-bold">
           <th class="pb-4 pt-6 px-6">Typ</th>
           <th class="pb-4 pt-6 px-6">Firma</th>
-<!--          <th class="pb-4 pt-6 px-6">Info</th>-->
           <th class="pb-4 pt-6 px-6">Użytkownik</th>
           <th class="pb-4 pt-6 px-6">Data</th>
         </tr>
@@ -20,19 +19,14 @@
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.link_id}/edit`">
-              {{ item.client.nazwa }}
+              {{ item.client ? item.client.nazwa : 'Brak danych' }}
               <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
             </Link>
           </td>
-<!--          <td class="border-t">-->
-<!--            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.id}/edit`">-->
-<!--&lt;!&ndash;              {{ item.updated_at }}&ndash;&gt;-->
-<!--              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />-->
-<!--            </Link>-->
-<!--          </td>-->
           <td class="border-t">
             <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.link_id}/edit`">
-              {{ item.user.last_name }} {{ item.user.first_name }}
+              <span v-if="item.user">{{ item.user.last_name }} {{ item.user.first_name }}</span>
+              <span v-else>System</span>
               <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
             </Link>
           </td>
@@ -43,7 +37,7 @@
             </Link>
           </td>
         </tr>
-        <tr v-if="historia.length === 0">
+        <tr v-if="historia.data && historia.data.length === 0">
           <td class="px-6 py-4 border-t" colspan="4">Brak</td>
         </tr>
       </table>

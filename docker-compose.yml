@@ -11,8 +11,11 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www
+    env_file: .env
+    environment:
+        - DB_PORT=3306
     networks:
-      - crm-network
+      - crm-v2-net
 
   web:
     image: nginx:alpine
@@ -24,7 +27,7 @@ services:
       - ./:/var/www
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     networks:
-      - crm-network
+      - crm-v2-net
     depends_on:
       - app
 
@@ -41,11 +44,12 @@ services:
       - "3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
+    env_file: .env
     networks:
-      - crm-network
+      - crm-v2-net
 
 networks:
-  crm-network:
+  crm-v2-net:
     driver: bridge
 
 volumes:
