@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         Schema::disableForeignKeyConstraints();
 
-//        DB::table('users')->truncate();
+        DB::table('users')->truncate();
         DB::table('accounts')->truncate();
         DB::table('branzas')->truncate();
         DB::table('krajs')->truncate();
@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         Account::create(['id' => 1, 'name' => 'MKL CRM']);
 
         $this->call([
-//            LegacyUserSeeder::class,
+            LegacyUserSeeder::class,
             LegacyBranzaSeeder::class,
             LegacyWalutaSeeder::class,
             LegacyKrajSeeder::class,
