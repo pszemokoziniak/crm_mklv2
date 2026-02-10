@@ -13,7 +13,7 @@ services:
       - ./:/var/www
     env_file: .env
     environment:
-        - DB_PORT=3306
+      - DB_PORT=3306
     networks:
       - crm-v2-net
 
@@ -37,11 +37,11 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: crm_database
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: Mkl_Crm_2026_!_Secure
+      MYSQL_PASSWORD: Mkl_Crm_2026_!_Secure
       MYSQL_USER: crm_user
     ports:
-      - "3307:3306"
+      - "127.0.0.1:3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
     env_file: .env
