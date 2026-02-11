@@ -1,68 +1,149 @@
 <template>
   <div>
-    <Head title="Do zrobienia" />
+    <Head title="Panel główny" />
     <Historia v-if="historia" :historia="historia" />
-    <hr class="my-5" />
-    <h1 class="mb-8 text-3xl font-bold">Do zrobienia</h1>
-    <search-filter-simple v-model="form.search" class="mr-4 mb-3 w-full max-w-md" @reset="reset" />
-    <div class="grid grid-cols-5 gap-4">
-      <div class="border-2 border-green-500">
-        <p class="text-center w-full p-2 text-indigo-600">Zapytania</p>
-        <div v-for="item in zapytanias" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
-          <Link class="" :href="`/zapytania/${item.id}/edit`">
-            <p v-if="item.wznowienie===2" class="p-1 text-red-600">Wznowienie</p>
-            <p class="p-1">{{ item.id_zapyt }}</p>
-            <p class="p-1">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</p>
-            <p class="p-1">{{ item.nazwa_projektu }}</p>
-            <p class="p-1">{{ item.data_zlozenia }}</p>
-            <p v-if="item.opracowuje" class="p-1 text-red-600">{{ item.opracowuje.last_name }} {{ item.opracowuje.first_name }}</p>
-            <p v-else class="p-1 text-gray-400">Nieprzypisane</p>
-          </Link>
+    <hr class="my-8 border-gray-200" />
+
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-3xl font-extrabold text-gray-900">Do zrobienia</h1>
+      <search-filter-simple v-model="form.search" class="w-full max-w-md" @reset="reset" />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+      <!-- Zapytania -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-4 px-2">
+          <h2 class="text-lg font-bold text-indigo-700 uppercase tracking-wider">Zapytania</h2>
+          <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{{ zapytanias.length }}</span>
+        </div>
+        <div class="space-y-3">
+          <div v-for="item in zapytanias" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <Link :href="`/zapytania/${item.id}/edit`" class="block p-4">
+              <div v-if="item.wznowienie===2" class="mb-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Wznowienie</span>
+              </div>
+              <div class="text-xs font-mono text-gray-500 mb-1">{{ item.id_zapyt }}</div>
+              <div class="font-bold text-gray-900 mb-1 truncate">{{ item.nazwa_projektu }}</div>
+              <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+
+              <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+                <div class="text-xs text-gray-500 flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  {{ item.data_zlozenia }}
+                </div>
+                <div v-if="item.opracowuje" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
+                  {{ item.opracowuje.last_name }}
+                </div>
+                <div v-else class="text-xs text-gray-400 italic">Nieprzypisane</div>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
-      <div>
-        <p class="text-center w-full p-2 text-indigo-600">Oferty</p>
-        <div v-for="item in ofertas.data" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
-          <Link class="" :href="`/oferta/${item.id}/edit`">
-            <p class="p-1">{{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak projektu' }}</p>
-            <p class="p-1">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</p>
-            <p class="p-1">{{ item.data_kontakt }}</p>
-            <p v-if="item.user" class="p-1 text-red-600">{{ item.user.last_name }} {{ item.user.first_name }}</p>
-            <p v-else class="p-1 text-gray-400">Brak użytkownika</p>
-          </Link>
+
+      <!-- Oferty -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-4 px-2">
+          <h2 class="text-lg font-bold text-green-700 uppercase tracking-wider">Oferty</h2>
+          <span class="bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{{ ofertas.length }}</span>
+        </div>
+        <div class="space-y-3">
+          <div v-for="item in ofertas" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <Link :href="`/oferta/${item.id}/edit`" class="block p-4">
+              <div class="font-bold text-gray-900 mb-1 truncate">{{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak projektu' }}</div>
+              <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+
+              <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+                <div class="text-xs text-gray-500 flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  {{ item.data_kontakt }}
+                </div>
+                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
+                  {{ item.user.last_name }}
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
-      <div>
-        <p class="text-center w-full p-2 text-indigo-600">Klienci kontakty</p>
-        <div v-for="item in kontakts" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
-          <Link class="" :href="`/kontakt/${item.id}/edit`">
-            <p class="p-1">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</p>
-            <p v-if="item.kontaktperson" class="p-1">{{ item.kontaktperson.last_name }} {{ item.kontaktperson.first_name }}</p>
-            <p class="p-1">{{ item.subject }}</p>
-            <p class="p-1">{{ item.call_time }}</p>
-            <p v-if="item.user" class="p-1 text-red-600">{{ item.user.last_name }} {{ item.user.first_name }}</p>
-          </Link>
+
+      <!-- Klienci kontakty -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-4 px-2">
+          <h2 class="text-lg font-bold text-blue-700 uppercase tracking-wider">Kontakty</h2>
+          <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{{ kontakts.length }}</span>
+        </div>
+        <div class="space-y-3">
+          <div v-for="item in kontakts" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <Link :href="`/kontakt/${item.id}/edit`" class="block p-4">
+              <div class="font-bold text-gray-900 mb-1 truncate">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+              <div v-if="item.kontaktperson" class="text-sm text-gray-700 font-medium mb-1">
+                {{ item.kontaktperson.first_name }} {{ item.kontaktperson.last_name }}
+              </div>
+              <div class="text-sm text-gray-600 mb-3 line-clamp-2">{{ item.subject }}</div>
+
+              <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+                <div class="text-xs text-gray-500 flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  {{ item.call_time }}
+                </div>
+                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
+                  {{ item.user.last_name }}
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
-      <div>
-        <p class="text-center w-full p-2 text-indigo-600">Przyszłe projekty</p>
-        <div v-for="item in futureProjects" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
-          <Link class="" :href="`/futureproject/${item.id}/edit`">
-            <p class="p-1">{{ item.nazwa }}</p>
-            <p class="p-1">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</p>
-            <p class="p-1">{{ item.data_kontakt }}</p>
-            <p v-if="item.user" class="p-1 text-red-600">{{ item.user.last_name }} {{ item.user.first_name }}</p>
-          </Link>
+
+      <!-- Przyszłe projekty -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-4 px-2">
+          <h2 class="text-lg font-bold text-purple-700 uppercase tracking-wider">Projekty</h2>
+          <span class="bg-purple-100 text-purple-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{{ futureProjects.length }}</span>
+        </div>
+        <div class="space-y-3">
+          <div v-for="item in futureProjects" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <Link :href="`/futureproject/${item.id}/edit`" class="block p-4">
+              <div class="font-bold text-gray-900 mb-1 truncate">{{ item.nazwa }}</div>
+              <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+
+              <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+                <div class="text-xs text-gray-500 flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  {{ item.data_kontakt }}
+                </div>
+                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
+                  {{ item.user.last_name }}
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
-      <div>
-        <p class="text-center w-full p-2 text-indigo-600">Zadania</p>
-        <div v-for="item in zadania" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100 border-2 rounded p-2 mb-2">
-          <Link class="" :href="`/zadania/${item.id}/edit`">
-            <p class="p-1">{{ item.subject }}</p>
-            <p class="p-1">{{ item.deadline }}</p>
-            <p v-if="item.users" class="p-1 text-red-600">{{ item.users.last_name }} {{ item.users.first_name }}</p>
-          </Link>
+
+      <!-- Zadania -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-4 px-2">
+          <h2 class="text-lg font-bold text-orange-700 uppercase tracking-wider">Zadania</h2>
+          <span class="bg-orange-100 text-orange-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{{ zadania.length }}</span>
+        </div>
+        <div class="space-y-3">
+          <div v-for="item in zadania" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <Link :href="`/zadania/${item.id}/edit`" class="block p-4">
+              <div class="font-bold text-gray-900 mb-1 truncate">{{ item.subject }}</div>
+
+              <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+                <div class="text-xs text-gray-500 flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  {{ item.deadline }}
+                </div>
+                <div v-if="item.users" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
+                  {{ item.users.last_name }}
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -89,7 +170,7 @@ export default {
   props: {
     kontakts: Array,
     zapytanias: Array,
-    ofertas: Object,
+    ofertas: Array,
     futureProjects: Array,
     zadania: Array,
     historia: Object,

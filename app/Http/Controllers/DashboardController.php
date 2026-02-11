@@ -42,28 +42,22 @@ class DashboardController extends Controller
                     ->filter(Request::only('search'))
                     ->orderBy('call_time')
                     ->get(),
-                'zapytanias' => Zapytania::with('user')
-                    ->with('opracowuje')
-                    ->with('client')
-                    ->where('wznowienie', null)
-                    ->orWhere('wznowienie', 2)
+                'zapytanias' => Zapytania::with(['user', 'opracowuje', 'client'])
+                    ->where(function ($query) {
+                        $query->whereNull('wznowienie')
+                            ->orWhere('wznowienie', 0)
+                            ->orWhere('wznowienie', 2);
+                    })
                     ->filter(Request::only('search'))
                     ->orderBy('data_zlozenia')
                     ->get(),
-                'ofertas' => Oferta::with('user')
-                    ->with('client')
-                    ->with('zapytania')
-                    ->with('ofertastatus')
-                    ->whereHas('ofertastatus', function ($query) {
-                        $query->where('name', 'like', 'Toczy się');
-                    })
+                'ofertas' => Oferta::with(['user', 'client', 'zapytania', 'ofertastatus'])
                     ->filter(Request::only('search'))
-                    ->paginate(10)
-                    ->withQueryString()
-//                    ->withTrashed()
-                    ->through(fn ($oferta) => [
+                    ->orderBy('data_kontakt')
+                    ->get()
+                    ->map(fn ($oferta) => [
                         'id' => $oferta->id,
-                        'nazwa_projektu' => $oferta->nazwa_projektu,
+                        'nazwa_projektu' => $oferta->zapytania ? $oferta->zapytania->nazwa_projektu : 'Brak projektu',
                         'zapytania' => $oferta->zapytania ? $oferta->zapytania : null,
                         'client' => $oferta->client ? $oferta->client : null,
                         'data_kontakt' => $oferta->data_kontakt,
