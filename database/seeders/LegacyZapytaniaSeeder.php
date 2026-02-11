@@ -21,11 +21,33 @@ class LegacyZapytaniaSeeder extends Seeder
         foreach ($oldZapytania as $old) {
             $walutaId = DB::table('walutas')->where('name', $old->waluta_zap)->value('id');
 
-            // Sprawdzamy czy kraj_id istnieje w nowej tabeli krajs
-            $krajId = in_array($old->kraj_zap, $availableKrajIds) ? $old->kraj_zap : 1;
+            // Mapowanie kraj_zap na kraj_id
+            $krajId = null;
+            if ($old->kraj_zap) {
+                // Najpierw szukamy po nazwie
+                $krajId = DB::table('krajs')->where('name', trim($old->kraj_zap))->value('id');
 
-            // Mapujemy zakres_zap 1:1 na zakres_id, sprawdzając czy istnieje
-            $zakresId = in_array($old->zakres_zap, $availableZakresIds) ? $old->zakres_zap : 1;
+                // Jeśli nie znaleziono, a wartość jest liczbą, sprawdzamy czy to ID
+                if (!$krajId && is_numeric($old->kraj_zap)) {
+                    if (in_array((int)$old->kraj_zap, $availableKrajIds)) {
+                        $krajId = (int)$old->kraj_zap;
+                    }
+                }
+            }
+            $krajId = $krajId ?: 1; // Fallback do ID 1
+
+            // Mapujemy zakres_zap na zakres_id
+            $zakresId = null;
+            if ($old->zakres_zap) {
+                $zakresId = DB::table('zakres')->where('name', trim($old->zakres_zap))->value('id');
+
+                if (!$zakresId && is_numeric($old->zakres_zap)) {
+                    if (in_array((int)$old->zakres_zap, $availableZakresIds)) {
+                        $zakresId = (int)$old->zakres_zap;
+                    }
+                }
+            }
+            $zakresId = $zakresId ?: 1;
 
             DB::table('zapytanias')->insert([
                 'id'                 => $old->id,
@@ -41,9 +63,9 @@ class LegacyZapytaniaSeeder extends Seeder
                 'zakres_id'          => $zakresId,
                 'user_opracowuje_id' => $old->otrzymal_zap ?: ($old->rejestUser ?: 1),
                 'start'              => $this->formatDate($old->start_zap),
-                'end'                => $this->formatDate($old->end_zap),
+                'end'              => $this->formatDate($old->end_zap),
                 'kwota'              => $old->kwota_zap,
-                'waluta_id'          => $walutaId,
+                'waluta_id'          => $walutaId ?: 1,
                 'opis'               => $old->opis_zap,
                 'miasto'             => Str::limit($old->city_zap, 50, ''),
                 'user_id'            => $old->rejestUser ?: 1,
