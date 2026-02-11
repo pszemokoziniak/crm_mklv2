@@ -11,6 +11,22 @@ class Kontakt extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'id',
+        'client_id',
+        'call_date',
+        'call_time',
+        'next_call_date',
+        'next_call_time',
+        'subject',
+        'description',
+        'user_id',
+        'kontakt_person_id',
+        'zapytania_id',
+        'created_at',
+        'updated_at',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
