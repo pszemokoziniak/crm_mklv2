@@ -48,9 +48,21 @@ class DashboardController extends Controller
                             ->orWhere('wznowienie', 0)
                             ->orWhere('wznowienie', 2);
                     })
+                    ->pendingOrOld()
                     ->filter(Request::only('search'))
                     ->orderBy('data_zlozenia')
-                    ->get(),
+                    ->get()
+                    ->map(fn ($zapytania) => [
+                        'id' => $zapytania->id,
+                        'id_zapyt' => $zapytania->id_zapyt,
+                        'nazwa_projektu' => $zapytania->nazwa_projektu,
+                        'client' => $zapytania->client ? $zapytania->client : null,
+                        'data_zlozenia' => $zapytania->data_zlozenia,
+                        'opracowuje' => $zapytania->opracowuje ? $zapytania->opracowuje : null,
+                        'wznowienie' => $zapytania->wznowienie,
+                        'user' => $zapytania->user ? $zapytania->user : null,
+                        'created_at' => date($zapytania->created_at)
+                    ]),
                 'ofertas' => Oferta::with(['user', 'client', 'zapytania', 'ofertastatus'])
                     ->filter(Request::only('search'))
                     ->orderBy('data_kontakt')

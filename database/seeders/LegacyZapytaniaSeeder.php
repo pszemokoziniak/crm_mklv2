@@ -61,7 +61,7 @@ class LegacyZapytaniaSeeder extends Seeder
                 'miejscowosc'        => Str::limit($old->city_zap, 100, ''),
                 'kraj_id'            => $krajId,
                 'zakres_id'          => $zakresId,
-                'user_opracowuje_id' => $old->otrzymal_zap ?: ($old->rejestUser ?: 1),
+                'user_opracowuje_id' => (int)$old->osoba_zap ?: ($old->rejestUser ?: 1),
                 'start'              => $this->formatDate($old->start_zap),
                 'end'              => $this->formatDate($old->end_zap),
                 'kwota'              => $old->kwota_zap,

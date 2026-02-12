@@ -35,7 +35,7 @@ class ZapytaniaController extends Controller
     {
         return Inertia::render('Zapytania/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'zapytanias' => Zapytania::with(['client', 'user', 'kraj', 'zakres', 'waluta'])
+            'zapytanias' => Zapytania::with(['client', 'user', 'kraj', 'zakres', 'waluta', 'otrzymal', 'opracowuje'])
                 ->OrderByCreatedAt()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
@@ -50,6 +50,8 @@ class ZapytaniaController extends Controller
                     'waluta' => $zapytania->waluta ? $zapytania->waluta : null,
                     'zakres' => $zapytania->zakres ? $zapytania->zakres : null,
                     'user' => $zapytania->user ? $zapytania->user : null,
+                    'otrzymal' => $zapytania->otrzymal ? $zapytania->otrzymal : null,
+                    'opracowuje' => $zapytania->opracowuje ? $zapytania->opracowuje : null,
                     'deleted_at' => $zapytania->deleted_at,
                     'created_at' => date($zapytania->created_at)
                 ])

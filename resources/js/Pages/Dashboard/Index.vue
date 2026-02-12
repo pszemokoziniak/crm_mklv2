@@ -26,13 +26,13 @@
               <div class="font-bold text-gray-900 mb-1 truncate">{{ item.nazwa_projektu }}</div>
               <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
 
-              <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+              <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                 <div class="text-xs text-gray-500 flex items-center">
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                  {{ item.data_zlozenia }}
+                  {{ item.data_zlozenia || 'Brak daty złożenia' }}
                 </div>
-                <div v-if="item.opracowuje" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
-                  {{ item.opracowuje.last_name }}
+                <div v-if="item.opracowuje" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded self-start">
+                  {{ item.opracowuje.first_name }} {{ item.opracowuje.last_name }}
                 </div>
                 <div v-else class="text-xs text-gray-400 italic">Nieprzypisane</div>
               </div>
@@ -53,13 +53,13 @@
               <div class="font-bold text-gray-900 mb-1 truncate">{{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak projektu' }}</div>
               <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
 
-              <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+              <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                 <div class="text-xs text-gray-500 flex items-center">
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  {{ item.data_kontakt }}
+                  {{ item.data_kontakt || 'Brak daty kontaktu' }}
                 </div>
-                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
-                  {{ item.user.last_name }}
+                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded self-start">
+                  {{ item.user.first_name }} {{ item.user.last_name }}
                 </div>
               </div>
             </Link>
@@ -82,13 +82,13 @@
               </div>
               <div class="text-sm text-gray-600 mb-3 line-clamp-2">{{ item.subject }}</div>
 
-              <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+              <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                 <div class="text-xs text-gray-500 flex items-center">
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  {{ item.call_time }}
+                  {{ item.call_time || 'Brak daty' }}
                 </div>
-                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
-                  {{ item.user.last_name }}
+                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded self-start">
+                  {{ item.user.first_name }} {{ item.user.last_name }}
                 </div>
               </div>
             </Link>
@@ -108,13 +108,13 @@
               <div class="font-bold text-gray-900 mb-1 truncate">{{ item.nazwa }}</div>
               <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
 
-              <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+              <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                 <div class="text-xs text-gray-500 flex items-center">
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                  {{ item.data_kontakt }}
+                  {{ item.data_kontakt || 'Brak daty' }}
                 </div>
-                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
-                  {{ item.user.last_name }}
+                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded self-start">
+                  {{ item.user.first_name }} {{ item.user.last_name }}
                 </div>
               </div>
             </Link>
@@ -133,13 +133,13 @@
             <Link :href="`/zadania/${item.id}/edit`" class="block p-4">
               <div class="font-bold text-gray-900 mb-1 truncate">{{ item.subject }}</div>
 
-              <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+              <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                 <div class="text-xs text-gray-500 flex items-center">
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  {{ item.deadline }}
+                  {{ item.deadline || 'Brak terminu' }}
                 </div>
-                <div v-if="item.users" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded">
-                  {{ item.users.last_name }}
+                <div v-if="item.users" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded self-start">
+                  {{ item.users.first_name }} {{ item.users.last_name }}
                 </div>
               </div>
             </Link>

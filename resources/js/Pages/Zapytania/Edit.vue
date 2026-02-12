@@ -30,7 +30,7 @@
 
         <form :class="{ 'ring-2 ring-green-500 ring-inset': isActive }" @submit.prevent="update">
           <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-            <select-input v-model="form.user_otrzymal_id" :error="form.errors.user_otrzymal_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Otrzymał">
+            <select-input v-model="form.user_otrzymal_id" :error="form.errors.user_otrzymal_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Zarejestrował">
               <option :value="null" />
               <option v-for="item in users" :key="item.id" :value="item.id">{{ item.last_name }} {{ item.first_name }}</option>
             </select-input>

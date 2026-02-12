@@ -24,7 +24,7 @@
             <th class="pb-4 pt-6 px-6">Kraj</th>
             <th class="pb-4 pt-6 px-6">Kwota szacowana</th>
             <th class="pb-4 pt-6 px-6">Zakres</th>
-            <th class="pb-4 pt-6 px-6">Dodał</th>
+            <th class="pb-4 pt-6 px-6">Zarejestrował</th>
             <th class="pb-4 pt-6 px-6" />
           </tr>
         </thead>
@@ -69,8 +69,11 @@
             <td class="border-t">
               <Link class="flex items-center px-6 py-4" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
                 <div class="text-sm">
-                  {{ item.user.first_name }} {{ item.user.last_name }} <br />
-                  <span class="text-gray-500">{{ item.created_at }}</span>
+                  <template v-if="item.otrzymal">
+                    {{ item.otrzymal.first_name }} {{ item.otrzymal.last_name }}
+                    <br />
+                    <span class="text-gray-500">{{ item.created_at }}</span>
+                  </template>
                 </div>
               </Link>
             </td>

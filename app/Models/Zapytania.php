@@ -13,6 +13,8 @@ class Zapytania extends Model
     use HasFactory;
     use SoftDeletes;
 
+    const PENDING_DAYS = 15;
+    const OLD_DAYS = 30;
 
     /**
      * The attributes that should be cast.
@@ -46,6 +48,10 @@ class Zapytania extends Model
     {
         return $this->belongsTo(User::class, 'user_opracowuje_id', 'id');
     }
+    public function otrzymal(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_otrzymal_id', 'id');
+    }
 
     public function waluta(): BelongsTo
     {
@@ -61,6 +67,15 @@ class Zapytania extends Model
     {
         $query->orderBy('created_at', 'DESC');
     }
+
+    public function scopePendingOrOld($query, $pendingDays = self::PENDING_DAYS, $oldDays = self::OLD_DAYS)
+    {
+        return $query->whereNull('deleted_at')
+            ->whereNotNull('data_zlozenia')
+            ->where('data_zlozenia', '<=', now()->addDays($pendingDays))
+            ->where('data_zlozenia', '>=', now()->subDays($oldDays));
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {

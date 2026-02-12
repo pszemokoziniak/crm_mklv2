@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Head title="Historia" />
-    <h1 class="mb-8 text-3xl font-bold">Historia</h1>
+    <Head title="Aktywaność" />
+    <h1 class="mb-8 text-3xl font-bold">Aktywność</h1>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">

@@ -4,29 +4,35 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
 
 class LegacyUserSeeder extends Seeder
 {
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('users')->delete(); // Używamy delete zamiast truncate dla pewności
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         $oldUsers = DB::connection('old_crm')->table('mkl_members')->get();
 
         foreach ($oldUsers as $oldUser) {
-            // Rozdzielanie imienia i nazwiska
             $nameParts = explode(' ', $oldUser->userNa, 2);
             $firstName = $nameParts[0] ?? 'N/A';
             $lastName = $nameParts[1] ?? 'N/A';
 
-            User::updateOrCreate(
-                ['email' => $oldUser->email],
+            // Używamy updateOrInsert zamiast insert
+            DB::table('users')->updateOrInsert(
+                ['id' => $oldUser->id],
                 [
-                    'account_id' => 1, // Domyślne account_id
+                    'account_id' => 1,
                     'first_name' => $firstName,
                     'last_name' => $lastName,
-                    'password' => $oldUser->password, // Kopiujemy hash
-                    'active' => ($oldUser->status == 0) ? 1 : 0, // Zakładam, że 0 w starej bazie to aktywny
-                    'owner' => ($oldUser->level == 1) ? true : false, // Przykładowe mapowanie uprawnień
+                    'email' => $oldUser->email,
+                    'password' => $oldUser->password,
+                    'active' => ($oldUser->status == 0) ? 1 : 0,
+                    'owner' => ($oldUser->level == 1) ? true : false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]
             );
         }
