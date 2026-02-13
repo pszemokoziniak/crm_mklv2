@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -18,9 +19,15 @@ class AuthenticatedSessionController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return Inertia::render('Auth/Login');
+        // Używamy Cookie::get() dla pewności
+        $rememberedEmail = $request->cookie('remembered_email') ?? Cookie::get('remembered_email');
+
+        return Inertia::render('Auth/Login', [
+            'status' => session('status'),
+            'rememberedEmail' => $rememberedEmail,
+        ]);
     }
 
     /**
@@ -30,10 +37,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::withTrashed()->where('email', $request->email)->first();
 
-        if (!$user) {
-            return Redirect::route('login')->withErrors(['email' => 'Nie ma takiego użytkownika.']);
+        if (!$user || $user->trashed()) {
+            return Redirect::route('login')->withErrors(['email' => 'Konto zostało usunięte lub nie istnieje.']);
         }
 
         if ($user->active === 0) {
@@ -42,6 +49,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->authenticate();
         $request->session()->regenerate();
+
+        // Zapamiętywanie adresu email w cookie na 30 dni
+        if ($request->remember) {
+            Cookie::queue('remembered_email', $request->email, 60 * 24 * 30);
+        } else {
+            Cookie::queue(Cookie::forget('remembered_email'));
+        }
 
         $user->login_time = now();
         $user->save();

@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BackUpController;
 use App\Http\Controllers\BranzaController;
 use App\Http\Controllers\CalendarController;
@@ -58,6 +60,22 @@ Route::post('login', [AuthenticatedSessionController::class, 'store'])
 
 Route::delete('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
+
+Route::get('forgot-password', [ForgotPasswordController::class, 'create'])
+    ->name('password.request')
+    ->middleware('guest');
+
+Route::post('forgot-password', [ForgotPasswordController::class, 'store'])
+    ->name('password.email')
+    ->middleware('guest');
+
+Route::get('reset-password/{token}', [ResetPasswordController::class, 'create'])
+    ->name('password.reset')
+    ->middleware('guest');
+
+Route::post('reset-password', [ResetPasswordController::class, 'store'])
+    ->name('password.update')
+    ->middleware('guest');
 
 // Dashboard
 
@@ -595,10 +613,6 @@ Route::delete('email/{email}', [EmailController::class, 'destroy'])
     ->name('email.destroy')
     ->middleware('auth');
 
-Route::put('zakres/{zakres}/restore', [EmailController::class, 'restore'])
-    ->name('zakres.restore')
-    ->middleware('auth');
-
 // Uprawnienia
 
 Route::get('uprawnienia', [UprawnieniaController::class, 'index'])
@@ -741,13 +755,13 @@ Route::post('kursy/{kursy}', [KursyController::class, 'update'])
     ->name('kursy.update')
     ->middleware('auth');
 
-Route::delete('kursy/{kursy}', [KursyController::class, 'destroy'])
-    ->name('kursy.destroy')
-    ->middleware('auth');
-
-Route::put('kursy/{kursy}/restore', [KursyController::class, 'restore'])
-    ->name('kursy.restore')
-    ->middleware('auth');
+//Route::delete('kursy/{kursy}', [KursyController::class, 'destroy'])
+//    ->name('kursy.destroy')
+//    ->middleware('auth');
+//
+//Route::put('kursy/{kursy}/restore', [KursyController::class, 'restore'])
+//    ->name('kursy.restore')
+//    ->middleware('auth');
 
 // Status Oferta
 
@@ -824,4 +838,3 @@ Route::post('users/{user}/block', [UsersController::class, 'block'])
 Route::post('users/{user}/unblock', [UsersController::class, 'unblock'])
     ->name('users.unblock')
     ->middleware('auth');
-

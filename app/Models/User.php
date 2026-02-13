@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -46,6 +47,17 @@ class User extends Authenticatable
         'owner' => 'string',
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
 
     public function resolveRouteBinding($value, $field = null)
     {
@@ -95,6 +107,8 @@ class User extends Authenticatable
             case 'user': return $query->where('owner', false);
             case 'owner': return $query->where('owner', true);
         }
+
+        return $query;
     }
 
     public function scopeFilter($query, array $filters)
