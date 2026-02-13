@@ -31,7 +31,7 @@
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                   {{ item.data_zlozenia || 'Brak daty złożenia' }}
                 </div>
-                <div v-if="item.opracowuje" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded self-start">
+                <div v-if="item.opracowuje" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
                   {{ item.opracowuje.first_name }} {{ item.opracowuje.last_name }}
                 </div>
                 <div v-else class="text-xs text-gray-400 italic">Nieprzypisane</div>
@@ -51,14 +51,19 @@
           <div v-for="item in ofertas" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
             <Link :href="`/oferta/${item.id}/edit`" class="block p-4">
               <div class="font-bold text-gray-900 mb-1 truncate">{{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak projektu' }}</div>
-              <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+              <div class="text-sm text-gray-600 mb-1">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+              <div v-if="item.status" class="mb-3">
+                <span :class="statusClasses(item.status)" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">
+                  {{ item.status }}
+                </span>
+              </div>
 
               <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                 <div class="text-xs text-gray-500 flex items-center">
-                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  {{ item.data_kontakt || 'Brak daty kontaktu' }}
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  Wysłano: {{ item.data_wyslania || 'Brak daty wysłania' }}
                 </div>
-                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded self-start">
+                <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
                   {{ item.user.first_name }} {{ item.user.last_name }}
                 </div>
               </div>
@@ -87,7 +92,7 @@
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                   {{ item.call_time || 'Brak daty' }}
                 </div>
-                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded self-start">
+                <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
                   {{ item.user.first_name }} {{ item.user.last_name }}
                 </div>
               </div>
@@ -113,7 +118,7 @@
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                   {{ item.data_kontakt || 'Brak daty' }}
                 </div>
-                <div v-if="item.user" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded self-start">
+                <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
                   {{ item.user.first_name }} {{ item.user.last_name }}
                 </div>
               </div>
@@ -138,7 +143,7 @@
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                   {{ item.deadline || 'Brak terminu' }}
                 </div>
-                <div v-if="item.users" class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded self-start">
+                <div v-if="item.users" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
                   {{ item.users.first_name }} {{ item.users.last_name }}
                 </div>
               </div>
@@ -194,6 +199,13 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    statusClasses(status) {
+      const s = status.toLowerCase()
+      if (s.includes('wygrana') || s.includes('przyjęta') || s.includes('realizacja')) return 'bg-green-100 text-green-800'
+      if (s.includes('przegrana') || s.includes('odrzucona') || s.includes('rezygnacja')) return 'bg-red-100 text-red-800'
+      if (s.includes('toczy') || s.includes('wysłana') || s.includes('oczekuje')) return 'bg-blue-100 text-blue-800'
+      return 'bg-gray-100 text-gray-800'
     },
   },
 }

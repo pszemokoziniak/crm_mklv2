@@ -73,6 +73,8 @@ class DashboardController extends Controller
                         'zapytania' => $oferta->zapytania ? $oferta->zapytania : null,
                         'client' => $oferta->client ? $oferta->client : null,
                         'data_kontakt' => $oferta->data_kontakt,
+                        'data_wyslania' => $oferta->data_wyslania,
+                        'status' => $oferta->ofertastatus ? $oferta->ofertastatus->name : null,
                         'user' => $oferta->user ? $oferta->user : null,
                         'created_at' => date($oferta->created_at)
                     ]),

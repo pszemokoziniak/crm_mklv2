@@ -68,4 +68,11 @@ class KontaktPersonController extends Controller
 
         return Redirect::route('kontaktperson', $kontaktPerson->client_id)->with('success', 'Usunięte.');
     }
+
+    public function restore(KontaktPerson $kontaktPerson)
+    {
+        $kontaktPerson->restore();
+
+        return Redirect::back()->with('success', 'Przywrócono.');
+    }
 }
