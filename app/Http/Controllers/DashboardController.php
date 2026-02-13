@@ -78,11 +78,20 @@ class DashboardController extends Controller
                         'user' => $oferta->user ? $oferta->user : null,
                         'created_at' => date($oferta->created_at)
                     ]),
-                'futureProjects' => FutureProject::with('user')
-                    ->with('client')
+                'futureProjects' => FutureProject::with(['user', 'client', 'faza'])
                     ->filter(Request::only('search'))
                     ->orderBy('data_kontakt')
-                    ->get(),
+                    ->get()
+                    ->map(fn ($futureProject) => [
+                        'id' => $futureProject->id,
+                        'nazwa' => $futureProject->nazwa,
+                        'client' => $futureProject->client ? $futureProject->client : null,
+                        'data_kontakt' => $futureProject->data_kontakt,
+                        'data_start' => $futureProject->data_start,
+                        'data_end' => $futureProject->data_end,
+                        'faza' => $futureProject->faza ? $futureProject->faza->name : null,
+                        'user' => $futureProject->user ? $futureProject->user : null,
+                    ]),
                 'zadania' => Zadania::with('users')
                     ->with('user')
                     ->filter(Request::only('search'))

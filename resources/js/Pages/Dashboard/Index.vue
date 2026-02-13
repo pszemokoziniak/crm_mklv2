@@ -90,7 +90,18 @@
               <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                 <div class="text-xs text-gray-500 flex items-center">
                   <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  {{ item.call_time || 'Brak daty' }}
+                  {{ item.call_time || 'Brak godziny' }}
+                </div>
+                <div v-if="item.next_call_date" class="text-xs text-indigo-600 font-semibold">
+                  <div class="flex items-center mb-1">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path
+                      stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    /></svg>
+                  </div>
+                  <div class="pl-4">
+                    {{ item.next_call_date }}
+                    <span v-if="item.next_call_time" class="block text-xs text-indigo-400">{{ item.next_call_time }}</span>
+                  </div>
                 </div>
                 <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
                   {{ item.user.first_name }} {{ item.user.last_name }}
@@ -111,7 +122,12 @@
           <div v-for="item in futureProjects" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
             <Link :href="`/futureproject/${item.id}/edit`" class="block p-4">
               <div class="font-bold text-gray-900 mb-1 truncate">{{ item.nazwa }}</div>
-              <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+              <div class="text-sm text-gray-600 mb-1">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+              <div v-if="item.faza" class="mb-3">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs uppercase tracking-wider bg-purple-100 text-purple-800">
+                  {{ item.faza }}
+                </span>
+              </div>
 
               <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                 <div class="text-xs text-gray-500 flex items-center">

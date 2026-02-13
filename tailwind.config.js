@@ -1,6 +1,7 @@
 const colors = require('tailwindcss/colors')
 const defaultTheme = require('tailwindcss/defaultTheme')
 
+// eslint-disable-next-line no-undef
 module.exports = {
   purge: [
     // prettier-ignore
@@ -20,6 +21,8 @@ module.exports = {
       yellow: colors.yellow,
       green: colors.green,
       gray: colors.blueGray,
+      purple: colors.purple,
+      blue: colors.blue,
       indigo: {
         100: '#e6e8ff',
         300: '#b2b7ff',
