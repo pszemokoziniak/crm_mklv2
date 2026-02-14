@@ -53,7 +53,10 @@ class ZapytaniaController extends Controller
                     'otrzymal' => $zapytania->otrzymal ? $zapytania->otrzymal : null,
                     'opracowuje' => $zapytania->opracowuje ? $zapytania->opracowuje : null,
                     'deleted_at' => $zapytania->deleted_at,
-                    'created_at' => date($zapytania->created_at)
+                    'created_at' => date($zapytania->created_at),
+                    'can' => [
+                        'edit' => Auth::user()->can('update', $zapytania),
+                    ]
                 ])
         ]);
     }
@@ -128,6 +131,9 @@ class ZapytaniaController extends Controller
                 'wznowienie' => $zapytania->wznowienie,
                 'user_id' => $zapytania->user_id,
                 'deleted_at' => $zapytania->deleted_at,
+                'can' => [
+                    'edit' => Auth::user()->can('update', $zapytania),
+                ]
             ],
             'branzas' => Branza::get(),
             'krajs' => Kraj::get(),
@@ -143,6 +149,8 @@ class ZapytaniaController extends Controller
 
     public function update(Zapytania $zapytania, ZapytaniaStoreRequest $request)
     {
+        $this->authorize('update', $zapytania);
+
         $zapytania->update($request->all());
         $this->saveRate($zapytania->id, $request->kurs, $request->kwota);
         ($zapytania)??$this->storeActivityLog('Poprawiono zapytanie', $zapytania->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
@@ -153,6 +161,8 @@ class ZapytaniaController extends Controller
 
     public function destroy(Zapytania $zapytania)
     {
+        $this->authorize('update', $zapytania);
+
         Oferta::where('zapytania_id', $zapytania->id)->delete();
 
         $zapytania->delete();
@@ -169,6 +179,8 @@ class ZapytaniaController extends Controller
     }
     public function restore(Zapytania $zapytania)
     {
+        $this->authorize('update', $zapytania);
+
         $zapytania->restore();
 
         return Redirect::back()->with('success', 'Zapytanie przywrócone');

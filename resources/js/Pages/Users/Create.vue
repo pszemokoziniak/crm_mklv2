@@ -1,27 +1,32 @@
 <template>
   <div>
-    <Head title="Create User" />
+    <Head title="Utwórz użytkownika" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/users">Users</Link>
-      <span class="text-indigo-400 font-medium">/</span> Create
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/users">Użytkownicy</Link>
+      <span class="text-indigo-400 font-medium">/</span> Utwórz
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.first_name" :error="form.errors.first_name" class="pb-8 pr-6 w-full lg:w-1/2" label="First name" />
-          <text-input v-model="form.last_name" :error="form.errors.last_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Last name" />
+          <text-input v-model="form.first_name" :error="form.errors.first_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Imię" />
+          <text-input v-model="form.last_name" :error="form.errors.last_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwisko" />
           <text-input v-model="form.email" :error="form.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
-          <text-input v-model="form.password" :error="form.errors.password" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Password" />
-          <select-input v-model="form.owner" :error="form.errors.owner" class="pb-8 pr-6 w-full lg:w-1/2" label="Uprawnienia">
-            <option :value="0">Administrator</option>
-            <option :value="Eksport">Eksport</option>
-            <option :value="Techniczny">Techniczny</option>
-            <option :value="Kierownictwo">Kierownictwo</option>
+          <text-input v-model="form.password" :error="form.errors.password" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Hasło" />
+
+          <select-input v-model="form.role" :error="form.errors.role" class="pb-8 pr-6 w-full lg:w-1/2" label="Rola">
+            <option :value="null" />
+            <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
           </select-input>
-          <file-input v-model="form.photo" :error="form.errors.photo" class="pb-8 pr-6 w-full lg:w-1/2" type="file" accept="image/*" label="Photo" />
+
+          <select-input v-model="form.owner" :error="form.errors.owner" class="pb-8 pr-6 w-full lg:w-1/2" label="Właściciel (stare)">
+            <option :value="true">Tak</option>
+            <option :value="false">Nie</option>
+          </select-input>
+
+          <file-input v-model="form.photo" :error="form.errors.photo" class="pb-8 pr-6 w-full lg:w-1/2" type="file" accept="image/*" label="Zdjęcie" />
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Create User</loading-button>
+          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Utwórz użytkownika</loading-button>
         </div>
       </form>
     </div>
@@ -46,6 +51,9 @@ export default {
     TextInput,
   },
   layout: Layout,
+  props: {
+    roles: Array,
+  },
   remember: 'form',
   data() {
     return {
@@ -55,7 +63,9 @@ export default {
         email: '',
         password: '',
         owner: false,
+        role: null,
         photo: null,
+        active: 1,
       }),
     }
   },

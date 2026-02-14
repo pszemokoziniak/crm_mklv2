@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Uprawnienia;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +10,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
@@ -18,6 +18,10 @@ class UsersController extends Controller
     {
         return Inertia::render('Users/Index', [
             'filters' => Request::all('search', 'role', 'trashed'),
+            'roles' => Role::all()->map(fn ($role) => [
+                'id' => $role->id,
+                'name' => $role->name,
+            ]),
             'users' => Auth::user()->account->users()
                 ->orderByName()
                 ->filter(Request::only('search', 'role', 'trashed'))
@@ -28,6 +32,7 @@ class UsersController extends Controller
                     'email' => $user->email,
                     'owner' => $user->owner,
                     'active' => $user->active,
+                    'roles' => $user->getRoleNames(),
                     'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
                     'deleted_at' => $user->deleted_at,
                 ]),
@@ -36,7 +41,12 @@ class UsersController extends Controller
 
     public function create()
     {
-        return Inertia::render('Users/Create');
+        return Inertia::render('Users/Create', [
+            'roles' => Role::all()->map(fn ($role) => [
+                'id' => $role->id,
+                'name' => $role->name,
+            ]),
+        ]);
     }
 
     public function store()
@@ -46,20 +56,22 @@ class UsersController extends Controller
             'last_name' => ['required', 'max:50'],
             'email' => ['required', 'max:50', 'email', Rule::unique('users')],
             'password' => ['nullable'],
-            'owner' => ['required', 'boolean'],
+            'role' => ['required', 'exists:roles,name'],
             'photo' => ['nullable', 'image'],
             'active' => ['required'],
         ]);
 
-        Auth::user()->account->users()->create([
+        $user = Auth::user()->account->users()->create([
             'first_name' => Request::get('first_name'),
             'last_name' => Request::get('last_name'),
             'email' => Request::get('email'),
             'password' => Request::get('password'),
-            'owner' => Request::get('owner'),
+            'owner' => false, // Domyślnie false, bo używamy ról Spatie
             'photo_path' => Request::file('photo') ? Request::file('photo')->store('users') : null,
             'active' => Request::get('active'),
-            ]);
+        ]);
+
+        $user->assignRole(Request::get('role'));
 
         return Redirect::route('users')->with('success', 'User created.');
     }
@@ -76,27 +88,36 @@ class UsersController extends Controller
                 'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
                 'deleted_at' => $user->deleted_at,
                 'active' => $user->active,
+                'role' => $user->getRoleNames()->first(),
             ],
-            'uprawnienia' => Uprawnienia::all(),
+            'roles' => Role::all()->map(fn ($role) => [
+                'id' => $role->id,
+                'name' => $role->name,
+            ]),
         ]);
     }
 
-    public function update(User $user, Request $request)
+    public function update(User $user)
     {
         if (App::environment('demo') && $user->isDemoUser()) {
             return Redirect::back()->with('error', 'Updating the demo user is not allowed.');
         }
+
         Request::validate([
             'first_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
             'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable'],
-            'owner' => ['required'],
-            'photo' => ['nullable', 'image'],
+            'role' => ['nullable', 'exists:roles,name'],
+            'photo' => ['nullable', 'image', 'max:2048'], // Dodano max size dla bezpieczeństwa
             'active' => ['nullable']
         ]);
 
-        $user->update(Request::only('first_name', 'last_name', 'email', 'owner', 'active'));
+        $user->update(Request::only('first_name', 'last_name', 'email', 'active'));
+
+        if (Request::get('role') && Auth::user()->hasRole('super-admin')) {
+            $user->syncRoles(Request::get('role'));
+        }
 
         if (Request::file('photo')) {
             $user->update(['photo_path' => Request::file('photo')->store('users')]);
@@ -106,7 +127,7 @@ class UsersController extends Controller
             $user->update(['password' => Request::get('password')]);
         }
 
-        return Redirect::back()->with('success', 'Użytkownik porawiony.');
+        return Redirect::back()->with('success', 'Użytkownik poprawiony.');
     }
 
     public function destroy(User $user)
@@ -126,6 +147,7 @@ class UsersController extends Controller
 
         return Redirect::back()->with('success', 'User restored.');
     }
+
     public function block(User $user)
     {
         $user->active = 0;
@@ -139,6 +161,4 @@ class UsersController extends Controller
         $user->save();
         return Redirect::back()->with('success', 'Użytkownik odblokowany.');
     }
-
-
 }

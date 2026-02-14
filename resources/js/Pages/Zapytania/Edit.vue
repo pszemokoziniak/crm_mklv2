@@ -1,158 +1,229 @@
 <template>
   <div>
     <Head :title="`${form.nazwa_projektu}`" />
-    <div class="flex items-center mb-8">
-      <h1 class="text-3xl font-bold">
-        <Link class="text-indigo-400 hover:text-indigo-600" href="/zapytania">Zapytania</Link>
-        <span class="text-gray-400 font-medium"> /</span> {{ form.id_zapyt }}
-      </h1>
-      <span v-if="zapytania.wznowienie === 2" class="ml-4 px-3 py-1 bg-red-100 text-red-600 text-sm font-semibold rounded-full">Wznowiony</span>
+
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+      <div class="flex items-center">
+        <h1 class="text-3xl font-bold text-gray-900">
+          <Link class="text-indigo-500 hover:text-indigo-700 transition-colors" href="/zapytania">Zapytania</Link>
+          <span class="text-gray-300 font-light mx-2">/</span>
+          <span class="text-gray-600">{{ form.id_zapyt }}</span>
+        </h1>
+        <span v-if="zapytania.wznowienie === 2" class="ml-4 px-3 py-1 bg-rose-100 text-rose-700 text-xs font-bold uppercase tracking-wider rounded-full shadow-sm border border-rose-200">
+          Wznowiony
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button v-if="zapytania.can.edit && !zapytania.deleted_at" :class="isActive ? 'bg-green-600 text-white border-green-700' : 'bg-white text-indigo-600 border-indigo-200'" class="flex items-center px-4 py-2 border rounded-lg text-sm font-medium hover:shadow-md transition-all" @click="disableForm">
+          <icon :name="isActive ? 'check' : 'edit'" class="w-4 h-4 mr-2" />
+          {{ isActive ? 'Tryb edycji aktywny' : 'Edytuj dane' }}
+        </button>
+      </div>
     </div>
 
-    <trashed-message v-if="zapytania.deleted_at" class="mb-6" @restore="restore"> Zapytanie zostało zarchiwizowane </trashed-message>
+    <trashed-message v-if="zapytania.deleted_at" class="mb-6 shadow-sm" @restore="restore">
+      To zapytanie znajduje się w archiwum.
+    </trashed-message>
 
-    <div class="max-w-5xl">
-      <div id="form" class="bg-white rounded-md shadow overflow-hidden mb-8">
-        <div class="px-8 py-6 border-b border-gray-100 bg-gray-50/50">
-          <div class="text-xl font-bold text-gray-800">
-            {{ zapytania.nazwa_projektu }}
-            <span class="text-gray-400 mx-2">|</span>
-            <Link class="text-indigo-600 hover:underline" :href="`/clients/${zapytania.client_id}/edit`">{{ clientById.nazwa }}</Link>
-          </div>
-          <div v-if="archiwumOpis[0]" class="mt-4 p-4 bg-amber-50 border border-amber-100 rounded text-sm text-amber-800">
-            <p class="font-semibold mb-1">Powód archiwizacji:</p>
-            {{ archiwumOpis[0].description }}
-            <div class="mt-2 text-xs text-amber-600">
-              Zarchiwizowane przez: {{ archiwumOpis[0].user.last_name }} {{ archiwumOpis[0].user.first_name }} dnia {{ archiwumOpis[0].created_at }}
+    <div class="max-w-5xl space-y-8">
+      <!-- Main Form Card -->
+      <div id="form-container" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500 ring-opacity-50 shadow-lg': isActive }">
+        <!-- Project Info Header -->
+        <div class="px-8 py-6 border-b border-gray-50 bg-gradient-to-r from-gray-50 to-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-extrabold text-gray-800 tracking-tight">{{ zapytania.nazwa_projektu }}</h2>
+              <div class="flex items-center mt-1 text-sm text-gray-500">
+                <icon name="office" class="w-4 h-4 mr-1 fill-gray-400" />
+                Klient: <Link class="ml-1 text-indigo-600 font-semibold hover:underline" :href="`/clients/${zapytania.client_id}/edit`">{{ clientById.nazwa }}</Link>
+              </div>
             </div>
+          </div>
+
+          <!-- Archive Reason -->
+          <div v-if="archiwumOpis[0]" class="mt-6 p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg text-sm text-amber-900">
+            <div class="flex items-start">
+              <icon name="info" class="w-5 h-5 mr-3 fill-amber-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p class="font-bold text-amber-900 mb-1 uppercase text-xs tracking-widest">Powód archiwizacji</p>
+                <p class="leading-relaxed">{{ archiwumOpis[0].description }}</p>
+                <div class="mt-2 text-xs text-amber-700 italic opacity-80">
+                  Przez: {{ archiwumOpis[0].user.last_name }} {{ archiwumOpis[0].user.first_name }} • {{ archiwumOpis[0].created_at }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- No Permission Alert -->
+          <div v-if="!zapytania.can.edit" class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg text-sm text-blue-900 flex items-center">
+            <icon name="info" class="w-5 h-5 mr-3 fill-blue-500 flex-shrink-0" />
+            <span class="font-medium">Tryb tylko do odczytu.</span>
+            <span class="ml-1 opacity-80">Nie masz uprawnień do edycji lub nie jesteś przypisany do tego projektu.</span>
           </div>
         </div>
 
-        <form :class="{ 'ring-2 ring-green-500 ring-inset': isActive }" @submit.prevent="update">
-          <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-            <select-input v-model="form.user_otrzymal_id" :error="form.errors.user_otrzymal_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Zarejestrował">
+        <!-- Form Fields -->
+        <form @submit.prevent="update">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 p-8">
+            <select-input v-model="form.user_otrzymal_id" :error="form.errors.user_otrzymal_id" :disabled="disable" class="w-full" label="Zarejestrował">
               <option :value="null" />
               <option v-for="item in users" :key="item.id" :value="item.id">{{ item.last_name }} {{ item.first_name }}</option>
             </select-input>
-            <text-input v-model="form.data_otrzymania" :error="form.errors.data_otrzymania" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data otrzymania" />
-            <text-input v-model="form.data_zlozenia" :error="form.errors.data_zlozenia" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany termin złożenia" />
-            <select-input v-model="form.client_id" :error="form.errors.client_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Klient">
+
+            <div class="grid grid-cols-2 gap-4">
+              <text-input v-model="form.data_otrzymania" :error="form.errors.data_otrzymania" :disabled="disable" type="date" label="Data otrzymania" />
+              <text-input v-model="form.data_zlozenia" :error="form.errors.data_zlozenia" :disabled="disable" type="date" label="Termin złożenia" />
+            </div>
+
+            <select-input v-model="form.client_id" :error="form.errors.client_id" :disabled="disable" class="w-full" label="Klient">
               <option :value="null" />
               <option v-for="item in clients" :key="item.id" :value="item.id">{{ item.nazwa }}</option>
             </select-input>
-            <text-input v-model="form.nazwa_projektu" :error="form.errors.nazwa_projektu" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwa projektu" />
-            <select-input v-model="form.preliminarz" :error="form.errors.preliminarz" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Preliminarz">
-              <option value="Tak">Tak</option>
-              <option value="Nie">Nie</option>
-            </select-input>
-            <text-input v-model="form.miejscowosc" :error="form.errors.miejscowosc" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Miejscowość" />
-            <select-input v-model="form.kraj_id" :error="form.errors.kraj_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Kraj">
-              <option :value="null" />
-              <option v-for="item in krajs" :key="item.id" :value="item.id">{{ item.name }}</option>
-            </select-input>
-            <select-input v-model="form.zakres_id" :error="form.errors.zakres_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Zakres">
-              <option :value="null" />
-              <option v-for="item in zakres" :key="item.id" :value="item.id">{{ item.name }}</option>
-            </select-input>
-            <select-input v-model="form.user_opracowuje_id" :error="form.errors.user_opracowuje_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Opracowuje">
+
+            <text-input v-model="form.nazwa_projektu" :error="form.errors.nazwa_projektu" :disabled="disable" class="w-full" label="Nazwa projektu" />
+
+            <div class="grid grid-cols-2 gap-4">
+              <select-input v-model="form.preliminarz" :error="form.errors.preliminarz" :disabled="disable" label="Preliminarz">
+                <option value="Tak">Tak</option>
+                <option value="Nie">Nie</option>
+              </select-input>
+              <text-input v-model="form.miejscowosc" :error="form.errors.miejscowosc" :disabled="disable" label="Miejscowość" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <select-input v-model="form.kraj_id" :error="form.errors.kraj_id" :disabled="disable" label="Kraj">
+                <option :value="null" />
+                <option v-for="item in krajs" :key="item.id" :value="item.id">{{ item.name }}</option>
+              </select-input>
+              <select-input v-model="form.zakres_id" :error="form.errors.zakres_id" :disabled="disable" label="Zakres">
+                <option :value="null" />
+                <option v-for="item in zakres" :key="item.id" :value="item.id">{{ item.name }}</option>
+              </select-input>
+            </div>
+
+            <select-input v-model="form.user_opracowuje_id" :error="form.errors.user_opracowuje_id" :disabled="disable" class="w-full" label="Opracowuje">
               <option :value="null" />
               <option v-for="item in users" :key="item.id" :value="item.id">{{ item.last_name }} {{ item.first_name }}</option>
             </select-input>
-            <text-input v-model="form.start" :error="form.errors.start" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany termin rozpoczęcia" />
-            <text-input v-model="form.end" :error="form.errors.end" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany termin zakończenia" />
-            <number-input v-model="form.kwota" :error="form.errors.kwota" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Kwota" />
-            <select-input v-model="form.waluta_id" :error="form.errors.waluta_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Waluta">
-              <option :value="null" />
-              <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
-            </select-input>
-            <text-area v-model="form.opis" :error="form.errors.opis" :disabled="disable" class="pb-8 pr-6 w-full" label="Opis" />
+
+            <div class="grid grid-cols-2 gap-4">
+              <text-input v-model="form.start" :error="form.errors.start" :disabled="disable" type="date" label="Planowany start" />
+              <text-input v-model="form.end" :error="form.errors.end" :disabled="disable" type="date" label="Planowany koniec" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <number-input v-model="form.kwota" :error="form.errors.kwota" :disabled="disable" label="Kwota" />
+              <select-input v-model="form.waluta_id" :error="form.errors.waluta_id" :disabled="disable" label="Waluta">
+                <option :value="null" />
+                <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
+              </select-input>
+            </div>
+
+            <text-area v-model="form.opis" :error="form.errors.opis" :disabled="disable" class="md:col-span-2" label="Opis projektu" />
           </div>
-          <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-            <button v-if="!zapytania.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Archiwizuj</button>
-            <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Zapisz zmiany</loading-button>
+
+          <!-- Form Actions -->
+          <div v-if="zapytania.can.edit" class="flex items-center justify-between px-8 py-6 bg-gray-50 border-t border-gray-100">
+            <button v-if="!zapytania.deleted_at" class="text-rose-600 font-semibold hover:text-rose-800 transition-colors flex items-center" tabindex="-1" type="button" @click="destroy">
+              <icon name="trash" class="w-4 h-4 mr-2" />
+              Archiwizuj zapytanie
+            </button>
+            <div class="flex gap-3 ml-auto">
+              <loading-button :loading="form.processing" class="btn-indigo shadow-md px-8" type="submit">
+                Zapisz zmiany
+              </loading-button>
+            </div>
           </div>
         </form>
 
+        <!-- Secondary Actions Bar -->
         <div v-if="!zapytania.deleted_at" class="bg-white border-t border-gray-100">
-          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 divide-x divide-gray-100">
-            <button class="flex items-center justify-center px-4 py-4 hover:bg-gray-50 text-indigo-600 transition" @click="disableForm">
-              <icon name="edit" class="mr-2 w-4 h-4" />
-              <span class="text-sm font-medium">Edytuj dane</span>
-            </button>
-
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 divide-x divide-gray-100">
             <form ref="form" action="pdf" class="flex" @submit.prevent="submit">
               <input type="hidden" name="param" :value="`${zapytania.id}`" />
-              <button type="submit" class="flex-1 flex items-center justify-center px-4 py-4 hover:bg-gray-50 text-indigo-600 transition">
-                <icon name="pdf" class="mr-2 w-4 h-4" />
-                <span class="text-sm font-medium">Generuj PDF</span>
+              <button type="submit" class="flex-1 flex items-center justify-center px-4 py-5 hover:bg-indigo-50 text-indigo-600 transition-all group">
+                <icon name="pdf" class="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
+                <span class="text-sm font-bold">PDF</span>
               </button>
             </form>
 
-            <button class="flex items-center justify-center px-4 py-4 hover:bg-gray-50 text-indigo-600 transition" @click="mail">
-              <icon name="mail" class="mr-2 w-4 h-4" />
-              <span class="text-sm font-medium">Wyślij mail</span>
+            <button class="flex items-center justify-center px-4 py-5 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="mail">
+              <icon name="mail" class="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
+              <span class="text-sm font-bold">Email</span>
             </button>
 
-            <button v-if="zapytania.wznowienie === 1" class="flex items-center justify-center px-4 py-4 hover:bg-gray-50 text-indigo-600 transition" @click="wznowienie">
-              <icon name="wznowienie" class="mr-2 w-4 h-4" />
-              <span class="text-sm font-medium">Wznowienie</span>
+            <button v-if="zapytania.wznowienie === 1 && zapytania.can.edit" class="flex items-center justify-center px-4 py-5 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="wznowienie">
+              <icon name="historia" class="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
+              <span class="text-sm font-bold text-center">Wznowienie</span>
             </button>
 
-            <button v-if="zapytania.wznowienie === 2" class="flex items-center justify-center px-4 py-4 hover:bg-gray-50 text-red-600 transition" @click="deleteWznowienie">
-              <icon name="deleteWznowienie" class="mr-2 w-4 h-4" />
-              <span class="text-sm font-medium">Anuluj wznowienie</span>
+            <button v-if="zapytania.wznowienie === 2 && zapytania.can.edit" class="flex items-center justify-center px-4 py-5 hover:bg-rose-50 text-rose-600 transition-all group" @click="deleteWznowienie">
+              <icon name="trash" class="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
+              <span class="text-sm font-bold text-center">Anuluj wznowienie</span>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Sekcja Ofert -->
-      <div class="bg-white rounded-md shadow overflow-hidden">
-        <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100">
-          <h2 class="text-2xl font-bold text-gray-800">Oferty</h2>
-          <Link :href="`/oferta/create/data/${zapytania.id}/${zapytania.client_id}`" class="btn-indigo">
-            <span>Dodaj ofertę</span>
+      <!-- Offers Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
+              <icon name="oferty" class="w-6 h-6 fill-indigo-600" />
+            </div>
+            <h2 class="text-xl font-bold text-gray-800">Oferty handlowe</h2>
+          </div>
+          <Link v-if="zapytania.can.edit" :href="`/oferta/create/data/${zapytania.id}/${zapytania.client_id}`" class="btn-indigo flex items-center px-6 py-3 rounded-lg shadow-md transition-all hover:shadow-lg active:scale-95">
+            <icon name="plus" class="w-4 h-4 mr-2" />
+            <span>Nowa oferta</span>
           </Link>
         </div>
+
         <div class="overflow-x-auto">
           <table class="w-full whitespace-nowrap">
             <thead>
-              <tr class="text-left font-bold bg-gray-50">
-                <th class="px-8 py-4">Kwota</th>
+              <tr class="text-left font-bold text-gray-400 text-xs uppercase tracking-widest bg-gray-50/50">
+                <th class="px-8 py-4">Wartość</th>
                 <th class="px-8 py-4">Data kontaktu</th>
-                <th class="px-8 py-4">Dodał</th>
+                <th class="px-8 py-4">Opiekun</th>
                 <th class="px-8 py-4" />
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="item in oferty" :key="item.id" class="hover:bg-gray-50 focus-within:bg-gray-50">
-                <td class="border-t">
-                  <Link class="flex items-center px-8 py-4 font-medium text-indigo-600" :href="`/oferta/${item.id}/edit`">
-                    {{ formatNumber(item.kwota) }} {{ item.waluta }}
+            <tbody class="divide-y divide-gray-50">
+              <tr v-for="item in oferty" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
+                <td class="px-8 py-5">
+                  <Link class="flex items-center font-bold text-gray-900 group-hover:text-indigo-600 transition-colors" :href="`/oferta/${item.id}/edit`">
+                    {{ formatNumber(item.kwota) }} <span class="ml-1 text-gray-400 font-medium">{{ item.waluta }}</span>
                   </Link>
                 </td>
-                <td class="border-t">
-                  <Link class="flex items-center px-8 py-4" :href="`/oferta/${item.id}/edit`">
+                <td class="px-8 py-5">
+                  <Link class="flex items-center text-gray-600" :href="`/oferta/${item.id}/edit`">
                     {{ item.data_kontakt }}
-                    <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
+                    <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                   </Link>
                 </td>
-                <td class="border-t">
-                  <Link class="flex items-center px-8 py-4 text-sm text-gray-600" :href="`/oferta/${item.id}/edit`">
-                    <div>
-                      {{ item.user.last_name }} {{ item.user.first_name }}
-                      <div class="text-xs text-gray-400">{{ item.created_at }}</div>
-                    </div>
+                <td class="px-8 py-5">
+                  <Link class="flex flex-col" :href="`/oferta/${item.id}/edit`">
+                    <span class="text-sm font-medium text-gray-700">{{ item.user.last_name }} {{ item.user.first_name }}</span>
+                    <span class="text-xs text-gray-400">{{ item.created_at }}</span>
                   </Link>
                 </td>
-                <td class="w-px border-t">
-                  <Link class="flex items-center px-4" :href="`/oferta/${item.id}/edit`" tabindex="-1">
-                    <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
+                <td class="px-8 py-5 text-right">
+                  <Link class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all" :href="`/oferta/${item.id}/edit`" tabindex="-1">
+                    <icon name="cheveron-right" class="w-5 h-5" />
                   </Link>
                 </td>
               </tr>
               <tr v-if="oferty.length === 0">
-                <td class="px-8 py-8 text-center text-gray-500 border-t" colspan="4">Brak ofert dla tego zapytania.</td>
+                <td class="px-8 py-12 text-center text-gray-400 border-t" colspan="4">
+                  <div class="flex flex-col items-center">
+                    <icon name="zapytania" class="w-12 h-12 mb-2 opacity-20" />
+                    <p>Brak ofert dla tego zapytania.</p>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -250,6 +321,7 @@ export default {
       this.form.get(`/zapytania/${this.zapytania.id}/deletewznowienie`)
     },
     disableForm() {
+      if (!this.zapytania.can.edit) return
       this.isActive = !this.isActive
       this.disable = !this.disable
     },

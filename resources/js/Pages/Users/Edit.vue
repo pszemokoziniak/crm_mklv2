@@ -1,64 +1,99 @@
 <template>
   <div>
     <Head :title="`${form.first_name} ${form.last_name}`" />
-    <div class="flex justify-start mb-8 max-w-3xl">
-      <h1 class="text-3xl font-bold">
-        <Link class="text-indigo-400 hover:text-indigo-600" href="/users">Użytkownik</Link>
-        <span class="text-indigo-400 font-medium">/</span>
-        {{ form.first_name }} {{ form.last_name }}
-      </h1>
-      <img v-if="user.photo" class="block ml-4 w-8 h-8 rounded-full" :src="user.photo" />
-    </div>
-    <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore"> Ten użytkownik został zarchiwizowany. </trashed-message>
-    <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="update" :class=" (isActive) ? 'border-2 border-green-500' : ''">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.first_name" :error="form.errors.first_name" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwisko" />
-          <text-input v-model="form.last_name" :error="form.errors.last_name" :disabled="disable" class="pb-8  w-full lg:w-1/2" label="Imię" />
-          <text-input v-model="form.email" :error="form.errors.email" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
-          <text-input v-model="form.password" :error="form.errors.password" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Hasło" />
-          <select-input v-model="form.owner" :error="form.errors.owner" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Uprawnienia">
-            <option v-for="item in uprawnienia" :key="item.id" :value="item.id">{{ item.name }}</option>
-          </select-input>
-          <file-input v-model="form.photo" :error="form.errors.photo" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" type="file" accept="image/*" label="Zdjęcie" />
+
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+      <div class="flex items-center">
+        <div class="relative">
+          <img v-if="user.photo" class="block w-16 h-16 rounded-full border-2 border-white shadow-sm" :src="user.photo" />
+          <div v-else class="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 font-bold text-xl border-2 border-white shadow-sm">
+            {{ user.first_name[0] }}{{ user.last_name[0] }}
+          </div>
+          <div :class="user.active ? 'bg-green-500' : 'bg-gray-400'" class="absolute bottom-0 right-0 w-4 h-4 border-2 border-white rounded-full" />
         </div>
-        <hr>
-        <div class="grid gap-1 grid-cols-3 p-5">
-          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 cursor-default" @click="disableForm">
-            <div class="group flex items-center py-3 cursor-pointer" @click="disableForm">
-              <icon name="edit" class="mr-2 w-4 h-4 inline"/>
-              <div class="">Edytuj dane</div>
+        <div class="ml-4">
+          <h1 class="text-3xl font-bold text-gray-900">
+            <Link class="text-indigo-500 hover:text-indigo-700 transition-colors" href="/users">Użytkownicy</Link>
+            <span class="text-gray-300 font-light mx-2">/</span>
+            <span class="text-gray-600">{{ form.first_name }} {{ form.last_name }}</span>
+          </h1>
+          <div class="text-sm text-gray-500 font-medium">{{ user.email }}</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button v-if="!user.deleted_at" :class="isActive ? 'bg-green-600 text-white border-green-700' : 'bg-white text-indigo-600 border-indigo-200'" class="flex items-center px-4 py-2 border rounded-lg text-sm font-medium hover:shadow-md transition-all" @click="disableForm">
+          <icon :name="isActive ? 'check' : 'edit'" class="w-4 h-4 mr-2" />
+          {{ isActive ? 'Tryb edycji aktywny' : 'Edytuj dane' }}
+        </button>
+      </div>
+    </div>
+
+    <trashed-message v-if="user.deleted_at" class="mb-6 shadow-sm" @restore="restore">
+      Ten użytkownik został zarchiwizowany.
+    </trashed-message>
+
+    <div class="max-w-3xl">
+      <div id="form-container" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500 ring-opacity-50 shadow-lg': isActive }">
+        <form @submit.prevent="update">
+          <div class="p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <text-input v-model="form.first_name" :error="form.errors.first_name" :disabled="disable" label="Imię" />
+              <text-input v-model="form.last_name" :error="form.errors.last_name" :disabled="disable" label="Nazwisko" />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <text-input v-model="form.email" :error="form.errors.email" :disabled="disable" label="Email" />
+              <text-input v-model="form.password" :error="form.errors.password" :disabled="disable" type="password" autocomplete="new-password" label="Hasło (zostaw puste, aby nie zmieniać)" />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Pole wyboru roli - widoczne tylko dla admina -->
+              <select-input v-if="$page.props.auth.user.roles.includes('super-admin')" v-model="form.role" :error="form.errors.role" :disabled="disable" label="Uprawnienia">
+                <option :value="null" />
+                <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
+              </select-input>
+
+              <file-input v-model="form.photo" :error="form.errors.photo" :disabled="disable" type="file" accept="image/*" label="Zdjęcie profilowe" />
             </div>
           </div>
-          <div v-if="user.active===1" class="px-8 py-4 bg-gray-50 border-t border-gray-100" @click="blockActive">
-            <Link class="group flex items-center py-3" href="#">
-              <icon name="zablokuj" class="mr-2 w-4 h-4 inline"/>
-              <div class="">Zablokuj</div>
-            </Link>
+
+          <!-- Form Actions -->
+          <div class="flex items-center justify-between px-8 py-6 bg-gray-50 border-t border-gray-100">
+            <button v-if="!user.deleted_at" class="text-rose-600 font-semibold hover:text-rose-800 transition-colors flex items-center" tabindex="-1" type="button" @click="destroy">
+              <icon name="trash" class="w-4 h-4 mr-2" />
+              Archiwizuj
+            </button>
+
+            <div class="flex gap-3 ml-auto">
+              <loading-button :loading="form.processing" class="btn-indigo shadow-md px-8" type="submit">
+                Zapisz zmiany
+              </loading-button>
+            </div>
           </div>
-          <div v-if="user.active===0" class="px-8 py-4 bg-gray-50 border-t border-gray-100" @click="unblockActive">
-            <Link class="group flex items-center py-3" href="#">
-              <icon name="zablokuj" class="mr-2 w-4 h-4 inline"/>
-              <div class="">Odblokuj konto</div>
-            </Link>
+        </form>
+
+        <!-- Secondary Actions Bar -->
+        <div v-if="!user.deleted_at" class="bg-white border-t border-gray-100">
+          <div class="grid grid-cols-1 divide-x divide-gray-100">
+            <!--            <button v-if="user.active===1" class="flex items-center justify-center px-4 py-4 hover:bg-rose-50 text-rose-600 transition-all group" @click="blockActive">-->
+            <!--              <icon name="trash" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />-->
+            <!--              <span class="text-sm font-bold">Zablokuj konto</span>-->
+            <!--            </button>-->
+
+            <!--            <button v-if="user.active===0" class="flex items-center justify-center px-4 py-4 hover:bg-green-50 text-green-600 transition-all group" @click="unblockActive">-->
+            <!--              <icon name="check" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />-->
+            <!--              <span class="text-sm font-bold">Odblokuj konto</span>-->
+            <!--            </button>-->
+
+            <button class="flex items-center justify-center px-4 py-4 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="disableForm">
+              <icon name="edit" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span class="text-sm font-bold">Edytuj dane</span>
+            </button>
           </div>
         </div>
-<!--        <div class="grid gap-1 grid-cols-3 p-5">-->
-<!--          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">-->
-<!--            <icon name="zablokuj" class="mr-2 w-4 h-4 inline"/>-->
-<!--            <button v-if="user.active===1" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="blockActive">Zablokuj konto </button>-->
-<!--            <button v-if="user.active===0" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="unblockActive">Odblokuj konto</button>-->
-<!--          </div>-->
-<!--          <div class="px-8 py-4 bg-gray-50 border-t border-gray-100">-->
-<!--            <icon name="edit" class="mr-2 w-4 h-4 inline"/>-->
-<!--            <button v-if="!user.deleted_at" class="text-indigo-600 hover:underline ml-auto" tabindex="-1" type="button" @click="disableForm">Edytuj dane</button>-->
-<!--          </div>-->
-<!--        </div>-->
-        <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button v-if="!user.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Archiwizuj</button>
-          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Popraw</loading-button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
 </template>
@@ -71,7 +106,7 @@ import FileInput from '@/Shared/FileInput'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
-import Icon from "@/Shared/Icon.vue";
+import Icon from '@/Shared/Icon.vue'
 
 export default {
   components: {
@@ -87,7 +122,7 @@ export default {
   layout: Layout,
   props: {
     user: Object,
-    uprawnienia: Object,
+    roles: Array,
   },
   remember: 'form',
   data() {
@@ -100,7 +135,7 @@ export default {
         last_name: this.user.last_name,
         email: this.user.email,
         password: '',
-        owner: this.user.owner,
+        role: this.user.role,
         photo: null,
       }),
     }
@@ -108,40 +143,36 @@ export default {
   methods: {
     update() {
       this.form.post(`/users/${this.user.id}`, {
-        onSuccess: () => this.form.reset('password', 'photo'),
+        onSuccess: () => {
+          this.form.reset('password', 'photo')
+          this.disable = true
+          this.isActive = false
+        },
       })
     },
     destroy() {
-      if (confirm('Are you sure you want to delete this user?')) {
+      if (confirm('Czy na pewno chcesz zarchiwizować tego użytkownika?')) {
         this.$inertia.delete(`/users/${this.user.id}`)
       }
     },
     restore() {
-      if (confirm('Are you sure you want to restore this user?')) {
+      if (confirm('Czy na pewno chcesz przywrócić tego użytkownika?')) {
         this.$inertia.put(`/users/${this.user.id}/restore`)
       }
     },
     blockActive() {
-      this.$inertia.post(`/users/${this.user.id}/block`)
+      if (confirm('Zablokować konto?')) {
+        this.$inertia.post(`/users/${this.user.id}/block`)
+      }
     },
     unblockActive() {
-      this.$inertia.post(`/users/${this.user.id}/unblock`)
+      if (confirm('Odblokować konto?')) {
+        this.$inertia.post(`/users/${this.user.id}/unblock`)
+      }
     },
     disableForm() {
-      this.isActive=true
-      let elems_input = document.getElementById('form').getElementsByTagName('input');
-      for(let i = 0; i < elems_input.length; i++) {
-        elems_input[i].disabled = false;
-
-      }
-      let elems_select = document.getElementById('form').getElementsByTagName('select');
-      for(let i = 0; i < elems_select.length; i++) {
-        elems_select[i].disabled = false;
-      }
-      let elems_text_area = document.getElementById('form').getElementsByTagName('textarea');
-      for(let i = 0; i < elems_text_area.length; i++) {
-        elems_text_area[i].disabled = false;
-      }
+      this.isActive = !this.isActive
+      this.disable = !this.disable
     },
   },
 }

@@ -1,14 +1,13 @@
 <template>
   <div>
     <Head title="Users" />
-    <h1 class="mb-8 text-3xl font-bold">Użykownicy</h1>
+    <h1 class="mb-8 text-3xl font-bold">Użytkownicy</h1>
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block text-gray-700">Uprawnienia:</label>
+        <label class="block text-gray-700">Rola:</label>
         <select v-model="form.role" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="user">User</option>
-          <option value="owner">Owner</option>
+          <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
         </select>
         <label class="block mt-4 text-gray-700">Archiwum:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
@@ -19,7 +18,7 @@
       </search-filter>
       <Link class="btn-indigo" href="/users/create">
         <span>Utwórz</span>
-        <span class="hidden md:inline">&nbsp></span>
+        <span class="hidden md:inline">&nbsp;użytkownika</span>
       </Link>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
@@ -28,7 +27,7 @@
           <th class="pb-4 pt-6 px-6">Nazwisko Imię</th>
           <th class="pb-4 pt-6 px-6">Email</th>
           <th class="pb-4 pt-6 px-6">Status</th>
-          <th class="pb-4 pt-6 px-6" colspan="2">Uprawnienia</th>
+          <th class="pb-4 pt-6 px-6" colspan="2">Rola</th>
         </tr>
         <tr v-for="user in users" :key="user.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
@@ -45,13 +44,13 @@
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/edit`" tabindex="-1">
-              <Icon v-if="user.active===0" name="userBlock" class="block w-6 h-6 fill-gray-400"/>
-              <Icon v-if="user.active===1" name="userActive" class="block w-6 h-6 fill-gray-400"/>
+              <Icon v-if="user.active===0" name="userBlock" class="block w-6 h-6 fill-gray-400" />
+              <Icon v-if="user.active===1" name="userActive" class="block w-6 h-6 fill-gray-400" />
             </Link>
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/edit`" tabindex="-1">
-              {{ user.owner ? 'Owner' : 'User' }}
+              {{ user.roles.join(', ') }}
             </Link>
           </td>
           <td class="w-px border-t">
@@ -89,6 +88,7 @@ export default {
   props: {
     filters: Object,
     users: Array,
+    roles: Array,
   },
   data() {
     return {
