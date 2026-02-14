@@ -1,95 +1,109 @@
 <template>
   <div>
     <Head title="Zapytania" />
-    <h1 class="mb-8 text-3xl font-bold">Zapytania</h1>
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+      <h1 class="text-3xl font-bold text-gray-900">Zapytania ofertowe</h1>
+      <Link class="btn-indigo flex items-center justify-center px-6 py-2 rounded-lg shadow-md transition-all hover:shadow-lg active:scale-95 w-full md:w-auto" href="/zapytania/create">
+        <icon name="plus" class="w-4 h-4 mr-2" />
+        <span>Nowe zapytanie</span>
+      </Link>
+    </div>
+
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block text-gray-700">Wybierz:</label>
-        <select v-model="form.trashed" class="form-select mt-1 w-full">
-          <option :value="null">Wszystko</option>
-          <option value="with">Z usuniętymi</option>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Status archiwum:</label>
+        <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+          <option :value="null">Wszystko (bez usuniętych)</option>
+          <option value="with">Wszystko (z usuniętymi)</option>
           <option value="only">Tylko usunięte</option>
         </select>
       </search-filter>
-      <Link class="btn-indigo" href="/zapytania/create">
-        <span>Dodaj</span>
-      </Link>
     </div>
-    <div class="bg-white rounded-md shadow overflow-x-auto">
-      <table class="w-full table-auto">
-        <thead>
-          <tr class="text-left font-bold">
-            <th class="pb-4 pt-6 px-6">ID/Projekt</th>
-            <th class="pb-4 pt-6 px-6">Klient</th>
-            <th class="pb-4 pt-6 px-6">Kraj</th>
-            <th class="pb-4 pt-6 px-6">Kwota szacowana</th>
-            <th class="pb-4 pt-6 px-6">Zakres</th>
-            <th class="pb-4 pt-6 px-6">Zarejestrował</th>
-            <th class="pb-4 pt-6 px-6" />
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in zapytanias.data" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
-            <td class="border-t">
-              <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/zapytania/${item.id}/edit`">
-                <div class="whitespace-normal min-w-[200px]">
-                  <span class="font-semibold">{{ item.nazwa_projektu }}</span>
-                  <br />
-                  <span class="text-sm text-gray-500">{{ item.id_zapyt }}</span>
-                </div>
-                <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
-              </Link>
-            </td>
-            <td class="border-t">
-              <Link class="flex items-center px-6 py-4" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                <div v-if="item.client" class="whitespace-normal">
-                  {{ item.client.nazwa }}
-                </div>
-              </Link>
-            </td>
-            <td class="border-t">
-              <Link class="flex items-center px-6 py-4" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                <div v-if="item.kraj">
-                  {{ item.kraj.name }}
-                </div>
-              </Link>
-            </td>
-            <td class="border-t">
-              <Link class="flex items-center px-6 py-4 whitespace-nowrap" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                {{ formatNumber(item.kwota) }} {{ item.waluta ? item.waluta.name : '' }}
-              </Link>
-            </td>
-            <td class="border-t">
-              <Link class="flex items-center px-6 py-4" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                <div v-if="item.zakres" class="whitespace-normal">
-                  {{ item.zakres.name }}
-                </div>
-              </Link>
-            </td>
-            <td class="border-t">
-              <Link class="flex items-center px-6 py-4" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                <div class="text-sm">
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+        <table class="w-full">
+          <thead>
+            <tr class="text-left font-bold text-gray-400 text-xs uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
+              <th class="px-6 py-4 whitespace-nowrap">Projekt / ID</th>
+              <th class="px-6 py-4 whitespace-nowrap">Klient</th>
+              <th class="px-6 py-4 whitespace-nowrap hidden lg:table-cell">Kraj</th>
+              <th class="px-6 py-4 whitespace-nowrap text-right">Kwota</th>
+              <th class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">Zakres</th>
+              <th class="px-6 py-4 whitespace-nowrap hidden md:table-cell">Zarejestrował</th>
+              <th class="px-6 py-4" />
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <tr v-for="item in zapytanias.data" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
+              <td class="px-6 py-4">
+                <Link class="flex flex-col focus:text-indigo-500" :href="`/zapytania/${item.id}/edit`">
+                  <div class="flex items-center">
+                    <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors break-words max-w-[150px] md:max-w-xs">{{ item.nazwa_projektu }}</span>
+                    <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
+                  </div>
+                  <span class="text-xs text-gray-400 font-medium mt-0.5">{{ item.id_zapyt }}</span>
+                </Link>
+              </td>
+              <td class="px-6 py-4">
+                <Link class="flex items-center text-gray-600" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+                  <div v-if="item.client" class="text-sm font-medium truncate max-w-[120px] md:max-w-none">
+                    {{ item.client.nazwa }}
+                  </div>
+                </Link>
+              </td>
+              <td class="px-6 py-4 hidden lg:table-cell">
+                <Link class="flex items-center text-gray-500" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+                  <div v-if="item.kraj" class="flex items-center text-sm">
+                    <icon name="office" class="w-3 h-3 mr-1.5 fill-gray-300" />
+                    {{ item.kraj.name }}
+                  </div>
+                </Link>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <Link class="inline-block font-bold text-gray-900 whitespace-nowrap" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+                  {{ formatNumber(item.kwota) }}
+                  <span class="text-xs text-gray-400 font-medium ml-0.5">{{ item.waluta ? item.waluta.name : '' }}</span>
+                </Link>
+              </td>
+              <td class="px-6 py-4 hidden sm:table-cell">
+                <Link class="flex items-center" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+                  <span v-if="item.zakres" class="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-md uppercase tracking-wider whitespace-nowrap">
+                    {{ item.zakres.name }}
+                  </span>
+                </Link>
+              </td>
+              <td class="px-6 py-4 hidden md:table-cell">
+                <Link class="flex flex-col" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
                   <template v-if="item.otrzymal">
-                    {{ item.otrzymal.first_name }} {{ item.otrzymal.last_name }}
-                    <br />
-                    <span class="text-gray-500">{{ item.created_at }}</span>
+                    <span class="text-sm font-medium text-gray-700 whitespace-nowrap">{{ item.otrzymal.first_name }} {{ item.otrzymal.last_name }}</span>
+                    <span class="text-xs text-gray-400 mt-0.5">{{ item.created_at }}</span>
                   </template>
+                </Link>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <Link class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+                  <icon name="cheveron-right" class="w-5 h-5" />
+                </Link>
+              </td>
+            </tr>
+            <tr v-if="zapytanias.data.length === 0">
+              <td class="px-6 py-12 text-center text-gray-400" colspan="7">
+                <div class="flex flex-col items-center">
+                  <icon name="zapytania" class="w-12 h-12 mb-2 opacity-20" />
+                  <p>Brak zapytań spełniających kryteria.</p>
                 </div>
-              </Link>
-            </td>
-            <td class="w-px border-t">
-              <Link class="flex items-center px-4" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
-              </Link>
-            </td>
-          </tr>
-          <tr v-if="zapytanias.data.length === 0">
-            <td class="px-6 py-4 border-t" colspan="7">Brak zapytań.</td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <pagination class="mt-6" :links="zapytanias.links" />
+
+    <div class="mt-8">
+      <pagination :links="zapytanias.links" />
+    </div>
   </div>
 </template>
 

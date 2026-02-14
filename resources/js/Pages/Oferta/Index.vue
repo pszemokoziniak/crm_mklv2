@@ -23,10 +23,9 @@
             <th class="pb-4 pt-6 px-6 w-1/4">Zapytanie</th>
             <th class="pb-4 pt-6 px-6 w-40">Typ</th>
             <th class="pb-4 pt-6 px-6">Klient</th>
-            <th class="pb-4 pt-6 px-6 w-40">Kwota</th>
             <th class="pb-4 pt-6 px-6 w-32">Status</th>
             <th class="pb-4 pt-6 px-6 w-40">Dodał</th>
-            <th class="pb-4 pt-6 px-6 w-12"></th>
+            <th class="pb-4 pt-6 px-6 w-12" />
           </tr>
         </thead>
         <tbody>
@@ -56,17 +55,6 @@
                 <div v-if="item.client" class="text-sm text-gray-900 truncate" :title="item.client.nazwa">
                   {{ item.client.nazwa }}
                 </div>
-              </Link>
-            </td>
-            <td class="border-t">
-              <Link class="flex items-center px-6 py-4 font-medium" :href="`/oferta/${item.id}/edit`" tabindex="-1">
-                <div v-if="item.kwota" class="text-sm">
-                  <div class="whitespace-nowrap">{{ formatCurrency(item.kwota) }} {{ item.waluta ? item.waluta.name : '' }}</div>
-                  <div v-if="item.waluta && item.waluta.name !== 'PLN'" class="text-xs text-gray-500 whitespace-nowrap">
-                    {{ formatCurrency(item.kwotaPLN) }} PLN
-                  </div>
-                </div>
-                <span v-else>-</span>
               </Link>
             </td>
             <td class="border-t">
