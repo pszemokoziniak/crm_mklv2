@@ -49,17 +49,24 @@ class Client extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('nazwa', 'like', '%'.$search.'%')
-            ->orWhereHas('branza', function ($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%');
-            })
-            ->orWhereHas('kraj', function ($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%');
-            })
-            ->orWhereHas('user', function ($query) use ($search) {
-                $query->where('first_name', 'like', '%'.$search.'%')
-                    ->orWhere('last_name', 'like', '%'.$search.'%');
-            });
+            $keywords = array_filter(explode('+', $search), 'trim');
+
+            foreach ($keywords as $keyword) {
+                $keyword = trim($keyword);
+                $query->where(function ($query) use ($keyword) {
+                    $query->where('nazwa', 'like', '%'.$keyword.'%')
+                        ->orWhereHas('branza', function ($query) use ($keyword) {
+                            $query->where('name', 'like', '%'.$keyword.'%');
+                        })
+                        ->orWhereHas('kraj', function ($query) use ($keyword) {
+                            $query->where('name', 'like', '%'.$keyword.'%');
+                        })
+                        ->orWhereHas('user', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', '%'.$keyword.'%')
+                                ->orWhere('last_name', 'like', '%'.$keyword.'%');
+                        });
+                });
+            }
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
