@@ -6,7 +6,7 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
       <div class="flex items-center">
         <div class="relative">
-          <img v-if="user.photo" class="block w-16 h-16 rounded-full border-2 border-white shadow-sm" :src="user.photo" />
+          <img v-if="user.photo" class="block w-16 h-16 rounded-full border-2 border-white shadow-sm" :src="user.photo" alt="phot" />
           <div v-else class="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 font-bold text-xl border-2 border-white shadow-sm">
             {{ user.first_name[0] }}{{ user.last_name[0] }}
           </div>
@@ -60,7 +60,7 @@
           </div>
 
           <!-- Form Actions -->
-          <div class="flex items-center justify-between px-8 py-6 bg-gray-50 border-t border-gray-100">
+          <div v-if="isActive" class="flex items-center justify-between px-8 py-6 bg-gray-50 border-t border-gray-100">
             <button v-if="!user.deleted_at" class="text-rose-600 font-semibold hover:text-rose-800 transition-colors flex items-center" tabindex="-1" type="button" @click="destroy">
               <icon name="trash" class="w-4 h-4 mr-2" />
               Archiwizuj
@@ -75,18 +75,8 @@
         </form>
 
         <!-- Secondary Actions Bar -->
-        <div v-if="!user.deleted_at" class="bg-white border-t border-gray-100">
+        <div v-if="!user.deleted_at && !isActive" class="bg-white border-t border-gray-100">
           <div class="grid grid-cols-1 divide-x divide-gray-100">
-            <!--            <button v-if="user.active===1" class="flex items-center justify-center px-4 py-4 hover:bg-rose-50 text-rose-600 transition-all group" @click="blockActive">-->
-            <!--              <icon name="trash" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />-->
-            <!--              <span class="text-sm font-bold">Zablokuj konto</span>-->
-            <!--            </button>-->
-
-            <!--            <button v-if="user.active===0" class="flex items-center justify-center px-4 py-4 hover:bg-green-50 text-green-600 transition-all group" @click="unblockActive">-->
-            <!--              <icon name="check" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />-->
-            <!--              <span class="text-sm font-bold">Odblokuj konto</span>-->
-            <!--            </button>-->
-
             <button class="flex items-center justify-center px-4 py-4 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="disableForm">
               <icon name="edit" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
               <span class="text-sm font-bold">Edytuj dane</span>
