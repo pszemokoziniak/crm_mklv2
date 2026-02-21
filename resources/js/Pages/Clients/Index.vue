@@ -12,6 +12,15 @@
 
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
+          <select v-model="form.status" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option :value="null">WSZYSTKO</option>
+            <option value="aktywni">AKTYWNI</option>
+            <option value="nieaktywni">NIEAKTYWNI</option>
+            <option value="zapytania">ZAPYTANIA</option>
+          </select>
+        </div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Status archiwum:</label>
         <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
           <option :value="null">Wszystko (bez usuniętych)</option>
@@ -28,7 +37,7 @@
             <tr class="text-left font-bold text-gray-400 text-xs uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
               <th class="px-6 py-4 whitespace-nowrap">Nazwa</th>
               <th class="px-6 py-4 whitespace-nowrap">Branża</th>
-              <th class="px-6 py-4 whitespace-nowrap">Kraj</th>
+              <th class="px-6 py-4 whitespace-nowrap">Z / O / K</th>
               <th class="px-6 py-4 whitespace-nowrap">Opiekun</th>
               <th class="px-6 py-4 whitespace-nowrap">Utworzył</th>
               <th class="px-6 py-4" />
@@ -48,10 +57,15 @@
                 </Link>
               </td>
               <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-500" :href="`/clients/${item.id}/edit`" tabindex="-1">
-                  <div v-if="item.kraj" class="flex items-center text-sm">
-                    <icon name="office" class="w-3 h-3 mr-1.5 fill-gray-300" />
-                    {{ item.kraj }}
+                <Link class="flex items-center gap-2" :href="`/clients/${item.id}/edit`" tabindex="-1">
+                  <div class="flex items-center justify-center w-7 h-7 rounded bg-indigo-50 text-indigo-600 text-xs font-bold" title="Zapytania">
+                    {{ item.zapytania_count }}
+                  </div>
+                  <div class="flex items-center justify-center w-7 h-7 rounded bg-blue-50 text-blue-600 text-xs font-bold" title="Oferty">
+                    {{ item.oferty_count }}
+                  </div>
+                  <div class="flex items-center justify-center w-7 h-7 rounded bg-emerald-50 text-emerald-600 text-xs font-bold" title="Kontakty">
+                    {{ item.kontakty_count }}
                   </div>
                 </Link>
               </td>
@@ -119,6 +133,7 @@ export default {
       form: {
         search: this.filters.search,
         trashed: this.filters.trashed,
+        status: this.filters.status,
       },
     }
   },

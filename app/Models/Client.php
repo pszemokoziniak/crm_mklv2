@@ -5,8 +5,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 
 class Client extends Model
 {
@@ -38,9 +40,17 @@ class Client extends Model
     {
         return $this->belongsTo(Kraj::class);
     }
-    public function zapytania()
+    public function zapytania(): HasMany
     {
-        return $this->hasOne(Zapytania::class);
+        return $this->hasMany(Zapytania::class);
+    }
+    public function oferty(): HasMany
+    {
+        return $this->hasMany(Oferta::class);
+    }
+    public function kontakty(): HasMany
+    {
+        return $this->hasMany(Kontakt::class);
     }
     public function scopeOrderByCreatedAt($query)
     {
@@ -72,6 +82,28 @@ class Client extends Model
                 $query->withTrashed();
             } elseif ($trashed === 'only') {
                 $query->onlyTrashed();
+            }
+        })->when($filters['status'] ?? null, function ($query, $status) {
+            if ($status === 'aktywni') {
+                $sixMonthsAgo = Carbon::now()->subMonths(6);
+                $query->where(function ($query) use ($sixMonthsAgo) {
+                    $query->whereHas('zapytania', function ($query) use ($sixMonthsAgo) {
+                        $query->where('created_at', '>=', $sixMonthsAgo);
+                    })->orWhereHas('kontakty', function ($query) use ($sixMonthsAgo) {
+                        $query->where('created_at', '>=', $sixMonthsAgo);
+                    });
+                });
+            } elseif ($status === 'nieaktywni') {
+                $sixMonthsAgo = Carbon::now()->subMonths(6);
+                $query->whereDoesntHave('zapytania', function ($query) use ($sixMonthsAgo) {
+                    $query->where('created_at', '>=', $sixMonthsAgo);
+                })->whereDoesntHave('kontakty', function ($query) use ($sixMonthsAgo) {
+                    $query->where('created_at', '>=', $sixMonthsAgo);
+                });
+            } elseif ($status === 'zapytania') {
+                $query->whereHas('zapytania', function ($query) {
+                    $query->whereYear('created_at', Carbon::now()->year);
+                });
             }
         });
     }

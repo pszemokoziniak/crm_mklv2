@@ -22,10 +22,11 @@ class ClientController extends Controller
     public function index()
     {
         return Inertia::render('Clients/Index', [
-            'filters' => Request::all('search', 'trashed'),
+            'filters' => Request::all('search', 'trashed', 'status'),
             'clients' => Client::with(['branza', 'user', 'kraj', 'creator'])
+                ->withCount(['zapytania', 'oferty', 'kontakty'])
                 ->orderByCreatedAt()
-                ->filter(Request::only('search', 'trashed'))
+                ->filter(Request::only('search', 'trashed', 'status'))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($client) => [
@@ -40,7 +41,10 @@ class ClientController extends Controller
                     'user' => $client->user ? (trim($client->user->first_name) != 'N/A' ? $client->user->first_name . ' ' . $client->user->last_name : $client->user->first_name) : '-',
                     'user_id' => $client->user_id,
                     'created_by' => $client->creator ? $client->creator->first_name . ' ' . $client->creator->last_name : '-',
-                    'created_at' => $client->created_at->format('Y-m-d H:i:s')
+                    'created_at' => $client->created_at->format('Y-m-d H:i:s'),
+                    'zapytania_count' => $client->zapytania_count,
+                    'oferty_count' => $client->oferty_count,
+                    'kontakty_count' => $client->kontakty_count,
                 ]),
         ]);
     }
@@ -83,6 +87,20 @@ class ClientController extends Controller
             'kraj' => Kraj::get(),
             'user' => User::get(),
             'client_id' => $client->id,
+            'zapytania' => $client->zapytania()->with(['oferty.status', 'oferty.waluta', 'user'])->orderBy('created_at', 'desc')->get()->map(fn ($zapytanie) => [
+                'id' => $zapytanie->id,
+                'nazwa_projektu' => $zapytanie->nazwa_projektu,
+                'created_at' => $zapytanie->created_at->format('Y-m-d'),
+                'user' => $zapytanie->user ? $zapytanie->user->first_name . ' ' . $zapytanie->user->last_name : '-',
+                'oferty' => $zapytanie->oferty->map(fn ($oferta) => [
+                    'id' => $oferta->id,
+                    'numer_oferty' => $oferta->numer_oferty,
+                    'status' => $oferta->status ? $oferta->status->name : '-',
+                    'kwota' => $oferta->kwota,
+                    'waluta' => $oferta->waluta ? $oferta->waluta->name : '',
+                    'created_at' => $oferta->created_at->format('Y-m-d'),
+                ]),
+            ]),
         ]);
     }
 

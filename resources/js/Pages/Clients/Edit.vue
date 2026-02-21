@@ -26,7 +26,7 @@
       Klient został usunięty.
     </trashed-message>
 
-    <div class="max-w-3xl">
+    <div class="w-full mb-8">
       <div id="form-container" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500 ring-opacity-50 shadow-lg': isActive }">
         <form @submit.prevent="update">
           <div class="flex flex-wrap -mb-8 -mr-6 p-8">
@@ -69,6 +69,7 @@
           <div v-if="isActive" class="flex items-center justify-between px-8 py-6 bg-gray-50 border-t border-gray-100">
             <archive-button v-if="!client.deleted_at" @click="destroy" />
             <div class="flex gap-3 ml-auto">
+              <button type="button" class="btn-secondary px-8" @click="disableForm">Anuluj</button>
               <loading-button :loading="form.processing" class="btn-indigo shadow-md px-8" type="submit">
                 Zapisz zmiany
               </loading-button>
@@ -92,6 +93,82 @@
               <span class="text-sm font-bold">Kontakty</span>
             </Link>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zapytania i Oferty Table -->
+    <div class="mt-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Zapytania i Oferty</h2>
+      <div class="space-y-6">
+        <div v-for="zapytanie in zapytania" :key="zapytanie.id" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <!-- Zapytanie Header -->
+          <div class="bg-gray-50/50 px-6 py-4 border-b border-gray-100 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <div class="md:col-span-5 flex flex-col">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Zapytanie</span>
+              <Link :href="`/zapytania/${zapytanie.id}/edit`" class="text-base font-bold text-gray-900 hover:text-indigo-600 transition-colors truncate" :title="zapytanie.nazwa_projektu">
+                {{ zapytanie.nazwa_projektu }}
+              </Link>
+            </div>
+            <div class="md:col-span-3 flex flex-col">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Data</span>
+              <span class="text-sm font-medium text-gray-600">{{ zapytanie.created_at }}</span>
+            </div>
+            <div class="md:col-span-4 flex flex-col">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Opiekun</span>
+              <span class="text-sm font-medium text-gray-600">{{ zapytanie.user }}</span>
+            </div>
+          </div>
+
+          <!-- Oferty Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="text-left font-bold text-gray-400 text-[10px] uppercase tracking-widest bg-white border-b border-gray-50">
+                  <th class="px-6 py-3 whitespace-nowrap w-1/3">Oferta</th>
+                  <th class="px-6 py-3 whitespace-nowrap w-1/3 text-center">Status</th>
+                  <th class="px-6 py-3 whitespace-nowrap w-1/3 text-right">Wartość</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-50">
+                <tr v-for="oferta in zapytanie.oferty" :key="oferta.id" class="hover:bg-indigo-50/20 transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <Link :href="`/oferta/${oferta.id}/edit`" class="flex flex-col group">
+                        <span class="text-sm font-semibold text-indigo-600 group-hover:underline">
+                          {{ oferta.numer_oferty }}
+                        </span>
+                        <span class="text-[10px] text-gray-400 group-hover:text-indigo-400 transition-colors">
+                          {{ oferta.created_at }}
+                        </span>
+                      </Link>
+                      <Link :href="`/oferta/${oferta.id}/edit`" class="text-gray-400 hover:text-indigo-600 transition-colors" title="Przejdź do oferty">
+                        <icon name="cheveron-right" class="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                      {{ oferta.status }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-right text-sm font-bold text-gray-900">
+                    {{ oferta.kwota || '-' }} {{ oferta.waluta }}
+                  </td>
+                </tr>
+                <tr v-if="zapytanie.oferty.length === 0">
+                  <td class="px-6 py-4 text-center text-sm text-gray-400 italic" colspan="3">
+                    Brak ofert dla tego zapytania.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div v-if="zapytania.length === 0" class="bg-white rounded-xl border-2 border-dashed border-gray-200 p-12 text-center">
+          <icon name="users" class="w-12 h-12 mx-auto mb-4 text-gray-300" />
+          <p class="text-gray-500 font-medium">Brak powiązanych zapytań dla tego klienta.</p>
         </div>
       </div>
     </div>
@@ -129,6 +206,7 @@ export default {
     user: Object,
     // eslint-disable-next-line vue/prop-name-casing
     client_id: String,
+    zapytania: Array,
   },
   remember: 'form',
   data() {

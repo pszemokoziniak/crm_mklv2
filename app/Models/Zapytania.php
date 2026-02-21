@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Zapytania extends Model
@@ -55,9 +56,9 @@ class Zapytania extends Model
         return $this->belongsTo(Waluta::class);
     }
 
-    public function oferta()
+    public function oferty(): HasMany
     {
-        return $this->belongsTo(Oferta::class, 'id', 'zapytania_id')->withTrashed();
+        return $this->hasMany(Oferta::class, 'zapytania_id')->withTrashed();
     }
 
     public function scopeOrderByCreatedAt($query)
