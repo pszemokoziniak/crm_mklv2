@@ -19,6 +19,7 @@ use App\Models\User;
 use App\Models\Waluta;
 use App\Models\Zakres;
 use App\Models\Zapytania;
+use App\Models\Kontakt;
 use Carbon\Carbon;
 //use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -144,6 +145,11 @@ class ZapytaniaController extends Controller
             'oferty' => Oferta::with('user')->where('zapytania_id', $zapytania->id)->get(),
             'clientById' => Client::where('id', $zapytania->client_id)->withTrashed()->firstOrFail(),
             'archiwumOpis' => ArchiwumZapytania::with('user')->where('zapytania_id', $zapytania->id)->get(),
+            'kontakty' => Kontakt::with(['user', 'kontaktperson', 'children.user', 'children.kontaktperson'])
+                ->where('zapytania_id', $zapytania->id)
+                ->whereNull('parent_id') // Tylko główne wątki
+                ->orderBy('created_at', 'desc')
+                ->get(),
         ]);
     }
 

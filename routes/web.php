@@ -140,8 +140,7 @@ Route::delete('organizations/{organization}', [OrganizationsController::class, '
     ->middleware('auth');
 
 Route::put('organizations/{organization}/restore', [OrganizationsController::class, 'restore'])
-    ->name('organizations.restore')
-    ->middleware('auth');
+    ->name('organizations.restore');
 
 // Contacts
 
@@ -175,15 +174,23 @@ Route::put('contacts/{contact}/restore', [ContactsController::class, 'restore'])
 
 // Kontakt
 
-Route::get('kontakt/{client_id}/index', [KontaktController::class, 'index'])
+Route::get('kontakt', [KontaktController::class, 'index'])
     ->name('kontakt')
     ->middleware('auth');
 
-Route::get('kontakt/create/{client}/{kontaktPerson_id}', [KontaktController::class, 'create'])
+Route::get('kontakt/{client_id}/index', [KontaktController::class, 'clientIndex'])
+    ->name('kontakt.client')
+    ->middleware('auth');
+
+Route::get('kontakt/create', [KontaktController::class, 'create'])
+    ->name('kontakt.create.general')
+    ->middleware('auth');
+
+Route::get('kontakt/create/{client}/{kontaktPerson_id?}', [KontaktController::class, 'create'])
     ->name('kontakt.create')
     ->middleware('auth');
 
-Route::post('kontakt/post/{client}', [KontaktController::class, 'store'])
+Route::post('kontakt/post/{client?}', [KontaktController::class, 'store'])
     ->name('kontakt.store')
     ->middleware('auth');
 
@@ -449,14 +456,6 @@ Route::get('branza/{branza}/edit', [BranzaController::class, 'edit'])
 
 Route::post('branza/{branza}', [BranzaController::class, 'update'])
     ->name('branza.update')
-    ->middleware('auth');
-
-Route::delete('branza/{branza}', [BranzaController::class, 'destroy'])
-    ->name('branza.destroy')
-    ->middleware('auth');
-
-Route::put('branza/{branza}/restore', [BranzaController::class, 'restore'])
-    ->name('branza.restore')
     ->middleware('auth');
 
 // Zadania
@@ -752,16 +751,7 @@ Route::get('kursy/{kursy}/edit', [KursyController::class, 'edit'])
     ->middleware('auth');
 
 Route::post('kursy/{kursy}', [KursyController::class, 'update'])
-    ->name('kursy.update')
-    ->middleware('auth');
-
-//Route::delete('kursy/{kursy}', [KursyController::class, 'destroy'])
-//    ->name('kursy.destroy')
-//    ->middleware('auth');
-//
-//Route::put('kursy/{kursy}/restore', [KursyController::class, 'restore'])
-//    ->name('kursy.restore')
-//    ->middleware('auth');
+    ->name('kursy.update');
 
 // Status Oferta
 

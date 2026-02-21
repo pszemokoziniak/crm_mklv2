@@ -13,6 +13,7 @@ use App\Models\Waluta;
 use App\Models\Zakres;
 use App\Models\Zapytania;
 use App\Models\Branza;
+use App\Models\Kontakt;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -110,6 +111,11 @@ class OfertaController extends Controller
             'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->first(),
             'statuses' => OfertaStatus::select('id', 'name')->get(),
             'waluta' => Waluta::select('id', 'name')->get(),
+            'kontakty' => Kontakt::with(['user', 'kontaktperson', 'children.user', 'children.kontaktperson'])
+                ->where('oferta_id', $oferta->id)
+                ->whereNull('parent_id')
+                ->orderBy('created_at', 'desc')
+                ->get(),
         ]);
     }
 

@@ -26,7 +26,7 @@
       Oferta została usunięta.
     </trashed-message>
 
-    <div class="max-w-3xl">
+    <div class="max-w-5xl space-y-8">
       <div id="form-container" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500 ring-opacity-50 shadow-lg': isActive }">
         <!-- Nagłówek z linkami do relacji -->
         <div class="bg-gray-50 px-8 py-4 border-b border-gray-100 flex flex-wrap gap-2 items-center text-lg font-semibold">
@@ -99,6 +99,74 @@
           </div>
         </div>
       </div>
+
+      <!-- Kontakty Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
+              <icon name="contact" class="w-6 h-6 fill-indigo-600" />
+            </div>
+            <h2 class="text-xl font-bold text-gray-800">Historia kontaktów</h2>
+          </div>
+          <Link :href="`/kontakt/create?client=${oferta.client_id}&oferta_id=${oferta.id}&zapytania_id=${oferta.zapytania_id}`" class="btn-indigo flex items-center px-6 py-3 rounded-lg shadow-md transition-all hover:shadow-lg active:scale-95">
+            <icon name="plus" class="w-4 h-4 mr-2" />
+            <span>Nowy kontakt</span>
+          </Link>
+        </div>
+
+        <div class="p-8">
+          <div v-if="kontakty.length > 0" class="space-y-6">
+            <div v-for="kontakt in kontakty" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+              <!-- Główny wpis w wątku -->
+              <div class="bg-gray-50/50 p-4 border-b border-gray-100 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-indigo-900">{{ kontakt.subject }}</span>
+                  <span class="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full font-medium">Wątek</span>
+                </div>
+                <div class="flex items-center gap-4">
+                  <span class="text-xs text-gray-500">{{ kontakt.call_date }} {{ kontakt.call_time }}</span>
+                  <Link :href="`/kontakt/${kontakt.id}/edit`" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold uppercase tracking-wider">Edytuj</Link>
+                </div>
+              </div>
+              <div class="p-4 text-gray-700 whitespace-pre-wrap text-sm">
+                <div class="mb-2 text-xs text-gray-500">
+                  Osoba: <span v-if="kontakt.kontaktperson" class="font-semibold">{{ kontakt.kontaktperson.first_name }} {{ kontakt.kontaktperson.last_name }}</span>
+                  <span v-else class="italic">Brak</span>
+                  • Przez: <span class="font-semibold">{{ kontakt.user.first_name }} {{ kontakt.user.last_name }}</span>
+                </div>
+                {{ kontakt.description }}
+              </div>
+
+              <!-- Odpowiedzi w wątku -->
+              <div v-if="kontakt.children && kontakt.children.length > 0" class="bg-white border-t border-gray-50">
+                <div v-for="reply in kontakt.children" :key="reply.id" class="p-4 border-b border-gray-50 last:border-0 ml-8 border-l-2 border-indigo-100">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold text-gray-600">{{ reply.user.first_name }} {{ reply.user.last_name }}</span>
+                    <div class="flex items-center gap-3">
+                      <span class="text-xs text-gray-400">{{ reply.call_date }} {{ reply.call_time }}</span>
+                      <Link :href="`/kontakt/${reply.id}/edit`" class="text-indigo-400 hover:text-indigo-600 text-xs">Edytuj</Link>
+                    </div>
+                  </div>
+                  <div class="text-sm text-gray-600 whitespace-pre-wrap">{{ reply.description }}</div>
+                </div>
+              </div>
+
+              <!-- Przycisk odpowiedzi -->
+              <div class="bg-gray-50/30 p-3 text-right">
+                <Link :href="`/kontakt/create?parent_id=${kontakt.id}&oferta_id=${oferta.id}&zapytania_id=${oferta.zapytania_id}`" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold flex items-center justify-end">
+                  <icon name="plus" class="w-3 h-3 mr-1" />
+                  Dodaj odpowiedź w tym wątku
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-12 text-gray-400">
+            <icon name="contact" class="w-12 h-12 mx-auto mb-3 opacity-20" />
+            <p>Brak zarejestrowanych kontaktów dla tej oferty.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -135,6 +203,7 @@ export default {
     clientById: Object,
     zapytaniaById: Object,
     waluta: Object,
+    kontakty: Array,
   },
   remember: 'form',
   data() {

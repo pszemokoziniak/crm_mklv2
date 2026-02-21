@@ -91,6 +91,8 @@ class Client extends Model
                         $query->where('created_at', '>=', $sixMonthsAgo);
                     })->orWhereHas('kontakty', function ($query) use ($sixMonthsAgo) {
                         $query->where('created_at', '>=', $sixMonthsAgo);
+                    })->orWhereHas('oferty', function ($query) use ($sixMonthsAgo) {
+                        $query->where('created_at', '>=', $sixMonthsAgo);
                     });
                 });
             } elseif ($status === 'nieaktywni') {
@@ -98,6 +100,8 @@ class Client extends Model
                 $query->whereDoesntHave('zapytania', function ($query) use ($sixMonthsAgo) {
                     $query->where('created_at', '>=', $sixMonthsAgo);
                 })->whereDoesntHave('kontakty', function ($query) use ($sixMonthsAgo) {
+                    $query->where('created_at', '>=', $sixMonthsAgo);
+                })->whereDoesntHave('oferty', function ($query) use ($sixMonthsAgo) {
                     $query->where('created_at', '>=', $sixMonthsAgo);
                 });
             } elseif ($status === 'zapytania') {

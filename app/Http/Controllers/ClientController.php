@@ -8,6 +8,7 @@ use App\Models\Branza;
 use App\Models\Client;
 use App\Models\Kraj;
 use App\Models\User;
+use App\Models\Kontakt;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -15,16 +16,28 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use App\Traits\StoreActivityLog;
+use Carbon\Carbon;
 
 class ClientController extends Controller
 {
     use StoreActivityLog;
     public function index()
     {
+        $sixMonthsAgo = Carbon::now()->subMonths(6);
+
         return Inertia::render('Clients/Index', [
             'filters' => Request::all('search', 'trashed', 'status'),
             'clients' => Client::with(['branza', 'user', 'kraj', 'creator'])
                 ->withCount(['zapytania', 'oferty', 'kontakty'])
+                ->withCount(['zapytania as recent_zapytania_count' => function ($query) use ($sixMonthsAgo) {
+                    $query->where('created_at', '>=', $sixMonthsAgo);
+                }])
+                ->withCount(['kontakty as recent_kontakty_count' => function ($query) use ($sixMonthsAgo) {
+                    $query->where('created_at', '>=', $sixMonthsAgo);
+                }])
+                ->withCount(['oferty as recent_oferty_count' => function ($query) use ($sixMonthsAgo) {
+                    $query->where('created_at', '>=', $sixMonthsAgo);
+                }])
                 ->orderByCreatedAt()
                 ->filter(Request::only('search', 'trashed', 'status'))
                 ->paginate(10)
@@ -45,6 +58,7 @@ class ClientController extends Controller
                     'zapytania_count' => $client->zapytania_count,
                     'oferty_count' => $client->oferty_count,
                     'kontakty_count' => $client->kontakty_count,
+                    'is_active' => ($client->recent_zapytania_count > 0 || $client->recent_kontakty_count > 0 || $client->recent_oferty_count > 0)
                 ]),
         ]);
     }
@@ -101,6 +115,11 @@ class ClientController extends Controller
                     'created_at' => $oferta->created_at->format('Y-m-d'),
                 ]),
             ]),
+            'kontakty' => Kontakt::with(['user', 'kontaktperson', 'children.user', 'children.kontaktperson'])
+                ->where('client_id', $client->id)
+                ->whereNull('parent_id')
+                ->orderBy('created_at', 'desc')
+                ->get(),
         ]);
     }
 

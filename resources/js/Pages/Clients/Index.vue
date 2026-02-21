@@ -47,6 +47,7 @@
             <tr v-for="item in clients.data" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
               <td class="px-6 py-4">
                 <Link class="flex items-center focus:text-indigo-500" :href="`/clients/${item.id}/edit`">
+                  <div :class="item.is_active ? 'bg-green-500' : 'bg-red-500'" class="w-2 h-2 rounded-full mr-3 shadow-sm" :title="item.is_active ? 'Aktywny (ostatnie 6 m-cy)' : 'Nieaktywny'" />
                   <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{{ item.nazwa }}</span>
                   <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                 </Link>

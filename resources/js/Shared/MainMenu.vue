@@ -33,6 +33,7 @@ export default {
         { label: 'Klienci', href: '/clients', icon: 'clients', activeRule: 'clients' },
         { label: 'Zapytania', href: '/zapytania', icon: 'zapytania', activeRule: 'zapytania' },
         { label: 'Oferty', href: '/oferta', icon: 'oferty', activeRule: 'oferta' },
+        { label: 'Kontakty', href: '/kontakt', icon: 'contact', activeRule: 'kontakt' },
         { label: 'Zadania', href: '/zadania', icon: 'tasks', activeRule: 'zadania' },
         { label: 'Kalendarz', href: '/calendar', icon: 'calendar', activeRule: 'calendar' },
         { label: 'Przyszłe projekty', href: '/futureproject', icon: 'future', activeRule: 'futureproject' },
@@ -43,7 +44,7 @@ export default {
         { label: 'Użytkownicy', href: '/users', icon: 'users', activeRule: 'users' },
         { label: 'Historia', href: '/activity', icon: 'historia', activeRule: 'activity' },
         { label: 'BackUp', href: '/backup', icon: 'backup', activeRule: 'backup' },
-      ]
+      ],
     }
   },
   methods: {

@@ -11,6 +11,7 @@ use App\Models\Zadania;
 use App\Models\Zapytania;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -36,11 +37,15 @@ class DashboardController extends Controller
                         'deleted_at' => $historia->deleted_at,
                         'created_at' => date($historia->created_at)
                     ]),
-                'kontakts' => Kontakt::with('client')
-                    ->with('kontaktperson')
-                    ->with('user')
+                'kontakts' => Kontakt::with(['client', 'kontaktperson', 'user'])
+                    ->where(function($query) {
+                        // Pokazujemy kontakty zaplanowane na dziś lub zaległe
+                        $query->where('next_call_date', '<=', Carbon::today())
+                              ->orWhere('call_date', Carbon::today());
+                    })
                     ->filter(Request::only('search'))
-                    ->orderBy('call_time')
+                    ->orderBy('next_call_date', 'asc')
+                    ->orderBy('next_call_time', 'asc')
                     ->get(),
                 'zapytanias' => Zapytania::with(['user', 'opracowuje', 'client'])
                     ->where(function ($query) {
