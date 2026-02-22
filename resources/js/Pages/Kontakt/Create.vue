@@ -48,22 +48,27 @@
           <!-- 5. Opis -->
           <textarea-input v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full" label="Szczegóły rozmowy / Notatki" />
 
-          <!-- 6. Osoba kontaktowa, Zapytanie, Oferta -->
-          <select-input v-model="form.kontakt_person_id" :error="form.errors.kontakt_person_id" class="pb-8 pr-6 w-full lg:w-1/3" label="Osoba kontaktowa">
+          <!-- 6. Osoba kontaktowa, Zapytanie, Oferta, Projekt Przyszłości -->
+          <select-input v-model="form.kontakt_person_id" :error="form.errors.kontakt_person_id" class="pb-8 pr-6 w-full lg:w-1/4" label="Osoba kontaktowa">
             <option :value="null">Brak</option>
             <option v-for="person in localKontaktPersons" :key="person.id" :value="person.id">
               {{ person.first_name }} {{ person.last_name }}
             </option>
           </select-input>
 
-          <select-input v-model="form.zapytania_id" :error="form.errors.zapytania_id" class="pb-8 pr-6 w-full lg:w-1/3" label="Zapytanie">
+          <select-input v-model="form.zapytania_id" :error="form.errors.zapytania_id" class="pb-8 pr-6 w-full lg:w-1/4" label="Zapytanie">
             <option :value="null">Brak</option>
             <option v-for="item in localZapytanias" :key="item.id" :value="item.id">{{ item.nazwa_projektu }}</option>
           </select-input>
 
-          <select-input v-model="form.oferta_id" :error="form.errors.oferta_id" class="pb-8 pr-6 w-full lg:w-1/3" label="Oferta">
+          <select-input v-model="form.oferta_id" :error="form.errors.oferta_id" class="pb-8 pr-6 w-full lg:w-1/4" label="Oferta">
             <option :value="null">Brak</option>
             <option v-for="item in localOfertas" :key="item.id" :value="item.id">{{ item.label }}</option>
+          </select-input>
+
+          <select-input v-model="form.future_project_id" :error="form.errors.future_project_id" class="pb-8 pr-6 w-full lg:w-1/4" label="Projekt przyszłości">
+            <option :value="null">Brak</option>
+            <option v-for="item in localFutureProjects" :key="item.id" :value="item.id">{{ item.nazwa }}</option>
           </select-input>
 
           <!-- Opiekun -->
@@ -121,6 +126,7 @@ export default {
     users: Array,
     zapytanias: Array,
     ofertas: Array,
+    futureProjects: Array, // Dodane
     client_id: [String, Number],
     client: Object,
     kontaktPersons: Array,
@@ -130,6 +136,7 @@ export default {
     parent_subject: String,
     selected_zapytania_id: [String, Number],
     selected_oferta_id: [String, Number],
+    selected_future_project_id: [String, Number], // Dodane
     selected_opiekun_id: [String, Number],
   },
   remember: 'form',
@@ -142,6 +149,7 @@ export default {
       entryType: this.parent_id ? 'reply' : 'new',
       localZapytanias: this.zapytanias || [],
       localOfertas: this.ofertas || [],
+      localFutureProjects: this.futureProjects || [], // Dodane
       localKontaktPersons: this.kontaktPersons || [],
       form: this.$inertia.form({
         subject: this.parent_subject || '',
@@ -152,6 +160,7 @@ export default {
         next_call_time: '',
         zapytania_id: this.selected_zapytania_id || null,
         oferta_id: this.selected_oferta_id || null,
+        future_project_id: this.selected_future_project_id || null, // Dodane
         kontakt_person_id: this.selected_kontakt_person_id || null,
         client_id: this.client_id || null,
         parent_id: this.parent_id || null,
@@ -159,11 +168,17 @@ export default {
       }),
     }
   },
+  computed: {
+    selectedPerson() {
+      return this.localKontaktPersons.find(p => p.id === this.form.kontakt_person_id)
+    },
+  },
   methods: {
     fetchClientData() {
       if (!this.form.client_id) {
         this.localZapytanias = []
         this.localOfertas = []
+        this.localFutureProjects = [] // Dodane
         this.localKontaktPersons = []
         return
       }
@@ -175,6 +190,7 @@ export default {
         onSuccess: (page) => {
           this.localZapytanias = page.props.zapytanias
           this.localOfertas = page.props.ofertas
+          this.localFutureProjects = page.props.futureProjects // Dodane
           this.localKontaktPersons = page.props.kontaktPersons
           this.form.client_id = page.props.client_id
         },
@@ -185,7 +201,7 @@ export default {
       this.form.subject = ''
     },
     syncSubject() {
-      const topic = this.existingTopics.find(t => t.id == this.form.parent_id)
+      const topic = this.existingTopics.find(t => t.id === this.form.parent_id)
       if (topic) {
         this.form.subject = topic.subject
       }

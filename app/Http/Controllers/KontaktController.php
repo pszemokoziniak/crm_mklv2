@@ -8,6 +8,7 @@ use App\Models\KontaktPerson;
 use App\Models\User;
 use App\Models\Zapytania;
 use App\Models\Oferta;
+use App\Models\FutureProject;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -18,7 +19,7 @@ class KontaktController extends Controller
     {
         return Inertia::render('Kontakt/Index', [
             'filters' => Request::all('search'),
-            'kontakty' => Kontakt::with(['user', 'opiekun', 'zapytania', 'oferta', 'kontaktperson', 'client'])
+            'kontakty' => Kontakt::with(['user', 'opiekun', 'zapytania', 'oferta', 'futureProject', 'kontaktperson', 'client'])
                 ->whereNull('parent_id')
                 ->withCount('children')
                 ->orderBy('created_at', 'desc')
@@ -34,6 +35,7 @@ class KontaktController extends Controller
                     'opiekun' => $kontakt->opiekun ? $kontakt->opiekun->first_name . ' ' . $kontakt->opiekun->last_name : '-',
                     'zapytanie' => $kontakt->zapytania ? $kontakt->zapytania->nazwa_projektu : '-',
                     'oferta' => $kontakt->oferta ? 'Oferta #' . $kontakt->oferta->id : '-',
+                    'future_project' => $kontakt->futureProject ? $kontakt->futureProject->nazwa : '-',
                     'replies_count' => $kontakt->children_count,
                 ]),
         ]);
@@ -42,7 +44,7 @@ class KontaktController extends Controller
     public function clientIndex($client_id)
     {
         return Inertia::render('Kontakt/ClientIndex', [
-            'kontakt' => Kontakt::with('user', 'opiekun', 'zapytania', 'oferta', 'kontaktperson')
+            'kontakt' => Kontakt::with('user', 'opiekun', 'zapytania', 'oferta', 'futureProject', 'kontaktperson')
                 ->where('client_id', $client_id)
                 ->whereNull('parent_id')
                 ->withCount('children')
@@ -68,6 +70,7 @@ class KontaktController extends Controller
 
         $zapytaniaId = Request::get('zapytania_id');
         $ofertaId = Request::get('oferta_id');
+        $futureProjectId = Request::get('future_project_id');
 
         return Inertia::render('Kontakt/Create', [
             'clients' => Client::orderBy('nazwa')->get(),
@@ -80,6 +83,7 @@ class KontaktController extends Controller
                 'id' => $o->id,
                 'label' => 'Oferta #' . $o->id . ' (' . $o->kwota . ' ' . ($o->waluta ? $o->waluta->name : '') . ')',
             ]) : [],
+            'futureProjects' => $client ? FutureProject::where('client_id', $client->id)->get() : [],
             'client_id' => $client ? $client->id : null,
             'client' => $client,
             'kontaktPersons' => $client ? KontaktPerson::where('client_id', $client->id)->get() : [],
@@ -89,6 +93,7 @@ class KontaktController extends Controller
             'parent_subject' => $parentKontakt ? $parentKontakt->subject : null,
             'selected_zapytania_id' => $zapytaniaId ?: ($parentKontakt ? $parentKontakt->zapytania_id : null),
             'selected_oferta_id' => $ofertaId ?: ($parentKontakt ? $parentKontakt->oferta_id : null),
+            'selected_future_project_id' => $futureProjectId ?: ($parentKontakt ? $parentKontakt->future_project_id : null),
             'selected_opiekun_id' => $parentKontakt ? $parentKontakt->opiekun_id : auth()->id(),
         ]);
     }
@@ -106,6 +111,7 @@ class KontaktController extends Controller
             'kontakt_person_id' => 'nullable|exists:kontakt_persons,id',
             'zapytania_id' => 'nullable|exists:zapytanias,id',
             'oferta_id' => 'nullable|exists:ofertas,id',
+            'future_project_id' => 'nullable|exists:future_projects,id',
             'parent_id' => 'nullable|exists:kontakts,id',
             'opiekun_id' => 'nullable|exists:users,id',
         ]);
@@ -126,6 +132,10 @@ class KontaktController extends Controller
             return redirect()->route('zapytania.edit', $request->zapytania_id)->with('success', 'Kontakt dodany.');
         }
 
+        if ($request->future_project_id) {
+            return redirect()->route('futureproject.edit', $request->future_project_id)->with('success', 'Kontakt dodany.');
+        }
+
         return redirect()->route('kontakt')->with('success', 'Kontakt dodany.');
     }
 
@@ -142,6 +152,7 @@ class KontaktController extends Controller
                 'next_call_time' => $kontakt->next_call_time,
                 'zapytania_id' => $kontakt->zapytania_id,
                 'oferta_id' => $kontakt->oferta_id,
+                'future_project_id' => $kontakt->future_project_id,
                 'kontakt_person_id' => $kontakt->kontakt_person_id,
                 'parent_id' => $kontakt->parent_id,
                 'client_id' => $kontakt->client_id,
@@ -157,6 +168,7 @@ class KontaktController extends Controller
                 'id' => $o->id,
                 'label' => 'Oferta #' . $o->id . ' (' . $o->kwota . ' ' . ($o->waluta ? $o->waluta->name : '') . ')',
             ]),
+            'futureProjects' => FutureProject::where('client_id', $kontakt->client_id)->get(),
             'kontaktPersons' => KontaktPerson::where('client_id', $kontakt->client_id)->get(),
             'client_id' => $kontakt->client_id,
         ]);

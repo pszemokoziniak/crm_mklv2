@@ -94,10 +94,15 @@
                 <!-- Następny kontakt - Wyróżniony -->
                 <div v-if="item.next_call_date" class="bg-indigo-50 p-2 rounded-md border border-indigo-100">
                   <div class="text-[9px] uppercase font-bold text-indigo-400 mb-0.5">Następny:</div>
-                  <div class="flex items-center text-indigo-700 font-bold text-xs">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    <span class="whitespace-nowrap">{{ item.next_call_date }}</span>
-                    <span v-if="item.next_call_time" class="ml-2 bg-indigo-200 text-indigo-800 px-1 py-0.5 rounded text-[9px]">{{ item.next_call_time }}</span>
+                  <div class="flex flex-col text-indigo-700 font-bold text-xs">
+                    <div class="flex items-center mb-1">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      <span class="whitespace-nowrap">{{ item.next_call_date }}</span>
+                    </div>
+                    <div v-if="item.next_call_time" class="flex items-center">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      <span class="bg-indigo-200 text-indigo-800 px-1 py-0.5 rounded text-[9px]">{{ item.next_call_time }}</span>
+                    </div>
                   </div>
                 </div>
 

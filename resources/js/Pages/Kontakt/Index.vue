@@ -15,53 +15,53 @@
       <div class="overflow-x-auto">
         <table class="w-full table-auto">
           <thead>
-            <tr class="text-left font-bold text-gray-400 text-xs uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
-              <th class="px-6 py-4">Klient</th>
-              <th class="px-6 py-4">Temat</th>
-              <th class="px-6 py-4">Data</th>
-              <th class="px-6 py-4">Dodał</th>
-              <th class="px-6 py-4">Opiekun</th>
-              <th class="px-6 py-4">Zapytanie / Oferta</th>
-              <th class="px-6 py-4" />
+            <tr class="text-left font-bold text-gray-400 text-[10px] uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
+              <th class="px-6 py-3">Klient</th>
+              <th class="px-6 py-3">Temat</th>
+              <th class="px-6 py-3 whitespace-nowrap">Data</th>
+              <th class="px-6 py-3">Dodał</th>
+              <th class="px-6 py-3">Opiekun</th>
+              <th class="px-6 py-3">Zapytanie / Oferta</th>
+              <th class="px-6 py-3" />
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
             <tr v-for="item in kontakty.data" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
-              <td class="px-6 py-4">
-                <Link class="flex items-center font-medium text-gray-900" :href="`/kontakt/${item.id}/edit`">
+              <td class="px-6 py-3">
+                <Link class="flex items-center font-medium text-gray-900 text-xs" :href="`/kontakt/${item.id}/edit`">
                   {{ item.client }}
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-indigo-600 font-semibold" :href="`/kontakt/${item.id}/edit`">
+              <td class="px-6 py-3">
+                <Link class="flex items-center text-indigo-600 font-semibold text-xs" :href="`/kontakt/${item.id}/edit`">
                   {{ item.subject }}
-                  <span v-if="item.replies_count > 0" class="ml-2 text-xs text-gray-500">({{ item.replies_count }} odpowiedzi)</span>
+                  <span v-if="item.replies_count > 0" class="ml-2 text-[10px] text-gray-500">({{ item.replies_count }})</span>
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-600" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
+              <td class="px-6 py-3 whitespace-nowrap">
+                <Link class="flex items-center text-gray-600 text-xs" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
                   {{ item.call_date }}
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-600" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
+              <td class="px-6 py-3">
+                <Link class="flex items-center text-gray-600 text-xs" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
                   {{ item.user }}
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-600" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
+              <td class="px-6 py-3">
+                <Link class="flex items-center text-gray-600 text-xs" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
                   {{ item.opiekun }}
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex flex-col text-gray-500 text-xs" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
-                  <span>Z: {{ item.zapytanie }}</span>
-                  <span>O: {{ item.oferta }}</span>
+              <td class="px-6 py-3">
+                <Link class="flex flex-col text-gray-500 text-[10px]" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
+                  <span class="whitespace-nowrap">Z: {{ truncateText(item.zapytanie, 15) }}</span>
+                  <span class="whitespace-nowrap">O: {{ truncateText(item.oferta, 15) }}</span>
                 </Link>
               </td>
-              <td class="px-6 py-4 text-right">
-                <Link class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
-                  <icon name="cheveron-right" class="w-5 h-5" />
+              <td class="px-6 py-3 text-right">
+                <Link class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
+                  <icon name="cheveron-right" class="w-4 h-4" />
                 </Link>
               </td>
             </tr>
@@ -69,7 +69,7 @@
               <td class="px-6 py-12 text-center text-gray-400" colspan="7">
                 <div class="flex flex-col items-center">
                   <icon name="contact" class="w-12 h-12 mb-2 opacity-20" />
-                  <p>Nie znaleziono żadnych kontaktów.</p>
+                  <p class="text-xs">Nie znaleziono żadnych kontaktów.</p>
                 </div>
               </td>
             </tr>
@@ -77,7 +77,7 @@
         </table>
       </div>
     </div>
-    <div class="mt-8">
+    <div class="mt-6">
       <pagination :links="kontakty.links" />
     </div>
   </div>
@@ -124,6 +124,13 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    truncateText(text, length) {
+      if (!text || text === '-') return '-'
+      if (text.length <= length) {
+        return text
+      }
+      return text.substring(0, length) + '...'
     },
   },
 }

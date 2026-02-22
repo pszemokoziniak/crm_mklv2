@@ -8,8 +8,8 @@
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.nazwa" :error="form.errors.nazwa" class="pb-8 pr-6 w-full lg:w-1/1" label="Nazwa projektu"/>
-          <text-input v-model="form.miasto" :error="form.errors.miasto" class="pb-8 pr-6 w-full lg:w-1/2" label="Miejscowość"/>
+          <text-input v-model="form.nazwa" :error="form.errors.nazwa" class="pb-8 pr-6 w-full lg:w-1/1" label="Nazwa projektu" />
+          <text-input v-model="form.miasto" :error="form.errors.miasto" class="pb-8 pr-6 w-full lg:w-1/2" label="Miejscowość" />
           <select-input v-model="form.kraj_id" :error="form.errors.kraj_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Kraj">
             <option :value="null" />
             <option v-for="item in kraj" :key="item.id" :value="item.id">{{ item.name }}</option>
@@ -31,6 +31,10 @@
           <select-input v-model="form.faza_id" :error="form.errors.faza_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Faza projektu">
             <option :value="null" />
             <option v-for="item in faza" :key="item.id" :value="item.id">{{ item.name }}</option>
+          </select-input>
+          <select-input v-model="form.opiekun_id" :error="form.errors.opiekun_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Opiekun">
+            <option :value="null" />
+            <option v-for="item in users" :key="item.id" :value="item.id">{{ item.first_name }} {{ item.last_name }}</option>
           </select-input>
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
@@ -83,6 +87,7 @@ export default {
         data_kontakt: '',
         faza_id: '',
         user_id: this.$page.props.auth.user.id,
+        opiekun_id: '',
       }),
     }
   },

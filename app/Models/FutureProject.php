@@ -3,14 +3,13 @@
 namespace App\Models;
 
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FutureProject extends Model
 {
-    use HasFactory;
     use SoftDeletes;
 
     protected $guarded = [];
@@ -35,10 +34,19 @@ class FutureProject extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function opiekun(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'opiekun_id');
+    }
 
     public function objekt()
     {
         return $this->belongsTo(Objekt::class);
+    }
+
+    public function kontakty(): HasMany
+    {
+        return $this->hasMany(Kontakt::class, 'future_project_id');
     }
 
     public function scopeOrderByCreatedAt($query)

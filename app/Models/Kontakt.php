@@ -24,6 +24,7 @@ class Kontakt extends Model
         'kontakt_person_id',
         'zapytania_id',
         'oferta_id',
+        'future_project_id',
         'created_at',
         'updated_at',
     ];
@@ -45,6 +46,10 @@ class Kontakt extends Model
     public function oferta(): BelongsTo
     {
         return $this->belongsTo(Oferta::class);
+    }
+    public function futureProject(): BelongsTo
+    {
+        return $this->belongsTo(FutureProject::class);
     }
     public function client(): BelongsTo
     {

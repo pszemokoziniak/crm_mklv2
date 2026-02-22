@@ -13,6 +13,7 @@ use App\Models\Objekt;
 use App\Models\User;
 use App\Models\Zakres;
 use App\Models\Zapytania;
+use App\Models\Kontakt;
 use Carbon\Carbon;
 //use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,7 @@ class FutureProjectController extends Controller
             'filters' => Request::all('search', 'trashed'),
             'futureprojects' => FutureProject::with('client')
                 ->with('user')
+                ->with('opiekun')
                 ->with('kraj')
                 ->with('faza')
                 ->with('objekt')
@@ -48,6 +50,7 @@ class FutureProjectController extends Controller
                     'faza' => $futureproject->faza ? $futureproject->faza : null,
                     'objekt' => $futureproject->objekt ? $futureproject->objekt : null,
                     'user' => $futureproject->user ? $futureproject->user : null,
+                    'opiekun' => $futureproject->opiekun ? $futureproject->opiekun : null,
                     'kwota' => $futureproject->kwota,
 
                     'deleted_at' => $futureproject->deleted_at,
@@ -69,7 +72,7 @@ class FutureProjectController extends Controller
     }
     public function store(FutureProjectRequest $request)
     {
-        $data = FutureProject::create($request->all());
+        $data = FutureProject::create(array_merge($request->all(), ['user_id' => Auth::id()]));
 
         $this->storeActivityLog('Dodano przyszły projekt', $data->id, $request->client_id, 'futureproject', 'zmiany', Auth::id());
 
@@ -94,6 +97,7 @@ class FutureProjectController extends Controller
                 'data_kontakt' => $futureProject->data_kontakt,
                 'faza_id' => $futureProject->faza_id,
                 'user_id' => $futureProject->user_id,
+                'opiekun_id' => $futureProject->opiekun_id,
                 'deleted_at' => $futureProject->deleted_at,
             ],
             'objekt' => Objekt::get()->map->only('id', 'name'),
@@ -101,6 +105,11 @@ class FutureProjectController extends Controller
             'krajs' => Kraj::get()->map->only('id', 'name'),
             'users' => User::get()->map->only('id', 'first_name', 'last_name'),
             'clients' => Client::withTrashed()->get()->map->only('id', 'nazwa'),
+            'kontakty' => Kontakt::with(['user', 'opiekun', 'kontaktperson', 'children.user', 'children.opiekun', 'children.kontaktperson'])
+                ->where('future_project_id', $futureProject->id)
+                ->whereNull('parent_id')
+                ->orderBy('created_at', 'desc')
+                ->get(),
         ]);
     }
 
