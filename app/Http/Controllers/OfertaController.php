@@ -116,6 +116,13 @@ class OfertaController extends Controller
                 ->whereNull('parent_id')
                 ->orderBy('created_at', 'desc')
                 ->get(),
+            'activities' => $oferta->activities()->with('causer')->latest()->get()->map(fn ($activity) => [
+                'id' => $activity->id,
+                'description' => $activity->description,
+                'user' => $activity->causer ? $activity->causer->first_name . ' ' . $activity->causer->last_name : 'System',
+                'changes' => $activity->changes,
+                'created_at' => $activity->created_at->format('Y-m-d H:i:s'),
+            ]),
         ]);
     }
 

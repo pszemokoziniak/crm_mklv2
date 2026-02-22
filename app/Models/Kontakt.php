@@ -3,15 +3,12 @@
 namespace App\Models;
 
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Kontakt extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'id',
         'parent_id',
@@ -23,6 +20,7 @@ class Kontakt extends Model
         'subject',
         'description',
         'user_id',
+        'opiekun_id',
         'kontakt_person_id',
         'zapytania_id',
         'oferta_id',
@@ -34,6 +32,12 @@ class Kontakt extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function opiekun(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'opiekun_id');
+    }
+
     public function zapytania(): BelongsTo
     {
         return $this->belongsTo(Zapytania::class);
@@ -75,6 +79,10 @@ class Kontakt extends Model
                         $query->where('nazwa', 'like', '%'.$search.'%');
                     })
                     ->orWhereHas('user', function ($query) use ($search) {
+                        $query->where('first_name', 'like', '%'.$search.'%')
+                            ->orWhere('last_name', 'like', '%'.$search.'%');
+                    })
+                    ->orWhereHas('opiekun', function ($query) use ($search) {
                         $query->where('first_name', 'like', '%'.$search.'%')
                             ->orWhere('last_name', 'like', '%'.$search.'%');
                     });

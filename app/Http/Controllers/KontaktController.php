@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Kontakt;
 use App\Models\KontaktPerson;
+use App\Models\User;
 use App\Models\Zapytania;
 use App\Models\Oferta;
 use Illuminate\Support\Facades\Request;
@@ -17,7 +18,7 @@ class KontaktController extends Controller
     {
         return Inertia::render('Kontakt/Index', [
             'filters' => Request::all('search'),
-            'kontakty' => Kontakt::with(['user', 'zapytania', 'oferta', 'kontaktperson', 'client'])
+            'kontakty' => Kontakt::with(['user', 'opiekun', 'zapytania', 'oferta', 'kontaktperson', 'client'])
                 ->whereNull('parent_id')
                 ->withCount('children')
                 ->orderBy('created_at', 'desc')
@@ -30,6 +31,7 @@ class KontaktController extends Controller
                     'call_date' => $kontakt->call_date,
                     'client' => $kontakt->client ? $kontakt->client->nazwa : '-',
                     'user' => $kontakt->user ? $kontakt->user->first_name . ' ' . $kontakt->user->last_name : '-',
+                    'opiekun' => $kontakt->opiekun ? $kontakt->opiekun->first_name . ' ' . $kontakt->opiekun->last_name : '-',
                     'zapytanie' => $kontakt->zapytania ? $kontakt->zapytania->nazwa_projektu : '-',
                     'oferta' => $kontakt->oferta ? 'Oferta #' . $kontakt->oferta->id : '-',
                     'replies_count' => $kontakt->children_count,
@@ -40,7 +42,7 @@ class KontaktController extends Controller
     public function clientIndex($client_id)
     {
         return Inertia::render('Kontakt/ClientIndex', [
-            'kontakt' => Kontakt::with('user', 'zapytania', 'oferta', 'kontaktperson')
+            'kontakt' => Kontakt::with('user', 'opiekun', 'zapytania', 'oferta', 'kontaktperson')
                 ->where('client_id', $client_id)
                 ->whereNull('parent_id')
                 ->withCount('children')
@@ -69,6 +71,10 @@ class KontaktController extends Controller
 
         return Inertia::render('Kontakt/Create', [
             'clients' => Client::orderBy('nazwa')->get(),
+            'users' => User::orderBy('last_name')->get()->map(fn($u) => [
+                'id' => $u->id,
+                'name' => $u->first_name . ' ' . $u->last_name,
+            ]),
             'zapytanias' => $client ? Zapytania::where('client_id', $client->id)->get() : [],
             'ofertas' => $client ? Oferta::where('client_id', $client->id)->get()->map(fn($o) => [
                 'id' => $o->id,
@@ -83,6 +89,7 @@ class KontaktController extends Controller
             'parent_subject' => $parentKontakt ? $parentKontakt->subject : null,
             'selected_zapytania_id' => $zapytaniaId ?: ($parentKontakt ? $parentKontakt->zapytania_id : null),
             'selected_oferta_id' => $ofertaId ?: ($parentKontakt ? $parentKontakt->oferta_id : null),
+            'selected_opiekun_id' => $parentKontakt ? $parentKontakt->opiekun_id : auth()->id(),
         ]);
     }
 
@@ -100,10 +107,14 @@ class KontaktController extends Controller
             'zapytania_id' => 'nullable|exists:zapytanias,id',
             'oferta_id' => 'nullable|exists:ofertas,id',
             'parent_id' => 'nullable|exists:kontakts,id',
+            'opiekun_id' => 'nullable|exists:users,id',
         ]);
 
         $data = $request->all();
         $data['user_id'] = auth()->id();
+        if (empty($data['opiekun_id'])) {
+            $data['opiekun_id'] = auth()->id();
+        }
 
         Kontakt::create($data);
 
@@ -134,8 +145,13 @@ class KontaktController extends Controller
                 'kontakt_person_id' => $kontakt->kontakt_person_id,
                 'parent_id' => $kontakt->parent_id,
                 'client_id' => $kontakt->client_id,
+                'opiekun_id' => $kontakt->opiekun_id,
             ],
-            'replies' => $kontakt->children()->with(['user', 'kontaktperson'])->get(),
+            'users' => User::orderBy('last_name')->get()->map(fn($u) => [
+                'id' => $u->id,
+                'name' => $u->first_name . ' ' . $u->last_name,
+            ]),
+            'replies' => $kontakt->children()->with(['user', 'opiekun', 'kontaktperson'])->get(),
             'zapytanias' => Zapytania::where('client_id', $kontakt->client_id)->get(),
             'ofertas' => Oferta::where('client_id', $kontakt->client_id)->get()->map(fn($o) => [
                 'id' => $o->id,

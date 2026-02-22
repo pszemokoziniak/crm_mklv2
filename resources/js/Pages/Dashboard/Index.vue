@@ -59,9 +59,12 @@
               </div>
 
               <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
-                <div class="text-xs text-gray-500 flex items-center">
-                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                  Wysłano: {{ item.data_wyslania || 'Brak daty wysłania' }}
+                <div class="flex flex-col">
+                  <span class="text-[9px] uppercase text-gray-400 font-bold leading-none mb-1">Wysłano</span>
+                  <div class="text-xs text-gray-500 flex items-center">
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    {{ item.data_wyslania || 'Brak daty' }}
+                  </div>
                 </div>
                 <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
                   {{ item.user.first_name }} {{ item.user.last_name }}

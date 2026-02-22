@@ -66,6 +66,11 @@
             <option v-for="item in localOfertas" :key="item.id" :value="item.id">{{ item.label }}</option>
           </select-input>
 
+          <!-- Opiekun -->
+          <select-input v-model="form.opiekun_id" :error="form.errors.opiekun_id" class="pb-8 pr-6 w-full" label="Opiekun (osoba dedykowana)">
+            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+          </select-input>
+
           <!-- 7. Data i Czas Kontaktu -->
           <text-input v-model="form.call_date" :error="form.errors.call_date" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
           <text-input v-model="form.call_time" :error="form.errors.call_time" type="time" class="pb-8 pr-6 w-full lg:w-1/2" label="Godzina kontaktu" />
@@ -113,6 +118,7 @@ export default {
   layout: Layout,
   props: {
     clients: Array,
+    users: Array,
     zapytanias: Array,
     ofertas: Array,
     client_id: [String, Number],
@@ -124,6 +130,7 @@ export default {
     parent_subject: String,
     selected_zapytania_id: [String, Number],
     selected_oferta_id: [String, Number],
+    selected_opiekun_id: [String, Number],
   },
   remember: 'form',
   data() {
@@ -148,6 +155,7 @@ export default {
         kontakt_person_id: this.selected_kontakt_person_id || null,
         client_id: this.client_id || null,
         parent_id: this.parent_id || null,
+        opiekun_id: this.selected_opiekun_id || null,
       }),
     }
   },

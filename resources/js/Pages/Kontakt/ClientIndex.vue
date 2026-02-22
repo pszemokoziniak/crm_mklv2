@@ -19,6 +19,7 @@
             <th class="pb-4 pt-6 px-6">Temat</th>
             <th class="pb-4 pt-6 px-6 hidden md:table-cell">Opis</th>
             <th class="pb-4 pt-6 px-6">Osoba kontaktowa</th>
+            <th class="pb-4 pt-6 px-6">Opiekun</th>
             <th class="pb-4 pt-6 px-6">Data kontaktu</th>
             <th class="pb-4 pt-6 px-6 text-indigo-600">Następny kontakt</th>
             <th class="pb-4 pt-6 px-6" />
@@ -50,6 +51,17 @@
             </td>
             <td class="border-t">
               <Link class="flex items-center px-6 py-4 text-gray-600" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
+                <span v-if="item.opiekun">
+                  {{ item.opiekun.first_name }} {{ item.opiekun.last_name }}
+                </span>
+                <span v-else-if="item.user">
+                  {{ item.user.first_name }} {{ item.user.last_name }}
+                </span>
+                <span v-else class="text-gray-400 italic">-</span>
+              </Link>
+            </td>
+            <td class="border-t">
+              <Link class="flex items-center px-6 py-4 text-gray-600" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
                 {{ item.call_date }} <span class="ml-2 text-gray-400 text-xs">{{ item.call_time }}</span>
               </Link>
             </td>
@@ -68,7 +80,7 @@
             </td>
           </tr>
           <tr v-if="kontakt.length === 0">
-            <td class="px-6 py-4 border-t text-center text-gray-500" colspan="6">Nie znaleziono żadnych kontaktów.</td>
+            <td class="px-6 py-4 border-t text-center text-gray-500" colspan="7">Nie znaleziono żadnych kontaktów.</td>
           </tr>
         </tbody>
       </table>

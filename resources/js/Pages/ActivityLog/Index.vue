@@ -1,61 +1,65 @@
 <template>
   <div>
-    <Head title="Aktywaność" />
-    <h1 class="mb-8 text-3xl font-bold">Aktywność</h1>
-    <div class="bg-white rounded-md shadow overflow-x-auto">
+    <Head title="Aktywność systemowa" />
+    <h1 class="mb-8 text-3xl font-bold">Aktywność systemowa</h1>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <table class="w-full whitespace-nowrap">
-        <tr class="text-left font-bold">
-          <th class="pb-4 pt-6 px-6">Typ</th>
-          <th class="pb-4 pt-6 px-6">Firma</th>
-          <th class="pb-4 pt-6 px-6">Użytkownik</th>
-          <th class="pb-4 pt-6 px-6">Data</th>
-        </tr>
-        <tr v-for="item in historia.data" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
-          <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.link_id}/edit`">
-              {{ item.action }}
-              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
-            </Link>
-          </td>
-          <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.link_id}/edit`">
-              {{ item.client ? item.client.nazwa : 'Brak danych' }}
-              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
-            </Link>
-          </td>
-          <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.link_id}/edit`">
-              <span v-if="item.user">{{ item.user.last_name }} {{ item.user.first_name }}</span>
-              <span v-else>System</span>
-              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
-            </Link>
-          </td>
-          <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/${item.link_action}/${item.link_id}/edit`">
+        <thead>
+          <tr class="text-left font-bold text-gray-400 text-[10px] uppercase tracking-widest bg-gray-50/50">
+            <th class="px-6 py-3">Użytkownik</th>
+            <th class="px-6 py-3">Akcja</th>
+            <th class="px-6 py-3">Model</th>
+            <th class="px-6 py-3">Data</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          <tr v-for="item in historia.data" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
+            <td class="px-6 py-3">
+              <span class="font-medium text-gray-900 text-xs">{{ item.causer }}</span>
+            </td>
+            <td class="px-6 py-3">
+              <span
+                :class="[
+                  item.description === 'created' ? 'text-green-600' :
+                  item.description === 'deleted' ? 'text-red-600' : 'text-blue-600',
+                  'font-bold uppercase text-sm tracking-wider'
+                ]"
+              >
+                {{ item.description === 'created' ? 'Utworzono' :
+                  item.description === 'updated' ? 'Zaktualizowano' :
+                  item.description === 'deleted' ? 'Usunięto' : item.description }}
+              </span>
+            </td>
+            <td class="px-6 py-3">
+              <Link v-if="item.link" :href="item.link" class="text-indigo-600 hover:underline font-semibold text-xs">
+                {{ item.subject_type }} #{{ item.subject_id }}
+              </Link>
+              <span v-else class="text-gray-400 text-xs">{{ item.subject_type }} #{{ item.subject_id }}</span>
+            </td>
+            <td class="px-6 py-3 text-sm text-gray-500">
               {{ item.created_at }}
-              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
-            </Link>
-          </td>
-        </tr>
-        <tr v-if="historia.data && historia.data.length === 0">
-          <td class="px-6 py-4 border-t" colspan="4">Brak</td>
-        </tr>
+            </td>
+          </tr>
+          <tr v-if="historia.data && historia.data.length === 0">
+            <td class="px-6 py-8 text-center text-gray-400 text-xs" colspan="4">
+              Brak zarejestrowanej aktywności.
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
-    <pagination class="mt-6" :links="historia.links" />
+    <pagination class="mt-4" :links="historia.links" />
   </div>
 </template>
 
 <script>
 import { Head, Link } from '@inertiajs/inertia-vue3'
-import Icon from '@/Shared/Icon'
 import Layout from '@/Shared/Layout'
 import Pagination from '@/Shared/Pagination'
 
 export default {
   components: {
     Head,
-    Icon,
     Link,
     Pagination,
   },

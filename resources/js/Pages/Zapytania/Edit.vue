@@ -297,6 +297,66 @@
           </table>
         </div>
       </div>
+
+      <!-- Historia zmian (Activity Log) - NA SAMYM DOLE -->
+      <div class="mt-12 mb-12">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="flex items-center px-8 py-6 border-b border-gray-50 bg-gray-50/30">
+            <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">
+              <icon name="printer" class="w-6 h-6 fill-amber-600" />
+            </div>
+            <h2 class="text-xl font-bold text-gray-800">Historia zmian systemowych</h2>
+          </div>
+          <div class="p-8">
+            <div v-if="activities && activities.length > 0" class="flow-root">
+              <ul role="list" class="-mb-8">
+                <li v-for="(activity, index) in activities" :key="activity.id">
+                  <div class="relative pb-8">
+                    <span v-if="index !== activities.length - 1" class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+                    <div class="relative flex space-x-3">
+                      <div>
+                        <span
+                          :class="[
+                            activity.description === 'created' ? 'bg-green-500' :
+                            activity.description === 'deleted' ? 'bg-red-500' : 'bg-blue-500',
+                            'h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'
+                          ]"
+                        >
+                          <icon :name="activity.description === 'created' ? 'plus' : 'edit'" class="w-4 h-4 text-white" />
+                        </span>
+                      </div>
+                      <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                        <div>
+                          <p class="text-sm text-gray-500">
+                            <span class="font-medium text-gray-900">{{ activity.user }}</span>
+                            {{ activity.description === 'created' ? 'utworzył(a) rekord' :
+                              activity.description === 'updated' ? 'zaktualizował(a) dane' :
+                              activity.description === 'deleted' ? 'usunął/ęła rekord' : activity.description }}
+                          </p>
+                          <!-- Wyświetlanie zmian -->
+                          <div v-if="activity.changes && activity.changes.attributes" class="mt-2 text-xs bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <div v-for="(val, key) in activity.changes.attributes" :key="key" class="mb-1 last:mb-0">
+                              <span class="font-bold text-gray-600">{{ key }}:</span>
+                              <span v-if="activity.changes.old" class="text-red-500 line-through mx-1">{{ activity.changes.old[key] }}</span>
+                              <span class="text-green-600 font-medium">{{ val }}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="whitespace-nowrap text-right text-sm text-gray-500">
+                          <time :datetime="activity.created_at">{{ activity.created_at }}</time>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div v-else class="text-center py-6 text-gray-400 italic">
+              Brak zarejestrowanych zmian systemowych.
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -337,6 +397,7 @@ export default {
     waluta: Object,
     oferty: Object,
     kontakty: Array,
+    activities: Array,
   },
   remember: 'form',
   data() {

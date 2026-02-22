@@ -38,6 +38,11 @@
             <option v-for="item in ofertas" :key="item.id" :value="item.id">{{ item.numer_oferty }}</option>
           </select-input>
 
+          <!-- Opiekun -->
+          <select-input v-model="form.opiekun_id" :error="form.errors.opiekun_id" class="pb-8 pr-6 w-full" label="Opiekun (osoba dedykowana)">
+            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+          </select-input>
+
           <text-input v-model="form.call_date" :error="form.errors.call_date" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
           <text-input v-model="form.call_time" :error="form.errors.call_time" type="time" class="pb-8 pr-6 w-full lg:w-1/2" label="Godzina kontaktu" />
 
@@ -65,6 +70,9 @@
           <div class="flex justify-between items-start mb-2">
             <div class="text-sm text-gray-500">
               <span class="font-bold text-gray-700">{{ reply.user.first_name }} {{ reply.user.last_name }}</span>
+              <span v-if="reply.opiekun_id && reply.opiekun_id !== reply.user_id" class="ml-2 text-indigo-600">
+                (Przekazano do: {{ reply.opiekun.first_name }} {{ reply.opiekun.last_name }})
+              </span>
               • {{ reply.call_date }} {{ reply.call_time }}
             </div>
             <Link :href="`/kontakt/${reply.id}/edit`" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
@@ -106,6 +114,7 @@ export default {
   layout: Layout,
   props: {
     kontakt: Object,
+    users: Array,
     replies: Array,
     zapytanias: Array,
     ofertas: Array,
@@ -125,6 +134,7 @@ export default {
         zapytania_id: this.kontakt.zapytania_id,
         oferta_id: this.kontakt.oferta_id,
         kontakt_person_id: this.kontakt.kontakt_person_id,
+        opiekun_id: this.kontakt.opiekun_id,
       }),
     }
   },

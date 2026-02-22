@@ -19,6 +19,7 @@
               <th class="px-6 py-4">Klient</th>
               <th class="px-6 py-4">Temat</th>
               <th class="px-6 py-4">Data</th>
+              <th class="px-6 py-4">Dodał</th>
               <th class="px-6 py-4">Opiekun</th>
               <th class="px-6 py-4">Zapytanie / Oferta</th>
               <th class="px-6 py-4" />
@@ -48,6 +49,11 @@
                 </Link>
               </td>
               <td class="px-6 py-4">
+                <Link class="flex items-center text-gray-600" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
+                  {{ item.opiekun }}
+                </Link>
+              </td>
+              <td class="px-6 py-4">
                 <Link class="flex flex-col text-gray-500 text-xs" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
                   <span>Z: {{ item.zapytanie }}</span>
                   <span>O: {{ item.oferta }}</span>
@@ -60,7 +66,7 @@
               </td>
             </tr>
             <tr v-if="kontakty.data.length === 0">
-              <td class="px-6 py-12 text-center text-gray-400" colspan="6">
+              <td class="px-6 py-12 text-center text-gray-400" colspan="7">
                 <div class="flex flex-col items-center">
                   <icon name="contact" class="w-12 h-12 mb-2 opacity-20" />
                   <p>Nie znaleziono żadnych kontaktów.</p>
