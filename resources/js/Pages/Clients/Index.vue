@@ -15,13 +15,13 @@
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
           <select v-model="form.status" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-            <option :value="null">WSZYSTKO</option>
-            <option value="aktywni">AKTYWNI</option>
-            <option value="nieaktywni">NIEAKTYWNI</option>
-            <option value="zapytania">ZAPYTANIA</option>
+            <option :value="null">Wszystko</option>
+            <option value="aktywni">Aktywni</option>
+            <option value="nieaktywni">Nieaktywni</option>
+            <option value="zapytania">Zapytania</option>
           </select>
         </div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Status archiwum:</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Archiwum:</label>
         <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
           <option :value="null">Wszystko (bez usuniętych)</option>
           <option value="with">Wszystko (z usuniętymi)</option>
@@ -39,7 +39,6 @@
               <th class="px-6 py-4 whitespace-nowrap">Branża</th>
               <th class="px-6 py-4 whitespace-nowrap">Z / O / K</th>
               <th class="px-6 py-4 whitespace-nowrap">Opiekun</th>
-              <th class="px-6 py-4 whitespace-nowrap">Utworzył</th>
               <th class="px-6 py-4" />
             </tr>
           </thead>
@@ -73,12 +72,6 @@
               <td class="px-6 py-4">
                 <Link class="flex items-center text-gray-600" :href="`/clients/${item.id}/edit`" tabindex="-1">
                   <span class="text-sm font-medium">{{ item.user }}</span>
-                </Link>
-              </td>
-              <td class="px-6 py-4">
-                <Link class="flex flex-col" :href="`/clients/${item.id}/edit`" tabindex="-1">
-                  <span class="text-sm font-medium text-gray-700">{{ item.created_by }}</span>
-                  <span class="text-xs text-gray-400 mt-0.5">{{ item.created_at }}</span>
                 </Link>
               </td>
               <td class="px-6 py-4 text-right">
