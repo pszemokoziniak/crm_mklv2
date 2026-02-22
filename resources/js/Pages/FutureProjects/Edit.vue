@@ -28,7 +28,6 @@
           <text-area v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" />
           <text-input v-model="form.inwestor" :error="form.errors.inwestor" class="pb-8 pr-6 w-full lg:w-1/1" label="Inwestor" />
           <text-area v-model="form.dane_kontaktowe" :error="form.errors.dane_kontaktowe" class="pb-8 pr-6 w-full lg:w-1/1" label="Dane kontaktowe" />
-          <text-input v-model="form.data_kontakt" :error="form.errors.data_kontakt" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
           <select-input v-model="form.faza_id" :error="form.errors.faza_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Faza projektu">
             <option :value="null" />
             <option v-for="item in faza" :key="item.id" :value="item.id">{{ item.name }}</option>
@@ -86,7 +85,7 @@
 
             <!-- Odpowiedzi w wątku -->
             <div v-if="kontakt.children && kontakt.children.length > 0" class="bg-white border-t border-gray-50">
-              <div v-for="reply in kontakt.children" :key="reply.id" class="p-4 border-b border-gray-50 last:border-0 ml-8 border-l-2 border-indigo-100">
+              <div v-for="reply in kontakt.children" :key="reply.id" class="p-4 border-b border-gray-50 last:border-0 ml-8 border-l-2">
                 <div class="flex justify-between items-center mb-2">
                   <span class="text-xs font-bold text-gray-600">{{ reply.user.first_name }} {{ reply.user.last_name }}</span>
                   <div class="flex items-center gap-3">
@@ -115,6 +114,39 @@
         <div v-else class="text-center py-12 text-gray-400">
           <icon name="contact" class="w-12 h-12 mx-auto mb-3 opacity-20" />
           <p>Brak zarejestrowanych kontaktów dla tego projektu.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity Log Section -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-12">
+      <div class="flex items-center px-8 py-6 border-b border-gray-50 bg-gray-50/30">
+        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+          <icon name="activity" class="w-6 h-6 fill-blue-600" />
+        </div>
+        <h2 class="text-xl font-bold text-gray-800">Historia zmian</h2>
+      </div>
+      <div class="p-8">
+        <div v-if="activities && activities.length > 0" class="space-y-4">
+          <div v-for="activity in activities" :key="activity.id" class="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-1">
+              <span>{{ activity.user }}</span>
+              <span>{{ activity.created_at }}</span>
+            </div>
+            <p class="text-gray-700">{{ activity.description }}</p>
+            <div v-if="activity.changes && activity.changes.attributes" class="mt-2 text-xs text-gray-600">
+              <span class="font-semibold">Zmieniono:</span>
+              <ul class="list-disc list-inside ml-2">
+                <li v-for="(value, key) in activity.changes.attributes" :key="key">
+                  {{ key }}: <span class="font-medium">{{ value }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div v-else class="text-center py-12 text-gray-400">
+          <icon name="activity" class="w-12 h-12 mx-auto mb-3 opacity-20" />
+          <p>Brak zarejestrowanych zmian dla tego projektu.</p>
         </div>
       </div>
     </div>
@@ -151,6 +183,7 @@ export default {
     krajs: Object,
     users: Object,
     kontakty: Array,
+    activities: Array, // Added activities prop
   },
   remember: 'form',
   data() {

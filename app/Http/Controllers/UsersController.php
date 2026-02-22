@@ -25,8 +25,9 @@ class UsersController extends Controller
             'users' => Auth::user()->account->users()
                 ->orderByName()
                 ->filter(Request::only('search', 'role', 'trashed'))
-                ->get()
-                ->transform(fn ($user) => [
+                ->paginate(10)
+                ->withQueryString()
+                ->through(fn ($user) => [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
@@ -94,6 +95,13 @@ class UsersController extends Controller
                 'id' => $role->id,
                 'name' => $role->name,
             ]),
+            'activities' => $user->activities()->with('causer')->latest()->get()->map(fn ($activity) => [
+                'id' => $activity->id,
+                'description' => $activity->description,
+                'user' => $activity->causer ? $activity->causer->first_name . ' ' . $activity->causer->last_name : 'System',
+                'changes' => $activity->changes,
+                'created_at' => $activity->created_at->format('Y-m-d H:i:s'),
+            ]),
         ]);
     }
 
@@ -113,10 +121,25 @@ class UsersController extends Controller
             'active' => ['nullable']
         ]);
 
+        $oldRole = $user->getRoleNames()->first();
+        $newRole = Request::get('role');
+
         $user->update(Request::only('first_name', 'last_name', 'email', 'active'));
 
-        if (Request::get('role') && Auth::user()->hasRole('super-admin')) {
-            $user->syncRoles(Request::get('role'));
+        if ($newRole && Auth::user()->hasRole('super-admin')) {
+            if ($oldRole !== $newRole) {
+                $user->syncRoles($newRole);
+
+                // Ręczne logowanie zmiany roli
+                activity()
+                    ->performedOn($user)
+                    ->causedBy(Auth::user())
+                    ->withProperties([
+                        'attributes' => ['role' => $newRole],
+                        'old' => ['role' => $oldRole]
+                    ])
+                    ->log('updated');
+            }
         }
 
         if (Request::file('photo')) {

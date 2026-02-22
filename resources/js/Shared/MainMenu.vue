@@ -43,7 +43,6 @@ export default {
         { label: 'Ustawienia', href: '/edit', icon: 'edit', activeRule: 'edit' },
         { label: 'Użytkownicy', href: '/users', icon: 'users', activeRule: 'users' },
         { label: 'Historia', href: '/activity', icon: 'historia', activeRule: 'activity' },
-        { label: 'BackUp', href: '/backup', icon: 'backup', activeRule: 'backup' },
       ],
     }
   },

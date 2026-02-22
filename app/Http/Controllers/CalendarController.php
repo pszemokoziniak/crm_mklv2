@@ -89,7 +89,7 @@ class CalendarController extends Controller
     {
         $search = array_values(Request::all('search'))[0];
 
-        $zapytanias = Zapytania::with('oferta')
+        $zapytanias = Zapytania::with('oferty')
             ->with('client')
             ->where(function ($query) use ($search){
                 $query->where('nazwa_projektu', 'like', '%'.$search.'%');
@@ -112,7 +112,7 @@ class CalendarController extends Controller
         foreach ($zapytanias as $item) {
 
             $colSpan = $this->getColSpan($start, $end, $item->start, $item->end);
-            array_push($data, ['id' => $item->id, 'id_zapyt' => $item->id_zapyt, 'nazwa_projektu' => $item->nazwa_projektu, 'oferta' => $item->oferta, 'client' => $item->client, 'start' => $item->start, 'end' => $item->end, 'colSpan' => $colSpan]);
+            array_push($data, ['id' => $item->id, 'id_zapyt' => $item->id_zapyt, 'nazwa_projektu' => $item->nazwa_projektu, 'oferta' => $item->oferty, 'client' => $item->client, 'start' => $item->start, 'end' => $item->end, 'colSpan' => $colSpan]);
         }
 
         return $data;

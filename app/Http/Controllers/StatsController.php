@@ -153,20 +153,20 @@ class StatsController extends Controller
                 ->whereYear('start', $month->format('Y'))
                 ->get()->sum('kwotaPLN');
 
-            $oferty = Zapytania::with('oferta')
+            $oferty = Zapytania::with('oferty')
 //                ->select('zapytanias.start', 'ofertas.kwotaPLN')
                 ->whereMonth('start', $month->format('m'))
                 ->whereYear('start', $month->format('Y'))
-                ->get()->sum('oferta.kwotaPLN');
+                ->get()->sum('oferty.kwotaPLN');
 
-            $ofertyWygrane = Zapytania::with('oferta')
+            $ofertyWygrane = Zapytania::with('oferty')
                 ->whereMonth('start', $month->format('m'))
                 ->whereYear('start', $month->format('Y'))
 //                ->where('oferta.oferta_status_id', '603f809e-aa41-49be-b25f-2166dd93bd5e')
-                ->whereHas('oferta', function ($query) {
+                ->whereHas('oferty', function ($query) {
                     $query->where('oferta_status_id', '603f809e-aa41-49be-b25f-2166dd93bd5e');
                 })
-                ->get()->sum('oferta.kwotaPLN');
+                ->get()->sum('oferty.kwotaPLN');
 
             $zapytaniaMonthSum[] = $zapytania;
             $ofertyMonthSum[] = $oferty;

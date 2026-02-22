@@ -94,20 +94,25 @@
                       <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                         <div>
                           <p class="text-sm text-gray-500">
-                            Opiekun: <span class="font-medium text-gray-900">{{ assignment.assigned_user.first_name }} {{ assignment.assigned_user.last_name }}</span>
+                            Opiekun: <span v-if="assignment.assigned_user" class="font-medium text-gray-900">{{ assignment.assigned_user.first_name }} {{ assignment.assigned_user.last_name }}</span>
+                            <span v-else class="italic text-gray-400">Nieznany</span>
                           </p>
                           <p class="text-xs text-gray-400 mt-1">
-                            Przez: {{ assignment.assigner.first_name }} {{ assignment.assigner.last_name }}
+                            Przez: <span v-if="assignment.assigner">{{ assignment.assigner.first_name }} {{ assignment.assigner.last_name }}</span>
+                            <span v-else class="italic">System</span>
                           </p>
                         </div>
                         <div class="whitespace-nowrap text-right text-xs text-gray-500">
-                          {{ new Date(assignment.assigned_at).toLocaleDateString() }}
+                          {{ assignment.assigned_at ? new Date(assignment.assigned_at).toLocaleDateString() : '-' }}
                         </div>
                       </div>
                     </div>
                   </div>
                 </li>
               </ul>
+            </div>
+            <div v-else class="text-center py-4 text-gray-400 italic">
+              Brak historii przypisań.
             </div>
           </div>
         </div>

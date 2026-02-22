@@ -22,7 +22,7 @@
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Status archiwum:</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
               <select v-model="form.trashed" class="form-select w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500">
                 <option :value="null">Aktywni</option>
                 <option value="with">Wszystko</option>
@@ -46,7 +46,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-            <tr v-for="user in users" :key="user.id" class="hover:bg-indigo-50/30 transition-colors group">
+            <tr v-for="user in users.data" :key="user.id" class="hover:bg-indigo-50/30 transition-colors group">
               <td class="px-6 py-4">
                 <Link class="flex items-center focus:outline-none" :href="`/users/${user.id}/edit`">
                   <div class="relative">
@@ -80,7 +80,7 @@
                 </Link>
               </td>
             </tr>
-            <tr v-if="users.length === 0">
+            <tr v-if="users.data.length === 0">
               <td class="px-6 py-12 text-center text-gray-500" colspan="4">
                 <div class="flex flex-col items-center">
                   <icon name="users" class="w-12 h-12 text-gray-200 mb-2" />
@@ -92,6 +92,7 @@
         </table>
       </div>
     </div>
+    <pagination class="mt-6" :links="users.links" />
   </div>
 </template>
 
@@ -103,6 +104,7 @@ import Layout from '@/Shared/Layout'
 import throttle from 'lodash/throttle'
 import mapValues from 'lodash/mapValues'
 import SearchFilter from '@/Shared/SearchFilter'
+import Pagination from '@/Shared/Pagination'
 
 
 export default {
@@ -111,11 +113,12 @@ export default {
     Icon,
     Link,
     SearchFilter,
+    Pagination,
   },
   layout: Layout,
   props: {
     filters: Object,
-    users: Array,
+    users: Object,
     roles: Array,
   },
   data() {

@@ -7,12 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class FutureProject extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LogsActivity;
 
     protected $guarded = [];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     public function resolveRouteBinding($value, $field = null)
     {
@@ -56,20 +66,22 @@ class FutureProject extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('nazwa', 'like', '%'.$search.'%')
-//                ->orWhereHas('zakres', function ($query) use ($search) {
-//                    $query->where('name', 'like', '%'.$search.'%');
-//                })
-                ->orWhereHas('kraj', function ($query) use ($search) {
-                    $query->where('name', 'like', '%'.$search.'%');
-                })
-                ->orWhereHas('client', function ($query) use ($search) {
-                    $query->where('nazwa', 'like', '%'.$search.'%');
-                })
-                ->orWhereHas('user', function ($query) use ($search) {
-                    $query->where('first_name', 'like', '%'.$search.'%')
-                        ->orWhere('last_name', 'like', '%'.$search.'%');
-                });
+            $query->where(function ($query) use ($search) {
+                $query->where('nazwa', 'like', '%'.$search.'%')
+                    ->orWhere('miasto', 'like', '%'.$search.'%')
+                    ->orWhereHas('kraj', function ($query) use ($search) {
+                        $query->where('name', 'like', '%'.$search.'%');
+                    })
+                    ->orWhereHas('client', function ($query) use ($search) {
+                        $query->where('nazwa', 'like', '%'.$search.'%');
+                    })
+                    ->orWhereHas('objekt', function ($query) use ($search) {
+                        $query->where('name', 'like', '%'.$search.'%');
+                    })
+                    ->orWhereHas('faza', function ($query) use ($search) {
+                        $query->where('name', 'like', '%'.$search.'%');
+                    });
+            });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
