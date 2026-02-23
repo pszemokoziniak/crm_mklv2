@@ -14,104 +14,89 @@ class LegacyKontaktSeeder extends Seeder
     {
         Schema::disableForeignKeyConstraints();
 
-        $tableName = 'mkl_kontaktKli';
-        if (!Schema::connection('old_crm')->hasTable($tableName)) {
-            $tableName = 'mkl_kontakty';
-        }
+        // Sprawdzamy obie potencjalne tabele źródłowe
+        $tables = ['mkl_kontaktKli', 'mkl_kontakty'];
 
-        $oldKontakts = DB::connection('old_crm')->table($tableName)->get();
-        $availableKontaktPersonIds = DB::table('kontakt_persons')->pluck('id')->toArray();
-        $availableClientIds = DB::table('clients')->pluck('id')->toArray();
-        $availableZapytaniaIds = DB::table('zapytanias')->pluck('id')->toArray();
+        foreach ($tables as $tableName) {
+            if (!Schema::connection('old_crm')->hasTable($tableName)) {
+                continue;
+            }
 
-        foreach ($oldKontakts as $old) {
-            if ($tableName === 'mkl_kontaktKli') {
-                // Mapowanie wg nowej instrukcji dla mkl_kontaktKli
-                $kontaktPersonId = $old->klientIdKon;
+            $oldKontakts = DB::connection('old_crm')->table($tableName)->get();
 
-                // Pobieramy client_id z tabeli kontakt_persons na podstawie kontakt_person_id
-                $clientId = DB::table('kontakt_persons')->where('id', $kontaktPersonId)->value('client_id');
+            foreach ($oldKontakts as $old) {
+                $clientId = null;
+                $kontaktPersonId = null;
+                $zapytaniaId = null;
+                $id = null;
 
-                // Jeśli nie znaleziono klienta przez osobę, sprawdźmy czy to nie jest ID klienta
-                if (!$clientId && in_array($kontaktPersonId, $availableClientIds)) {
-                    $clientId = $kontaktPersonId;
+                if ($tableName === 'mkl_kontaktKli') {
+                    $id = $old->id;
+                    // W tej tabeli klientIdKon to BEZPOŚREDNIO ID klienta
+                    $clientId = $old->klientIdKon;
                     $kontaktPersonId = null;
+
+                    $callDate = $this->formatDate($old->lastKo);
+                    $callTime = $old->time ? date('H:i:s', strtotime($old->time)) : '00:00:00';
+                    $nextCallDate = $this->formatDate($old->nextKo);
+                    $description = $old->opis ?? '';
+                    $createdAt = $this->formatDate($old->time);
+                    $subject = 'Kontakt z CRM (mkl_kontaktKli)';
+
+                    $userIdRaw = $old->user;
+                } else {
+                    // Logika dla mkl_kontakty
+                    $id = $old->idKo ?? $old->id;
+                    $clientId = $old->klientIdKon ?? null;
+                    $kontaktPersonId = is_numeric($old->klientKo) ? (int)$old->klientKo : null;
+
+                    // Jeśli nie mamy clientId, a mamy osobę, spróbujmy wyciągnąć klienta z osoby
+                    if (!$clientId && $kontaktPersonId) {
+                        $clientId = DB::table('kontakt_persons')->where('id', $kontaktPersonId)->value('client_id');
+                    }
+
+                    $zapytaniaId = $old->zapytKo ?? $old->zap_id ?? null;
+                    if ($zapytaniaId <= 0) $zapytaniaId = null;
+
+                    $callDate = $this->formatDate($old->dataKo ?? $old->time ?? null);
+                    $callTime = isset($old->time) ? date('H:i:s', strtotime($old->time)) : (isset($old->dataKo) ? '00:00:00' : null);
+                    $nextCallDate = $this->formatDate($old->nextKo ?? null);
+                    $description = $old->opisKo ?? ($old->opis ?? '');
+                    $createdAt = $this->formatDate($old->rejestrKo ?? $old->time ?? null);
+                    $subject = $old->tematKo ?? 'Kontakt z CRM';
+
+                    $userIdRaw = $old->ktoKo ?? $old->user ?? 1;
                 }
 
+                // Jeśli nadal nie mamy clientId, pomijamy rekord
                 if (!$clientId) {
                     continue;
                 }
 
-                $userId = $old->user;
-                if (!is_numeric($userId)) {
-                    $user = User::where(DB::raw("CONCAT(first_name, ' ', last_name)"), $userId)->first();
-                    $userId = $user ? $user->id : 1;
+                // Mapowanie użytkownika
+                $userId = 1;
+                if (is_numeric($userIdRaw)) {
+                    $userId = (int)$userIdRaw;
+                } else if ($userIdRaw) {
+                    $user = User::where(DB::raw("CONCAT(first_name, ' ', last_name)"), $userIdRaw)->first();
+                    if ($user) $userId = $user->id;
                 }
 
                 Kontakt::updateOrCreate(
-                    ['id' => $old->id],
+                    ['id' => $id],
                     [
                         'client_id' => $clientId,
-                        'call_date' => $this->formatDate($old->lastKo),
-                        'call_time' => $old->time ? date('H:i:s', strtotime($old->time)) : '00:00:00',
-                        'next_call_date' => $this->formatDate($old->nextKo),
+                        'call_date' => $callDate,
+                        'call_time' => $callTime,
+                        'next_call_date' => $nextCallDate,
                         'next_call_time' => null,
-                        'subject' => 'Kontakt z CRM',
-                        'description' => $old->opis ?? '',
-                        'user_id' => $userId,
-                        'kontakt_person_id' => $kontaktPersonId, // Kopiujemy bezpośrednio klientIdKon
-                        'zapytania_id' => null,
-                        'created_at' => $this->formatDate($old->time),
-                        'updated_at' => $this->formatDate($old->time),
-                    ]
-                );
-            } else {
-                // Logika dla mkl_kontakty
-                $clientId = $old->klientIdKon ?? $old->klientKo ?? null;
-
-                if ($clientId && !is_numeric($clientId)) {
-                    $clientId = DB::table('clients')->where('nazwa', $clientId)->value('id');
-                }
-
-                if ((!$clientId || !in_array($clientId, $availableClientIds)) && is_numeric($old->klientKo)) {
-                    $clientId = DB::table('kontakt_persons')->where('id', $old->klientKo)->value('client_id');
-                }
-
-                if (!$clientId || !in_array($clientId, $availableClientIds)) {
-                    continue;
-                }
-
-                $kontaktPersonId = is_numeric($old->klientKo) ? (int)$old->klientKo : null;
-                if ($kontaktPersonId && !in_array($kontaktPersonId, $availableKontaktPersonIds)) {
-                    $kontaktPersonId = null;
-                }
-
-                $zapytaniaId = $old->zapytKo ?? $old->zap_id ?? null;
-                if ($zapytaniaId <= 0 || !in_array($zapytaniaId, $availableZapytaniaIds)) {
-                    $zapytaniaId = null;
-                }
-
-                $userId = $old->ktoKo ?? $old->user ?? 1;
-                if (!is_numeric($userId)) {
-                    $user = User::where(DB::raw("CONCAT(first_name, ' ', last_name)"), $userId)->first();
-                    $userId = $user ? $user->id : 1;
-                }
-
-                Kontakt::updateOrCreate(
-                    ['id' => $old->idKo ?? $old->id],
-                    [
-                        'client_id' => $clientId,
-                        'call_date' => $this->formatDate($old->dataKo ?? $old->time ?? null),
-                        'call_time' => isset($old->time) ? date('H:i:s', strtotime($old->time)) : (isset($old->dataKo) ? '00:00:00' : null),
-                        'next_call_date' => $this->formatDate($old->nextKo ?? null),
-                        'next_call_time' => null,
-                        'subject' => $old->tematKo ?? 'Kontakt z CRM',
-                        'description' => $old->opisKo ?? ($old->opis ?? ''),
+                        'subject' => $subject,
+                        'description' => $description,
                         'user_id' => $userId,
                         'kontakt_person_id' => $kontaktPersonId,
                         'zapytania_id' => $zapytaniaId,
-                        'created_at' => $this->formatDate($old->rejestrKo ?? $old->time ?? null),
-                        'updated_at' => $this->formatDate($old->rejestrKo ?? $old->time ?? null),
+                        'created_at' => $createdAt,
+                        'updated_at' => $createdAt,
                     ]
                 );
             }
