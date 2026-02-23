@@ -85,20 +85,25 @@ class DashboardController extends Controller
                         'user' => $oferta->user ? $oferta->user : null,
                         'created_at' => date($oferta->created_at)
                     ]),
-                'futureProjects' => FutureProject::with(['user', 'client', 'faza'])
+                'futureProjects' => FutureProject::with(['user', 'client', 'faza', 'kontakty' => function($query) {
+                        $query->orderBy('created_at', 'desc');
+                    }])
                     ->filter(Request::only('search'))
                     ->orderBy('data_kontakt')
                     ->get()
-                    ->map(fn ($futureProject) => [
-                        'id' => $futureProject->id,
-                        'nazwa' => $futureProject->nazwa,
-                        'client' => $futureProject->client ? $futureProject->client : null,
-                        'data_kontakt' => $futureProject->data_kontakt,
-                        'data_start' => $futureProject->data_start,
-                        'data_end' => $futureProject->data_end,
-                        'faza' => $futureProject->faza ? $futureProject->faza->name : null,
-                        'user' => $futureProject->user ? $futureProject->user : null,
-                    ]),
+                    ->map(function ($futureProject) {
+                        $lastKontakt = $futureProject->kontakty->first();
+                        return [
+                            'id' => $futureProject->id,
+                            'nazwa' => $futureProject->nazwa,
+                            'client' => $futureProject->client ? $futureProject->client : null,
+                            'data_kontakt' => ($lastKontakt && $lastKontakt->next_call_date) ? $lastKontakt->next_call_date : $futureProject->data_kontakt,
+                            'data_start' => $futureProject->data_start,
+                            'data_end' => $futureProject->data_end,
+                            'faza' => $futureProject->faza ? $futureProject->faza->name : null,
+                            'user' => $futureProject->user ? $futureProject->user : null,
+                        ];
+                    }),
                 'zadania' => Zadania::with('responsiblePerson')
                     ->with('user')
                     ->filter(Request::only('search'))

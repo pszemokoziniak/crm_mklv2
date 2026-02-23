@@ -170,7 +170,8 @@ class KontaktController extends Controller
             ]),
             'futureProjects' => FutureProject::where('client_id', $kontakt->client_id)->get(),
             'kontaktPersons' => KontaktPerson::where('client_id', $kontakt->client_id)->get(),
-            'client_id' => $kontakt->client_id,
+            'client' => Client::find($kontakt->client_id),
+            'clients' => Client::orderBy('nazwa')->get(),
         ]);
     }
 
