@@ -129,9 +129,11 @@
               </div>
               <div class="p-4 text-gray-700 whitespace-pre-wrap text-sm">
                 <div class="mb-2 text-xs text-gray-500">
-                  Osoba: <span v-if="kontakt.kontaktperson" class="font-semibold">{{ kontakt.kontaktperson.first_name }} {{ kontakt.kontaktperson.last_name }}</span>
+                  Kontakt: <span v-if="kontakt.kontaktperson" class="font-semibold">{{ kontakt.kontaktperson.first_name
+                  }} {{ kontakt.kontaktperson.last_name }}</span>
                   <span v-else class="italic">Brak</span>
-                  • Przez: <span class="font-semibold">{{ kontakt.user.first_name }} {{ kontakt.user.last_name }}</span>
+                  • Opiekun: <span class="font-semibold">{{ kontakt.user.first_name }} {{ kontakt.user.last_name
+                  }}</span>
                 </div>
                 {{ kontakt.description }}
               </div>

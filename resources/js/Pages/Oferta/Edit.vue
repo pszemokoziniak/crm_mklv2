@@ -131,16 +131,19 @@
               </div>
               <div class="p-4 text-gray-700 whitespace-pre-wrap text-sm">
                 <div class="mb-2 text-xs text-gray-500">
-                  Osoba: <span v-if="kontakt.kontaktperson" class="font-semibold">{{ kontakt.kontaktperson.first_name }} {{ kontakt.kontaktperson.last_name }}</span>
+                  Kontakt: <span v-if="kontakt.kontaktperson" class="font-semibold">{{ kontakt.kontaktperson.first_name
+                                                                                    }}
+                    {{ kontakt.kontaktperson.last_name }}</span>
                   <span v-else class="italic">Brak</span>
-                  • Przez: <span class="font-semibold">{{ kontakt.user.first_name }} {{ kontakt.user.last_name }}</span>
+                  • Opiekun: <span class="font-semibold">{{ kontakt.user.first_name }} {{ kontakt.user.last_name
+                  }}</span>
                 </div>
                 {{ kontakt.description }}
               </div>
 
               <!-- Odpowiedzi w wątku -->
               <div v-if="kontakt.children && kontakt.children.length > 0" class="bg-white border-t border-gray-50">
-                <div v-for="reply in kontakt.children" :key="reply.id" class="p-4 border-b border-gray-50 last:border-0 ml-8 border-l-2 border-indigo-100">
+                <div v-for="reply in kontakt.children" :key="reply.id" class="p-4 border-b last:border-0 ml-8 border-l-2 border-indigo-100">
                   <div class="flex justify-between items-center mb-2">
                     <span class="text-xs font-bold text-gray-600">{{ reply.user.first_name }} {{ reply.user.last_name }}</span>
                     <div class="flex items-center gap-3">

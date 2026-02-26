@@ -18,12 +18,31 @@ class KontaktController extends Controller
     public function index()
     {
         return Inertia::render('Kontakt/Index', [
-            'filters' => Request::all('search'),
+            'filters' => Request::all('search', 'field', 'direction'),
             'kontakty' => Kontakt::with(['user', 'opiekun', 'zapytania', 'oferta', 'futureProject', 'kontaktperson', 'client'])
                 ->whereNull('parent_id')
                 ->withCount('children')
-                ->orderBy('created_at', 'desc')
                 ->filter(Request::only('search'))
+                ->when(Request::get('field'), function ($query, $field) {
+                    $direction = Request::get('direction', 'asc');
+                    if ($field === 'client') {
+                        $query->join('clients', 'kontakts.client_id', '=', 'clients.id')
+                            ->orderBy('clients.nazwa', $direction)
+                            ->select('kontakts.*');
+                    } elseif ($field === 'user') {
+                        $query->join('users', 'kontakts.user_id', '=', 'users.id')
+                            ->orderBy('users.last_name', $direction)
+                            ->select('kontakts.*');
+                    } elseif ($field === 'opiekun') {
+                        $query->join('users as opiekunowie', 'kontakts.opiekun_id', '=', 'opiekunowie.id')
+                            ->orderBy('opiekunowie.last_name', $direction)
+                            ->select('kontakts.*');
+                    } else {
+                        $query->orderBy($field, $direction);
+                    }
+                }, function ($query) {
+                    $query->orderBy('created_at', 'desc');
+                })
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($kontakt) => [

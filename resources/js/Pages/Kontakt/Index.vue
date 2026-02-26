@@ -16,11 +16,36 @@
         <table class="w-full table-auto">
           <thead>
             <tr class="text-left font-bold text-gray-400 text-[10px] uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
-              <th class="px-6 py-3">Klient</th>
-              <th class="px-6 py-3">Temat</th>
-              <th class="px-6 py-3 whitespace-nowrap">Data</th>
-              <th class="px-6 py-3">Dodał</th>
-              <th class="px-6 py-3">Opiekun</th>
+              <th class="px-6 py-3 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('client')">
+                <div class="flex items-center">
+                  Klient
+                  <icon v-if="form.field === 'client'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+                </div>
+              </th>
+              <th class="px-6 py-3 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('subject')">
+                <div class="flex items-center">
+                  Temat
+                  <icon v-if="form.field === 'subject'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+                </div>
+              </th>
+              <th class="px-6 py-3 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('call_date')">
+                <div class="flex items-center">
+                  Data
+                  <icon v-if="form.field === 'call_date'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+                </div>
+              </th>
+              <th class="px-6 py-3 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('user')">
+                <div class="flex items-center">
+                  Dodał
+                  <icon v-if="form.field === 'user'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+                </div>
+              </th>
+              <th class="px-6 py-3 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('opiekun')">
+                <div class="flex items-center">
+                  Opiekun
+                  <icon v-if="form.field === 'opiekun'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+                </div>
+              </th>
               <th class="px-6 py-3">Zapytanie / Oferta</th>
               <th class="px-6 py-3" />
             </tr>
@@ -110,6 +135,8 @@ export default {
     return {
       form: {
         search: this.filters.search,
+        field: this.filters.field,
+        direction: this.filters.direction,
       },
     }
   },
@@ -124,6 +151,10 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    sort(field) {
+      this.form.field = field
+      this.form.direction = this.form.direction === 'asc' ? 'desc' : 'asc'
     },
     truncateText(text, length) {
       if (!text || text === '-') return '-'

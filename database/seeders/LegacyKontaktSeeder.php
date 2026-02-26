@@ -12,99 +12,62 @@ class LegacyKontaktSeeder extends Seeder
 {
     public function run()
     {
+        // Wyłączamy klucze obce na czas importu
         Schema::disableForeignKeyConstraints();
 
-        // Sprawdzamy obie potencjalne tabele źródłowe
-        $tables = ['mkl_kontaktKli', 'mkl_kontakty'];
+        $tableName = 'mkl_kontakty';
 
-        foreach ($tables as $tableName) {
-            if (!Schema::connection('old_crm')->hasTable($tableName)) {
+        if (!Schema::connection('old_crm')->hasTable($tableName)) {
+            $this->command->error("Tabela {$tableName} nie istnieje w połączeniu old_crm!");
+            return;
+        }
+
+        $oldKontakts = DB::connection('old_crm')->table($tableName)->get();
+
+        foreach ($oldKontakts as $old) {
+            // Mapowanie ID klienta ze starego pola klientKo
+            $clientId = (int)$old->klientKo;
+
+            if (!$clientId) {
+                $this->command->warn("Pominięto rekord ID: {$old->idKo} - brak client_id");
                 continue;
             }
 
-            $oldKontakts = DB::connection('old_crm')->table($tableName)->get();
+            // Mapowanie użytkownika (ktoKo)
+            $userId = (int)($old->ktoKo ?: 1);
 
-            foreach ($oldKontakts as $old) {
-                $clientId = null;
-                $kontaktPersonId = null;
-                $zapytaniaId = null;
-                $id = null;
+            // Obsługa ID oferty i zapytania (0 traktujemy jako null)
+            $ofertaId = ($old->ofertaKo > 0) ? $old->ofertaKo : null;
+            $zapytaniaId = ($old->zapytKo > 0) ? $old->zapytKo : null;
 
-                if ($tableName === 'mkl_kontaktKli') {
-                    $id = $old->id;
-                    // W tej tabeli klientIdKon to BEZPOŚREDNIO ID klienta
-                    $clientId = $old->klientIdKon;
-                    $kontaktPersonId = null;
-
-                    $callDate = $this->formatDate($old->lastKo);
-                    $callTime = $old->time ? date('H:i:s', strtotime($old->time)) : '00:00:00';
-                    $nextCallDate = $this->formatDate($old->nextKo);
-                    $description = $old->opis ?? '';
-                    $createdAt = $this->formatDate($old->time);
-                    $subject = 'Kontakt z CRM (mkl_kontaktKli)';
-
-                    $userIdRaw = $old->user;
-                } else {
-                    // Logika dla mkl_kontakty
-                    $id = $old->idKo ?? $old->id;
-                    $clientId = $old->klientIdKon ?? null;
-                    $kontaktPersonId = is_numeric($old->klientKo) ? (int)$old->klientKo : null;
-
-                    // Jeśli nie mamy clientId, a mamy osobę, spróbujmy wyciągnąć klienta z osoby
-                    if (!$clientId && $kontaktPersonId) {
-                        $clientId = DB::table('kontakt_persons')->where('id', $kontaktPersonId)->value('client_id');
-                    }
-
-                    $zapytaniaId = $old->zapytKo ?? $old->zap_id ?? null;
-                    if ($zapytaniaId <= 0) $zapytaniaId = null;
-
-                    $callDate = $this->formatDate($old->dataKo ?? $old->time ?? null);
-                    $callTime = isset($old->time) ? date('H:i:s', strtotime($old->time)) : (isset($old->dataKo) ? '00:00:00' : null);
-                    $nextCallDate = $this->formatDate($old->nextKo ?? null);
-                    $description = $old->opisKo ?? ($old->opis ?? '');
-                    $createdAt = $this->formatDate($old->rejestrKo ?? $old->time ?? null);
-                    $subject = $old->tematKo ?? 'Kontakt z CRM';
-
-                    $userIdRaw = $old->ktoKo ?? $old->user ?? 1;
-                }
-
-                // Jeśli nadal nie mamy clientId, pomijamy rekord
-                if (!$clientId) {
-                    continue;
-                }
-
-                // Mapowanie użytkownika
-                $userId = 1;
-                if (is_numeric($userIdRaw)) {
-                    $userId = (int)$userIdRaw;
-                } else if ($userIdRaw) {
-                    $user = User::where(DB::raw("CONCAT(first_name, ' ', last_name)"), $userIdRaw)->first();
-                    if ($user) $userId = $user->id;
-                }
-
-                Kontakt::updateOrCreate(
-                    ['id' => $id],
-                    [
-                        'client_id' => $clientId,
-                        'call_date' => $callDate,
-                        'call_time' => $callTime,
-                        'next_call_date' => $nextCallDate,
-                        'next_call_time' => null,
-                        'subject' => $subject,
-                        'description' => $description,
-                        'user_id' => $userId,
-                        'kontakt_person_id' => $kontaktPersonId,
-                        'zapytania_id' => $zapytaniaId,
-                        'created_at' => $createdAt,
-                        'updated_at' => $createdAt,
-                    ]
-                );
-            }
+            Kontakt::updateOrCreate(
+                ['id' => $old->idKo],
+                [
+                    'client_id'         => $clientId,
+                    'call_date'         => $this->formatDate($old->dataKo),
+                    'call_time'         => '00:00:00', // W starej tabeli brało tylko DATE
+                    'next_call_date'    => $this->formatDate($old->nextKo),
+                    'next_call_time'    => null,
+                    'subject'           => $old->tematKo ?? 'Kontakt z CRM',
+                    'description'       => $old->opisKo ?? '',
+                    'user_id'           => $userId,
+                    'opiekun_id'        => null, // Jeśli masz logikę opiekuna, można tu dodać
+                    'kontakt_person_id' => null, // Tabela źródłowa nie posiada jasnego powiązania z osobą kontaktową
+                    'zapytania_id'      => $zapytaniaId,
+                    'oferta_id'         => $ofertaId,
+                    'created_at'        => $this->formatDate($old->rejestrKo),
+                    'updated_at'        => $this->formatDate($old->rejestrKo),
+                ]
+            );
         }
 
         Schema::enableForeignKeyConstraints();
+        $this->command->info("Import kontaktów zakończony sukcesem.");
     }
 
+    /**
+     * Formatuje datę, unikając błędnych wartości MySQL
+     */
     private function formatDate($date)
     {
         if (!$date || $date == '0000-00-00' || $date == '0000-00-00 00:00:00') {

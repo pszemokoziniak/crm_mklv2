@@ -32,9 +32,19 @@
     </div>
 
     <div v-show="activeTab === 'todo'">
-      <div class="flex items-center justify-between mb-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
         <h1 class="text-3xl font-extrabold text-gray-900">Do zrobienia</h1>
-        <search-filter-simple v-model="form.search" class="w-full max-w-md" @reset="reset" />
+        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full max-w-2xl">
+          <div v-if="users && users.length > 0" class="flex w-full sm:w-64 bg-white rounded shadow">
+            <select v-model="form.user_id" class="relative w-full px-4 py-3 rounded focus:shadow-outline border-none text-sm">
+              <option :value="null">Wszyscy użytkownicy</option>
+              <option v-for="user in users" :key="user.id" :value="user.id">
+                {{ user.first_name }} {{ user.last_name }}
+              </option>
+            </select>
+          </div>
+          <search-filter-simple v-model="form.search" class="w-full" @reset="reset" />
+        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
@@ -87,6 +97,13 @@
                 </div>
 
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
+                  <div v-if="item.data_kontakt" class="flex flex-col">
+                    <span class="text-[9px] uppercase text-indigo-500 font-bold leading-none mb-1">Data kontaktu</span>
+                    <div class="text-xs text-indigo-700 font-bold flex items-center">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      {{ item.data_kontakt }}
+                    </div>
+                  </div>
                   <div class="flex flex-col">
                     <span class="text-[9px] uppercase text-gray-400 font-bold leading-none mb-1">Wysłano</span>
                     <div class="text-xs text-gray-500 flex items-center">
@@ -144,37 +161,6 @@
                       <span class="text-[9px] uppercase text-gray-400 font-bold leading-none mb-1">Opiekun</span>
                       <span class="text-[10px] text-gray-500 truncate">{{ item.user.first_name }} {{ item.user.last_name }}</span>
                     </div>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <!-- Przyszłe projekty -->
-        <div class="flex flex-col">
-          <div class="flex items-center justify-between mb-4 px-2">
-            <h2 class="text-lg font-bold text-purple-700 uppercase tracking-wider">Projekty</h2>
-            <span class="bg-purple-100 text-purple-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{{ futureProjects.length }}</span>
-          </div>
-          <div class="space-y-3">
-            <div v-for="item in futureProjects" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
-              <Link :href="`/futureproject/${item.id}/edit`" class="block p-4">
-                <div class="font-bold text-gray-900 mb-1 truncate">{{ item.nazwa }}</div>
-                <div class="text-sm text-gray-600 mb-1">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
-                <div v-if="item.faza" class="mb-3">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs uppercase tracking-wider bg-purple-100 text-purple-800">
-                    {{ item.faza }}
-                  </span>
-                </div>
-
-                <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
-                  <div class="text-xs text-gray-500 flex items-center">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    {{ item.data_kontakt || 'Brak daty' }}
-                  </div>
-                  <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
-                    {{ item.user.first_name }} {{ item.user.last_name }}
                   </div>
                 </div>
               </Link>
@@ -240,12 +226,14 @@ export default {
     zadania: Array,
     historia: Object,
     filters: Object,
+    users: Array,
   },
   data() {
     return {
       activeTab: 'todo',
       form: {
         search: this.filters.search,
+        user_id: this.filters.user_id,
       },
     }
   },

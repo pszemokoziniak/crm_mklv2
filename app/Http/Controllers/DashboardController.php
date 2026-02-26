@@ -9,17 +9,27 @@ use App\Models\Kontakt;
 use App\Models\Oferta;
 use App\Models\Zadania;
 use App\Models\Zapytania;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+        $isAdmin = $user->hasAnyRole(['super-admin', 'administrator']);
+        $selectedUserId = Request::get('user_id');
+
+        // Jeśli admin wybrał usera, to filtrujemy po nim. Jeśli nie, a nie jest adminem, filtrujemy po zalogowanym.
+        $filterUserId = $isAdmin ? $selectedUserId : $user->id;
+
         return Inertia::render('Dashboard/Index',
             [
-                'filters' => Request::all('search'),
+                'filters' => Request::all('search', 'user_id'),
+                'users' => $isAdmin ? User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get() : [],
                 'historia' => Activity::with(['causer', 'subject'])
                     ->latest()
                     ->paginate(5)
@@ -36,14 +46,15 @@ class DashboardController extends Controller
                     ]),
                 'kontakts' => Kontakt::with(['client', 'kontaktperson', 'user', 'opiekun'])
                     ->where(function($query) {
-                        // Pokazujemy kontakty zaplanowane na dziś lub zaległe
-                        $query->where('next_call_date', '<=', Carbon::today())
+                        // Pokazujemy kontakty zaplanowane na najbliższe 7 dni lub zaległe
+                        $query->where('next_call_date', '<=', Carbon::today()->addDays(7))
                               ->orWhere('call_date', Carbon::today());
                     })
-                    ->where(function($query) {
-                        // Pokazujemy tylko te, gdzie użytkownik jest opiekunem lub twórcą
-                        $query->where('opiekun_id', auth()->id())
-                              ->orWhere('user_id', auth()->id());
+                    ->when($filterUserId, function($query) use ($filterUserId) {
+                        $query->where(function($q) use ($filterUserId) {
+                            $q->where('opiekun_id', $filterUserId)
+                              ->orWhere('user_id', $filterUserId);
+                        });
                     })
                     ->filter(Request::only('search'))
                     ->orderBy('next_call_date', 'asc')
@@ -54,6 +65,15 @@ class DashboardController extends Controller
                         $query->whereNull('wznowienie')
                             ->orWhere('wznowienie', 0)
                             ->orWhere('wznowienie', 2);
+                    })
+                    ->whereDoesntHave('oferty', function ($query) {
+                        $query->whereNull('deleted_at');
+                    })
+                    ->when($filterUserId, function($query) use ($filterUserId) {
+                        $query->where(function($q) use ($filterUserId) {
+                            $q->where('user_opracowuje_id', $filterUserId)
+                              ->orWhere('user_id', $filterUserId);
+                        });
                     })
                     ->pendingOrOld()
                     ->filter(Request::only('search'))
@@ -71,6 +91,16 @@ class DashboardController extends Controller
                         'created_at' => date($zapytania->created_at)
                     ]),
                 'ofertas' => Oferta::with(['user', 'client', 'zapytania', 'ofertastatus'])
+                    ->whereHas('zapytania', function ($query) {
+                        $query->whereNull('deleted_at');
+                    })
+                    ->where(function ($query) {
+                        $query->whereNull('data_kontakt')
+                              ->orWhere('data_kontakt', '<=', Carbon::today()->addDays(7));
+                    })
+                    ->when($filterUserId, function($query) use ($filterUserId) {
+                        $query->where('user_id', $filterUserId);
+                    })
                     ->filter(Request::only('search'))
                     ->orderBy('data_kontakt')
                     ->get()
@@ -88,6 +118,9 @@ class DashboardController extends Controller
                 'futureProjects' => FutureProject::with(['user', 'client', 'faza', 'kontakty' => function($query) {
                         $query->orderBy('created_at', 'desc');
                     }])
+                    ->when($filterUserId, function($query) use ($filterUserId) {
+                        $query->where('user_id', $filterUserId);
+                    })
                     ->filter(Request::only('search'))
                     ->orderBy('data_kontakt')
                     ->get()
@@ -106,6 +139,16 @@ class DashboardController extends Controller
                     }),
                 'zadania' => Zadania::with('responsiblePerson')
                     ->with('user')
+                    ->where(function ($query) {
+                        $query->whereNull('deadline')
+                              ->orWhere('deadline', '<=', Carbon::today()->addDays(7));
+                    })
+                    ->when($filterUserId, function($query) use ($filterUserId) {
+                        $query->where(function($q) use ($filterUserId) {
+                            $q->where('responsible_person_id', $filterUserId)
+                              ->orWhere('user_id', $filterUserId);
+                        });
+                    })
                     ->filter(Request::only('search'))
                     ->orderBy('deadline')
                     ->get(),
