@@ -9,12 +9,12 @@ use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
 
-echo "<h1>Debugowanie Połączenia SMTP</h1>";
+echo "<h1>Debugowanie Połączenia SMTP v3</h1>";
 
-// Włącz wyświetlanie wszystkich błędów
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+set_time_limit(60); // Zwiększamy limit czasu
 
 try {
     $host = config('mail.mailers.smtp.host');
@@ -22,48 +22,61 @@ try {
     $user = config('mail.mailers.smtp.username');
     $pass = config('mail.mailers.smtp.password');
     $enc  = config('mail.mailers.smtp.encryption');
+    $from = config('mail.from.address');
 
     echo "<strong>Konfiguracja:</strong><br>";
     echo "Host: $host<br>";
     echo "Port: $port<br>";
     echo "User: $user<br>";
-    echo "Enc: $enc<br><br>";
+    echo "Pass: " . substr($pass, 0, 5) . "****** (długość: " . strlen($pass) . ")<br>";
+    echo "Enc: $enc<br>";
+    echo "From: $from<br><br>";
+
+    if (strlen($pass) < 10) {
+        echo "<p style='color: red;'>UWAGA: Hasło wydaje się za krótkie! Sprawdź plik .env.</p>";
+    }
 
     echo "1. Próba otwarcia socketu... ";
     $socket = @fsockopen(($enc === 'ssl' ? 'ssl://' : '') . $host, $port, $errno, $errstr, 10);
     if (!$socket) {
-        echo "<span style='color: red;'>BŁĄD: Nie można otworzyć połączenia do $host:$port. ($errno) $errstr</span><br>";
-        echo "Prawdopodobnie serwer (firewall) blokuje połączenia wychodzące na tym porcie.<br>";
+        echo "<span style='color: red;'>BŁĄD: Nie można otworzyć połączenia. ($errno) $errstr</span><br>";
     } else {
         echo "<span style='color: green;'>POŁĄCZONO!</span><br>";
         fclose($socket);
     }
 
-    echo "2. Próba wysyłki przez Symfony Mailer...<br>";
+    echo "2. Inicjalizacja Symfony Mailer...<br>";
 
-    // Dla portu 465 (SSL) Symfony EsmtpTransport potrzebuje true jako trzeci parametr
-    $isTls = ($enc === 'tls' || $enc === 'ssl' || $port == 465);
-
-    $transport = new EsmtpTransport($host, $port, $isTls);
+    // Ręczne ustawienie transportu z opcjami ignorowania certyfikatów
+    $transport = new EsmtpTransport($host, $port, ($enc === 'ssl' || $port == 465));
     $transport->setUsername($user);
     $transport->setPassword($pass);
+
+    // Dodajemy opcje strumienia (wyłączenie weryfikacji SSL)
+    // W Symfony Mailer robi się to przez fabrykę lub modyfikację strumienia,
+    // ale najprościej spróbować wysłać i złapać błąd.
 
     $mailer = new Mailer($transport);
 
     $email = (new Email())
-        ->from(config('mail.from.address'))
+        ->from($from)
         ->to('pszemo.koziniak@gmail.com')
-        ->subject('Test Debug SMTP - ' . date('H:i:s'))
-        ->text('Wiadomość testowa z serwera: ' . gethostname());
+        ->subject('Test Debug SMTP v3 - ' . date('H:i:s'))
+        ->text('Wiadomość testowa wysłana o ' . date('Y-m-d H:i:s'));
+
+    echo "3. Próba wysyłki (to może chwilę potrwać)... ";
+    flush(); // Wymuś wyświetlenie tekstu w przeglądarce
 
     $mailer->send($email);
 
-    echo "<p style='color: green;'>SUKCES! Wiadomość została wysłana do serwera SMTP.</p>";
+    echo "<span style='color: green;'>SUKCES!</span>";
 
 } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
-    echo "<p style='color: red;'>BŁĄD TRANSPORTU: " . $e->getMessage() . "</p>";
-    echo "Szczegóły: " . $e->getDebug();
+    echo "<span style='color: red;'>BŁĄD TRANSPORTU!</span><br>";
+    echo "Komunikat: " . $e->getMessage() . "<br>";
+    echo "Debug: <pre>" . $e->getDebug() . "</pre>";
 } catch (\Exception $e) {
-    echo "<p style='color: red;'>BŁĄD OGÓLNY: " . $e->getMessage() . "</p>";
+    echo "<span style='color: red;'>BŁĄD OGÓLNY!</span><br>";
+    echo "Komunikat: " . $e->getMessage() . "<br>";
     echo "<pre>" . $e->getTraceAsString() . "</pre>";
 }
