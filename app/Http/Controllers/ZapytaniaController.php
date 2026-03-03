@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use App\Traits\StoreActivityLog;
 
@@ -103,7 +104,14 @@ class ZapytaniaController extends Controller
         $this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
         $emails = $this->getEmails();
-        Mail::send(new ZapytaniaMail($this->zapytaniaById($data->id), $emails));
+
+        try {
+            if ($emails->isNotEmpty()) {
+                Mail::send(new ZapytaniaMail($this->zapytaniaById($data->id), $emails));
+            }
+        } catch (\Exception $e) {
+            Log::error('Błąd wysyłki maila (store): ' . $e->getMessage());
+        }
 
         return Redirect::route('zapytania')->with('success', 'Zapisano. Mail wysłany');
     }
@@ -246,7 +254,14 @@ class ZapytaniaController extends Controller
     }
     public function mail(Zapytania $zapytania)
     {
-        Mail::send(new ZapytaniaMail($this->zapytaniaById($zapytania->id)));
+        $emails = $this->getEmails();
+        try {
+            if ($emails->isNotEmpty()) {
+                Mail::send(new ZapytaniaMail($this->zapytaniaById($zapytania->id), $emails));
+            }
+        } catch (\Exception $e) {
+            Log::error('Błąd wysyłki maila (manual): ' . $e->getMessage());
+        }
     }
     public function wznowienie(Zapytania $zapytania)
     {
@@ -266,7 +281,14 @@ class ZapytaniaController extends Controller
         $zapytania->save();
 
         $emails = $this->getEmails();
-        Mail::send(new ZapytaniaMail($this->zapytaniaById($data->id), $emails));
+
+        try {
+            if ($emails->isNotEmpty()) {
+                Mail::send(new ZapytaniaMail($this->zapytaniaById($zapytania->id), $emails));
+            }
+        } catch (\Exception $e) {
+            Log::error('Błąd wysyłki maila (wznowienie): ' . $e->getMessage());
+        }
 
         return Redirect::route('zapytania.edit', $request->zapytania_id)->with('success', 'Wznowienie dodane.');
 
