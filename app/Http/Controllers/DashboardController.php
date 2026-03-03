@@ -20,16 +20,18 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $isAdmin = $user->hasAnyRole(['super-admin', 'administrator']);
+        // Kierownictwo: super-admin i administrator
+        $isKierownictwo = $user->hasAnyRole(['super-admin', 'administrator']);
         $selectedUserId = Request::get('user_id');
 
-        // Jeśli admin wybrał usera, to filtrujemy po nim. Jeśli nie, a nie jest adminem, filtrujemy po zalogowanym.
-        $filterUserId = $isAdmin ? $selectedUserId : $user->id;
+        // Jeśli Kierownictwo nie wybrało nikogo, $filterUserId jest null (widzą wszystko).
+        // Jeśli to nie Kierownictwo (np. Eksport Techniczny), zawsze filtrujemy po ich ID.
+        $filterUserId = $isKierownictwo ? $selectedUserId : $user->id;
 
         return Inertia::render('Dashboard/Index',
             [
                 'filters' => Request::all('search', 'user_id'),
-                'users' => $isAdmin ? User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get() : [],
+                'users' => $isKierownictwo ? User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get() : [],
                 'historia' => Activity::with(['causer', 'subject'])
                     ->latest()
                     ->paginate(5)

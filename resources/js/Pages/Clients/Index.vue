@@ -35,10 +35,25 @@
         <table class="w-full">
           <thead>
             <tr class="text-left font-bold text-gray-400 text-xs uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
-              <th class="px-6 py-4 whitespace-nowrap">Nazwa</th>
-              <th class="px-6 py-4 whitespace-nowrap">Branża</th>
+              <th class="px-6 py-4 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('nazwa')">
+                <div class="flex items-center">
+                  Nazwa
+                  <icon v-if="form.field === 'nazwa'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+                </div>
+              </th>
+              <th class="px-6 py-4 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('branza')">
+                <div class="flex items-center">
+                  Branża
+                  <icon v-if="form.field === 'branza'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+                </div>
+              </th>
               <th class="px-6 py-4 whitespace-nowrap">Z / O / K</th>
-              <th class="px-6 py-4 whitespace-nowrap">Opiekun</th>
+              <th class="px-6 py-4 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('user')">
+                <div class="flex items-center">
+                  Opiekun
+                  <icon v-if="form.field === 'user'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+                </div>
+              </th>
               <th class="px-6 py-4" />
             </tr>
           </thead>
@@ -128,6 +143,8 @@ export default {
         search: this.filters.search,
         trashed: this.filters.trashed,
         status: this.filters.status,
+        field: this.filters.field,
+        direction: this.filters.direction,
       },
     }
   },
@@ -142,6 +159,10 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    sort(field) {
+      this.form.field = field
+      this.form.direction = this.form.direction === 'asc' ? 'desc' : 'asc'
     },
   },
 }

@@ -19,14 +19,18 @@ class ZapytaniaPolicy
      */
     public function update(User $user, Zapytania $zapytania)
     {
-        // Super-admin can do anything (handled by Gate::before in AuthServiceProvider)
-
-        // Check if user has permission to manage zapytania
-        if (!$user->hasPermissionTo('manage zapytania')) {
-            return false;
+        // 1. Super-admin i Administrator mogą edytować wszystko
+        if ($user->hasAnyRole(['super-admin', 'administrator'])) {
+            return true;
         }
 
-        // Check if user is assigned to this zapytanie
-        return $user->id === $zapytania->user_otrzymal_id || $user->id === $zapytania->user_opracowuje_id;
+        // 2. Inni muszą mieć uprawnienie 'manage zapytania' ORAZ być przypisani do rekordu
+        if ($user->hasPermissionTo('manage zapytania')) {
+            return $user->id === $zapytania->user_otrzymal_id ||
+                   $user->id === $zapytania->user_opracowuje_id ||
+                   $user->id === $zapytania->user_id;
+        }
+
+        return false;
     }
 }

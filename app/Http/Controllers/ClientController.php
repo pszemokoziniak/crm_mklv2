@@ -26,7 +26,7 @@ class ClientController extends Controller
         $sixMonthsAgo = Carbon::now()->subMonths(6);
 
         return Inertia::render('Clients/Index', [
-            'filters' => Request::all('search', 'trashed', 'status'),
+            'filters' => Request::all('search', 'trashed', 'status', 'field', 'direction'),
             'clients' => Client::with(['branza', 'user', 'kraj', 'creator'])
                 ->withCount(['zapytania', 'oferty', 'kontakty'])
                 ->withCount(['zapytania as recent_zapytania_count' => function ($query) use ($sixMonthsAgo) {
@@ -38,8 +38,25 @@ class ClientController extends Controller
                 ->withCount(['oferty as recent_oferty_count' => function ($query) use ($sixMonthsAgo) {
                     $query->where('created_at', '>=', $sixMonthsAgo);
                 }])
-                ->orderByCreatedAt()
                 ->filter(Request::only('search', 'trashed', 'status'))
+                ->when(Request::get('field'), function ($query, $field) {
+                    $direction = Request::get('direction', 'asc');
+                    if ($field === 'branza') {
+                        $query->join('branzas', 'clients.branza_id', '=', 'branzas.id')
+                            ->orderBy('branzas.name', $direction)
+                            ->select('clients.*');
+                    } elseif ($field === 'user') {
+                        $query->join('users', 'clients.user_id', '=', 'users.id')
+                            ->orderBy('users.last_name', $direction)
+                            ->select('clients.*');
+                    } elseif (in_array($field, ['zapytania_count', 'oferty_count', 'kontakty_count'])) {
+                        $query->orderBy($field, $direction);
+                    } else {
+                        $query->orderBy($field, $direction);
+                    }
+                }, function ($query) {
+                    $query->orderBy('created_at', 'desc');
+                })
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($client) => [

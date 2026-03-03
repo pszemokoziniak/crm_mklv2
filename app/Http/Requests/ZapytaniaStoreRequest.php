@@ -38,7 +38,7 @@ class ZapytaniaStoreRequest extends FormRequest
         'end' => ['required', 'date'],
         'kwota' => ['required', 'numeric'],
         'waluta_id' => ['required'],
-        'opis' => ['required', 'max:50'],
+        'opis' => ['required', 'max:1000'],
         ];
     }
 
@@ -47,6 +47,7 @@ class ZapytaniaStoreRequest extends FormRequest
             'required'  => 'Pole jest wymagane.',
             'unique' => 'Nazwa użyta',
             'numeric' => 'Pole może zawierać tylko cyfry',
+            'max' => 'Pole :attribute nie może być dłuższe niż :max znaków.',
         ];
     }
 
@@ -61,6 +62,9 @@ class ZapytaniaStoreRequest extends FormRequest
             'data_end' => 'Data do',
             'planowany_budzet' => 'Planowany budżet',
             'tekst1' => 'Liczba osób',
+            'opis' => 'Opis projektu',
+            'nazwa_projektu' => 'Nazwa projektu',
+            'miejscowosc' => 'Miejscowość',
         ];
     }
 }
