@@ -1,24 +1,43 @@
 <?php
 
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mime\Email;
 
 require __DIR__.'/../vendor/autoload.php';
 $app = require_once __DIR__.'/../bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $kernel->handle(Illuminate\Http\Request::capture());
 
-echo "<h1>Test wysyłki SMTP</h1>";
+echo "<h1>Szczegółowy Test SMTP</h1>";
 
 try {
-    $to = "pszemo.koziniak@gmail.com"; // Zmień na swój adres do testu
+    $host = env('MAIL_HOST');
+    $port = env('MAIL_PORT');
+    $user = env('MAIL_USERNAME');
+    $pass = env('MAIL_PASSWORD');
+    $enc  = env('MAIL_ENCRYPTION');
 
-    Mail::raw('To jest testowa wiadomość z CRM MKLBAU', function ($message) use ($to) {
-        $message->to($to)
-                ->subject('Test SMTP - ' . date('H:i:s'));
-    });
+    echo "Łączenie z: $host:$port ($enc) jako $user...<br>";
 
-    echo "<p style='color: green;'>Sukces! Laravel nie zgłosił błędu podczas wysyłki.</p>";
-    echo "<p>Jeśli mail nie dotarł, sprawdź folder SPAM lub ustawienia serwera home.pl.</p>";
+    // Używamy bezpośrednio transportu Symfony, aby wyciągnąć logi
+    $transport = new EsmtpTransport($host, $port, $enc === 'tls');
+    $transport->setUsername($user);
+    $transport->setPassword($pass);
+
+    $mailer = new Mailer($transport);
+
+    $email = (new Email())
+        ->from(env('MAIL_FROM_ADDRESS'))
+        ->to('pszemo.koziniak@gmail.com')
+        ->subject('Test Debug SMTP - ' . date('H:i:s'))
+        ->text('Treść testowa');
+
+    $mailer->send($email);
+
+    echo "<p style='color: green;'>Serwer SMTP zaakceptował wiadomość!</p>";
+    echo "<p>Jeśli mail nadal nie dotarł do pszemo.koziniak@gmail.com, sprawdź czy nie trafił do SPAMU lub czy domena mkl.pl ma poprawne rekordy SPF.</p>";
 
 } catch (\Exception $e) {
     echo "<p style='color: red;'>BŁĄD: " . $e->getMessage() . "</p>";
