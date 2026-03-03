@@ -121,7 +121,7 @@
               </select-input>
             </div>
 
-            <text-area v-model="form.opis" :error="form.errors.opis" :disabled="disable" class="md:col-span-2" label="Opis projektu" />
+            <text-area v-model="form.opis" :error="form.errors.opis" :disabled="disable" class="md:col-span-2" label="Opis projektu" rows="8" />
           </div>
 
           <!-- Form Actions -->

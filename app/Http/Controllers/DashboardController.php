@@ -30,11 +30,11 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard/Index',
             [
-                'filters' => Request::all('search', 'user_id'),
+                'filters' => Request::all('search', 'user_id', 'tab'),
                 'users' => $isKierownictwo ? User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get() : [],
                 'historia' => Activity::with(['causer', 'subject'])
                     ->latest()
-                    ->paginate(5)
+                    ->paginate(50)
                     ->withQueryString()
                     ->through(fn ($activity) => [
                         'id' => $activity->id,
@@ -96,9 +96,8 @@ class DashboardController extends Controller
                     ->whereHas('zapytania', function ($query) {
                         $query->whereNull('deleted_at');
                     })
-                    ->where(function ($query) {
-                        $query->whereNull('data_kontakt')
-                              ->orWhere('data_kontakt', '<=', Carbon::today()->addDays(7));
+                    ->whereHas('ofertastatus', function ($query) {
+                        $query->where('name', 'TOCZY');
                     })
                     ->when($filterUserId, function($query) use ($filterUserId) {
                         $query->where('user_id', $filterUserId);

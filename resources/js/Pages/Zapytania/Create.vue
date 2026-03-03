@@ -49,7 +49,7 @@
             <option :value="null" />
             <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
-          <text-area v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full" label="Opis" />
+          <text-area v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full" label="Opis" rows="8" />
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
           <loading-button :loading="form.processing" class="btn-indigo" type="submit">Utwórz zapytanie</loading-button>

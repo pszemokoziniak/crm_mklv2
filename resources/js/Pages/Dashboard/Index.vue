@@ -4,7 +4,7 @@
     <div class="mb-8">
       <div class="sm:hidden">
         <label for="tabs" class="sr-only">Wybierz zakładkę</label>
-        <select id="tabs" v-model="activeTab" name="tabs" class="block w-full focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+        <select id="tabs" v-model="activeTab" name="tabs" class="block w-full focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" @change="updateTabUrl">
           <option value="todo">Do zrobienia</option>
           <option value="activity">Aktywność systemowa</option>
         </select>
@@ -15,14 +15,14 @@
             <button
               type="button"
               :class="[activeTab === 'todo' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200']"
-              @click="activeTab = 'todo'"
+              @click="setTab('todo')"
             >
               Do zrobienia
             </button>
             <button
               type="button"
               :class="[activeTab === 'activity' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200']"
-              @click="activeTab = 'activity'"
+              @click="setTab('activity')"
             >
               Aktywność systemowa
             </button>
@@ -230,10 +230,11 @@ export default {
   },
   data() {
     return {
-      activeTab: 'todo',
+      activeTab: this.filters.tab || 'todo',
       form: {
         search: this.filters.search,
         user_id: this.filters.user_id,
+        tab: this.filters.tab || 'todo',
       },
     }
   },
@@ -246,8 +247,16 @@ export default {
     },
   },
   methods: {
+    setTab(tab) {
+      this.activeTab = tab
+      this.form.tab = tab
+    },
+    updateTabUrl() {
+      this.form.tab = this.activeTab
+    },
     reset() {
       this.form = mapValues(this.form, () => null)
+      this.form.tab = this.activeTab
     },
     statusClasses(status) {
       const s = status.toLowerCase()
