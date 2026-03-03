@@ -11,6 +11,9 @@ class ZapytaniaMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $data;
+    public $emails;
+
     /**
      * Create a new message instance.
      *
@@ -29,8 +32,9 @@ class ZapytaniaMail extends Mailable
      */
     public function build()
     {
+        // Adres FROM musi być taki sam jak MAIL_USERNAME w .env (crmsystem@mkl.pl)
         return $this
-            ->from('crm@mkl.pl', 'CRM - MKLBAU')
+            ->from(config('mail.from.address'), config('mail.from.name'))
             ->to($this->emails)
             ->subject('Nowe zapytanie - '.$this->data->id_zapyt)
             ->view('zapytaniaPdf')
