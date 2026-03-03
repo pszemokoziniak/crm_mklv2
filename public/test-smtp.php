@@ -9,74 +9,56 @@ use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Email;
 
-echo "<h1>Debugowanie Połączenia SMTP v3</h1>";
+echo "<h1>Debugowanie Połączenia SMTP v4 (Raw Socket)</h1>";
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-set_time_limit(60); // Zwiększamy limit czasu
+$host = config('mail.mailers.smtp.host');
+$port = config('mail.mailers.smtp.port');
+$user = config('mail.mailers.smtp.username');
+$pass = config('mail.mailers.smtp.password');
+
+echo "Próba połączenia z $host na porcie $port...<br>";
+
+// TEST 1: Ręczne sprawdzenie odpowiedzi serwera (bez SSL na starcie)
+$socket = fsockopen($host, $port, $errno, $errstr, 10);
+if (!$socket) {
+    echo "BŁĄD SOCKETU: $errstr ($errno)<br>";
+} else {
+    echo "Socket otwarty. Odpowiedź serwera: " . fgets($socket, 1024) . "<br>";
+    fwrite($socket, "EHLO test.mkl.pl\r\n");
+    echo "EHLO sent. Odpowiedź: " . fgets($socket, 1024) . "<br>";
+    fclose($socket);
+}
+
+echo "<br>Próba wysyłki przez Symfony Mailer z ignorowaniem SSL...<br>";
 
 try {
-    $host = config('mail.mailers.smtp.host');
-    $port = config('mail.mailers.smtp.port');
-    $user = config('mail.mailers.smtp.username');
-    $pass = config('mail.mailers.smtp.password');
-    $enc  = config('mail.mailers.smtp.encryption');
-    $from = config('mail.from.address');
-
-    echo "<strong>Konfiguracja:</strong><br>";
-    echo "Host: $host<br>";
-    echo "Port: $port<br>";
-    echo "User: $user<br>";
-    echo "Pass: " . substr($pass, 0, 5) . "****** (długość: " . strlen($pass) . ")<br>";
-    echo "Enc: $enc<br>";
-    echo "From: $from<br><br>";
-
-    if (strlen($pass) < 10) {
-        echo "<p style='color: red;'>UWAGA: Hasło wydaje się za krótkie! Sprawdź plik .env.</p>";
-    }
-
-    echo "1. Próba otwarcia socketu... ";
-    $socket = @fsockopen(($enc === 'ssl' ? 'ssl://' : '') . $host, $port, $errno, $errstr, 10);
-    if (!$socket) {
-        echo "<span style='color: red;'>BŁĄD: Nie można otworzyć połączenia. ($errno) $errstr</span><br>";
-    } else {
-        echo "<span style='color: green;'>POŁĄCZONO!</span><br>";
-        fclose($socket);
-    }
-
-    echo "2. Inicjalizacja Symfony Mailer...<br>";
-
-    // Ręczne ustawienie transportu z opcjami ignorowania certyfikatów
-    $transport = new EsmtpTransport($host, $port, ($enc === 'ssl' || $port == 465));
+    // Tworzymy transport ręcznie z wyłączoną weryfikacją
+    $transport = new EsmtpTransport($host, $port, ($port == 465));
     $transport->setUsername($user);
     $transport->setPassword($pass);
 
-    // Dodajemy opcje strumienia (wyłączenie weryfikacji SSL)
-    // W Symfony Mailer robi się to przez fabrykę lub modyfikację strumienia,
-    // ale najprościej spróbować wysłać i złapać błąd.
+    // To jest kluczowe dla serwerów z problematycznymi certyfikatami
+    $transport->setStreamOptions([
+        'ssl' => [
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+        ]
+    ]);
 
     $mailer = new Mailer($transport);
-
     $email = (new Email())
-        ->from($from)
+        ->from(config('mail.from.address'))
         ->to('pszemo.koziniak@gmail.com')
-        ->subject('Test Debug SMTP v3 - ' . date('H:i:s'))
-        ->text('Wiadomość testowa wysłana o ' . date('Y-m-d H:i:s'));
-
-    echo "3. Próba wysyłki (to może chwilę potrwać)... ";
-    flush(); // Wymuś wyświetlenie tekstu w przeglądarce
+        ->subject('Test CRM MKL v4 - ' . date('H:i:s'))
+        ->text('Jeśli to widzisz, to znaczy że wyłączenie weryfikacji SSL pomogło.');
 
     $mailer->send($email);
+    echo "<h2 style='color: green;'>SUKCES! Mail wysłany.</h2>";
 
-    echo "<span style='color: green;'>SUKCES!</span>";
-
-} catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
-    echo "<span style='color: red;'>BŁĄD TRANSPORTU!</span><br>";
-    echo "Komunikat: " . $e->getMessage() . "<br>";
-    echo "Debug: <pre>" . $e->getDebug() . "</pre>";
 } catch (\Exception $e) {
-    echo "<span style='color: red;'>BŁĄD OGÓLNY!</span><br>";
-    echo "Komunikat: " . $e->getMessage() . "<br>";
-    echo "<pre>" . $e->getTraceAsString() . "</pre>";
+    echo "<h2 style='color: red;'>BŁĄD: " . $e->getMessage() . "</h2>";
+    if (method_exists($e, 'getDebug')) {
+        echo "<pre>" . $e->getDebug() . "</pre>";
+    }
 }
