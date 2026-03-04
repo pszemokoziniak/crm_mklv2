@@ -42,10 +42,8 @@ return [
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN'),
             'auth_mode' => null,
-            'verify_peer' => false,
-            'verify_peer_name' => false,
+            // Opcje dla SwiftMailera (Laravel 8)
             'stream' => [
                 'ssl' => [
                     'allow_self_signed' => true,
@@ -53,18 +51,6 @@ return [
                     'verify_peer_name' => false,
                 ],
             ],
-        ],
-
-        'ses' => [
-            'transport' => 'ses',
-        ],
-
-        'mailgun' => [
-            'transport' => 'mailgun',
-        ],
-
-        'postmark' => [
-            'transport' => 'postmark',
         ],
 
         'sendmail' => [
@@ -79,14 +65,6 @@ return [
 
         'array' => [
             'transport' => 'array',
-        ],
-
-        'failover' => [
-            'transport' => 'failover',
-            'mailers' => [
-                'smtp',
-                'log',
-            ],
         ],
     ],
 
