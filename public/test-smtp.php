@@ -1,44 +1,19 @@
 <?php
 
-require __DIR__.'/../vendor/autoload.php';
-$app = require_once __DIR__.'/../bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-$kernel->handle(Illuminate\Http\Request::capture());
+echo "<h1>Szybki Test SMTP v5</h1>";
 
-use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
-use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mime\Email;
+$host = "serwer1551306.home.pl";
+$user = "crmsystem@mkl.pl";
+$pass = "6wp0o8092792P7BXw9kWs";
 
-echo "<h1>Debugowanie Połączenia SMTP v4 (Raw Socket)</h1>";
+// Testujemy oba porty z krótkim timeoutem
+$ports = [465 => 'ssl', 587 => 'tls'];
 
-$host = config('mail.mailers.smtp.host');
-$port = config('mail.mailers.smtp.port');
-$user = config('mail.mailers.smtp.username');
-$pass = config('mail.mailers.smtp.password');
+foreach ($ports as $port => $encryption) {
+    echo "<h2>Test portu $port ($encryption)</h2>";
 
-echo "Próba połączenia z $host na porcie $port...<br>";
-
-// TEST 1: Ręczne sprawdzenie odpowiedzi serwera (bez SSL na starcie)
-$socket = fsockopen($host, $port, $errno, $errstr, 10);
-if (!$socket) {
-    echo "BŁĄD SOCKETU: $errstr ($errno)<br>";
-} else {
-    echo "Socket otwarty. Odpowiedź serwera: " . fgets($socket, 1024) . "<br>";
-    fwrite($socket, "EHLO test.mkl.pl\r\n");
-    echo "EHLO sent. Odpowiedź: " . fgets($socket, 1024) . "<br>";
-    fclose($socket);
-}
-
-echo "<br>Próba wysyłki przez Symfony Mailer z ignorowaniem SSL...<br>";
-
-try {
-    // Tworzymy transport ręcznie z wyłączoną weryfikacją
-    $transport = new EsmtpTransport($host, $port, ($port == 465));
-    $transport->setUsername($user);
-    $transport->setPassword($pass);
-
-    // To jest kluczowe dla serwerów z problematycznymi certyfikatami
-    $transport->setStreamOptions([
+    $timeout = 5;
+    $context = stream_context_create([
         'ssl' => [
             'verify_peer' => false,
             'verify_peer_name' => false,
@@ -46,19 +21,27 @@ try {
         ]
     ]);
 
-    $mailer = new Mailer($transport);
-    $email = (new Email())
-        ->from(config('mail.from.address'))
-        ->to('pszemo.koziniak@gmail.com')
-        ->subject('Test CRM MKL v4 - ' . date('H:i:s'))
-        ->text('Jeśli to widzisz, to znaczy że wyłączenie weryfikacji SSL pomogło.');
+    $remote = ($port == 465) ? "ssl://$host" : "tcp://$host";
 
-    $mailer->send($email);
-    echo "<h2 style='color: green;'>SUKCES! Mail wysłany.</h2>";
+    $start = microtime(true);
+    $socket = @stream_socket_client($remote . ":" . $port, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT, $context);
+    $end = microtime(true);
 
-} catch (\Exception $e) {
-    echo "<h2 style='color: red;'>BŁĄD: " . $e->getMessage() . "</h2>";
-    if (method_exists($e, 'getDebug')) {
-        echo "<pre>" . $e->getDebug() . "</pre>";
+    if (!$socket) {
+        echo "<p style='color: red;'>BŁĄD POŁĄCZENIA: $errstr ($errno) - czas: " . round($end - $start, 2) . "s</p>";
+    } else {
+        echo "<p style='color: green;'>POŁĄCZONO z socketem w " . round($end - $start, 2) . "s</p>";
+        echo "Odpowiedź serwera: " . fgets($socket, 1024) . "<br>";
+
+        if ($port == 587) {
+            fwrite($socket, "EHLO test.mkl.pl\r\n");
+            echo "EHLO: " . fgets($socket, 1024) . "<br>";
+            fwrite($socket, "STARTTLS\r\n");
+            echo "STARTTLS: " . fgets($socket, 1024) . "<br>";
+        }
+
+        fclose($socket);
     }
 }
+
+echo "<hr><p>Jeśli port 587 pokazał 'STARTTLS: 220 Ready to start TLS', to użyj portu 587 i szyfrowania tls w .env</p>";
