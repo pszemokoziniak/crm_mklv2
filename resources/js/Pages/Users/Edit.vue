@@ -23,7 +23,7 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <button v-if="!user.deleted_at" :class="isActive ? 'bg-green-600 text-white border-green-700' : 'bg-white text-indigo-600 border-indigo-200'" class="flex items-center px-4 py-2 border rounded-lg text-sm font-medium hover:shadow-md transition-all" @click="disableForm">
+        <button v-if="!user.deleted_at && canEdit" :class="isActive ? 'bg-green-600 text-white border-green-700' : 'bg-white text-indigo-600 border-indigo-200'" class="flex items-center px-4 py-2 border rounded-lg text-sm font-medium hover:shadow-md transition-all" @click="disableForm">
           <icon :name="isActive ? 'check' : 'edit'" class="w-4 h-4 mr-2" />
           {{ isActive ? 'Tryb edycji aktywny' : 'Edytuj dane' }}
         </button>
@@ -49,8 +49,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Pole wyboru roli - widoczne tylko dla admina -->
-              <select-input v-if="$page.props.auth.user.roles.includes('super-admin')" v-model="form.role" :error="form.errors.role" :disabled="disable" label="Uprawnienia">
+              <!-- Pole wyboru roli - widoczne tylko dla super-admina i Administratora, ale NIE przy edycji własnego profilu (chyba że jest się super-adminem/adminem, ale tu blokujemy zmianę własnych uprawnień dla bezpieczeństwa lub zgodnie z prośbą) -->
+              <select-input v-if="canChangeRole" v-model="form.role" :error="form.errors.role" :disabled="disable" label="Uprawnienia">
                 <option :value="null" />
                 <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
               </select-input>
@@ -61,7 +61,7 @@
 
           <!-- Form Actions -->
           <div v-if="isActive" class="flex items-center justify-between px-8 py-6 bg-gray-50 border-t border-gray-100">
-            <button v-if="!user.deleted_at" class="text-rose-600 font-semibold hover:text-rose-800 transition-colors flex items-center" tabindex="-1" type="button" @click="destroy">
+            <button v-if="!user.deleted_at && (isSuperAdmin || isAdmin)" class="text-rose-600 font-semibold hover:text-rose-800 transition-colors flex items-center" tabindex="-1" type="button" @click="destroy">
               <icon name="trash" class="w-4 h-4 mr-2" />
               Archiwizuj
             </button>
@@ -75,7 +75,7 @@
         </form>
 
         <!-- Secondary Actions Bar -->
-        <div v-if="!user.deleted_at && !isActive" class="bg-white border-t border-gray-100">
+        <div v-if="!user.deleted_at && !isActive && canEdit" class="bg-white border-t border-gray-100">
           <div class="grid grid-cols-1 divide-x divide-gray-100">
             <button class="flex items-center justify-center px-4 py-4 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="disableForm">
               <icon name="edit" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -190,6 +190,24 @@ export default {
         photo: null,
       }),
     }
+  },
+  computed: {
+    isSuperAdmin() {
+      return this.$page.props.auth.user.roles.includes('super-admin')
+    },
+    isAdmin() {
+      return this.$page.props.auth.user.roles.includes('Administrator')
+    },
+    isOwnProfile() {
+      return this.$page.props.auth.user.id === this.user.id
+    },
+    canEdit() {
+      return this.isSuperAdmin || this.isAdmin || this.isOwnProfile
+    },
+    canChangeRole() {
+      // Może zmieniać rolę jeśli jest adminem/super-adminem I NIE edytuje własnego profilu
+      return (this.isSuperAdmin || this.isAdmin) && !this.isOwnProfile
+    },
   },
   methods: {
     update() {

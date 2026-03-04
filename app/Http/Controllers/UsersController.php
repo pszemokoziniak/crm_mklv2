@@ -126,7 +126,7 @@ class UsersController extends Controller
 
         $user->update(Request::only('first_name', 'last_name', 'email', 'active'));
 
-        if ($newRole && Auth::user()->hasRole('super-admin')) {
+        if ($newRole && (Auth::user()->hasRole('super-admin') || Auth::user()->hasRole('Administrator'))) {
             if ($oldRole !== $newRole) {
                 $user->syncRoles($newRole);
 
