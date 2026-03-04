@@ -20,7 +20,9 @@
             </dropdown>
           </div>
           <div class="md:text-md flex items-center justify-between p-4 w-full text-sm bg-white border-b md:px-12 md:py-0 shadow-sm">
-            <div class="mr-4 mt-1 font-medium text-gray-600">{{ auth.user.account.name }}</div>
+            <div class="mr-4 mt-1 font-bold text-indigo-600 uppercase tracking-wider">
+              {{ auth.user.roles[0] || 'Użytkownik' }}
+            </div>
             <dropdown class="mt-1" placement="bottom-end">
               <template #default>
                 <div class="group flex items-center cursor-pointer select-none p-2 rounded-lg hover:bg-gray-50 transition-colors">

@@ -78,4 +78,34 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    public function showCompleteProfile()
+    {
+        return Inertia::render('Auth/CompleteProfile', [
+            'user' => Auth::user()->only('first_name', 'last_name', 'email'),
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'first_name' => ['required', 'string', 'max:50', 'min:2'],
+            'last_name' => ['required', 'string', 'max:50', 'min:2'],
+        ], [
+            'first_name.required' => 'Pole imię jest wymagane.',
+            'first_name.min' => 'Imię musi mieć co najmniej :min znaki.',
+            'first_name.max' => 'Imię nie może być dłuższe niż :max znaków.',
+            'last_name.required' => 'Pole nazwisko jest wymagane.',
+            'last_name.min' => 'Nazwisko musi mieć co najmniej :min znaki.',
+            'last_name.max' => 'Nazwisko nie może być dłuższe niż :max znaków.',
+        ]);
+
+        $user = Auth::user();
+        $user->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+        ]);
+
+        return redirect()->intended(RouteServiceProvider::HOME)->with('success', 'Dane zostały zaktualizowane.');
+    }
 }

@@ -77,6 +77,13 @@ Route::post('reset-password', [ResetPasswordController::class, 'store'])
     ->name('password.update')
     ->middleware('guest');
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('complete-profile', [AuthenticatedSessionController::class, 'showCompleteProfile'])
+        ->name('profile.complete');
+    Route::post('complete-profile', [AuthenticatedSessionController::class, 'updateProfile'])
+        ->name('profile.complete.store');
+});
+
 // Dashboard
 
 Route::get('/', [DashboardController::class, 'index'])
