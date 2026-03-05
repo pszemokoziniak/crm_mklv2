@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
         DB::table('future_projects')->truncate();
         DB::table('linkedins')->truncate();
         DB::table('strony_wwws')->truncate();
-        DB::table('kontakts')->truncate();
+//        DB::table('kontakts')->truncate();
 
         Schema::enableForeignKeyConstraints();
 
@@ -53,7 +53,7 @@ class DatabaseSeeder extends Seeder
             LegacyFutureProjectSeeder::class,
             LegacyLinkedinSeeder::class,
             LegacyStronyWwwSeeder::class,
-            LegacyKontaktSeeder::class,
+//            LegacyKontaktSeeder::class,
         ]);
     }
 }
