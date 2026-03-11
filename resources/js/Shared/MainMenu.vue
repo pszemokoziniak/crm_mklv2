@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-1">
-    <div v-for="item in menuItems" :key="item.href">
+    <div v-for="item in filteredMenuItems" :key="item.href">
       <Link
         class="group flex items-center px-4 py-3 rounded-lg transition-all duration-200"
         :href="item.href"
@@ -45,6 +45,17 @@ export default {
         { label: 'Historia', href: '/activity', icon: 'historia', activeRule: 'activity' },
       ],
     }
+  },
+  computed: {
+    filteredMenuItems() {
+      const isExport = this.$page.props.auth.user.roles.includes('eksport')
+
+      return this.menuItems.filter(item => {
+        // Blokada dla roli eksport
+        return !(isExport && ['Ustawienia', 'Użytkownicy', 'Historia'].includes(item.label))
+
+      })
+    },
   },
   methods: {
     isUrl(...urls) {
