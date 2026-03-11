@@ -25,8 +25,10 @@
       <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
         <table class="w-full table-fixed md:table-auto">
           <thead>
-            <tr class="text-left font-bold text-gray-400 text-[10px] uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
-              <th class="px-4 py-4 w-1/3 md:w-auto">Projekt / ID</th>
+            <tr
+              class="text-left font-bold text-gray-400 text-[8px] uppercase tracking-widest bg-gray-50/50 border-b border-gray-100"
+            >
+              <th class="px-4 py-4 w-1/3 md:w-auto">Projekt</th>
               <th class="px-4 py-4 w-1/4 md:w-auto">Klient</th>
               <th class="px-4 py-4 hidden lg:table-cell">Kraj</th>
               <th class="px-4 py-4 hidden sm:table-cell">Zakres</th>

@@ -24,11 +24,16 @@ class ZapytaniaPolicy
             return true;
         }
 
-        // 2. Inni muszą mieć uprawnienie 'manage zapytania' ORAZ być przypisani do rekordu
+        // 2. Jeśli użytkownik jest przypisany do zapytania w dowolnej roli, może je edytować
+        if ($user->id === (int)$zapytania->user_otrzymal_id ||
+            $user->id === (int)$zapytania->user_opracowuje_id ||
+            $user->id === (int)$zapytania->user_id) {
+            return true;
+        }
+
+        // 3. Ewentualnie jeśli ma ogólne uprawnienie do zarządzania wszystkimi zapytaniami
         if ($user->hasPermissionTo('manage zapytania')) {
-            return $user->id === $zapytania->user_otrzymal_id ||
-                   $user->id === $zapytania->user_opracowuje_id ||
-                   $user->id === $zapytania->user_id;
+            return true;
         }
 
         return false;

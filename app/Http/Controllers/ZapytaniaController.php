@@ -63,16 +63,46 @@ class ZapytaniaController extends Controller
         ]);
     }
 
+    private function generateNextIdZapyt()
+    {
+        $year = Carbon::now()->format('Y');
+
+        // Szukamy ostatniego numeru w bazie (nawet usuniętego)
+        $lastZapytanie = Zapytania::withTrashed()
+            ->where('id_zapyt', 'like', "%/$year")
+            ->orderByRaw('CAST(SUBSTRING_INDEX(id_zapyt, "/", 1) AS UNSIGNED) DESC')
+            ->first();
+
+        if ($lastZapytanie) {
+            $parts = explode('/', $lastZapytanie->id_zapyt);
+            $nextNumber = (int)$parts[0] + 1;
+        } else {
+            // Jeśli nie ma w tym roku, sprawdzamy ogólnie ostatni i zwiększamy,
+            // lub zaczynamy od 1 (albo od konkretnego progu jeśli system był migrowany)
+            $lastAny = Zapytania::withTrashed()
+                ->orderByRaw('CAST(SUBSTRING_INDEX(id_zapyt, "/", 1) AS UNSIGNED) DESC')
+                ->first();
+
+            if ($lastAny) {
+                $parts = explode('/', $lastAny->id_zapyt);
+                $nextNumber = (int)$parts[0] + 1;
+            } else {
+                $nextNumber = 1;
+            }
+        }
+
+        return $nextNumber . '/' . $year;
+    }
+
     public function create()
     {
-
         return Inertia::render('Zapytania/Create', [
             'zakres' => Zakres::get()->map->only('id', 'name'),
             'kraj' => Kraj::get()->map->only('id', 'name', 'waluta'),
             'waluta' => Waluta::get()->map->only('id', 'name'),
             'users' => User::get()->map->only('id', 'first_name', 'last_name'),
             'clients' => Client::get()->map->only('id', 'nazwa'),
-            'id_zapyt' => (Zapytania::withTrashed()->count()+1).'/'.Carbon::now()->format('Y'),
+            'id_zapyt' => $this->generateNextIdZapyt(),
         ]);
     }
     public function store(ZapytaniaStoreRequest $request)
@@ -98,7 +128,7 @@ class ZapytaniaController extends Controller
         $data->kwota = $request->kwota;
         $data->waluta_id = $request->waluta_id;
         $data->opis = $request->opis;
-        $data->user_id = $request->user_id;
+        $data->user_id = Auth::id(); // Zmieniono na Auth::id() dla pewności
         $data->save();
 
         $this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
