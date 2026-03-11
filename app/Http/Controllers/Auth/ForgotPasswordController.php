@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ForgotPasswordController extends Controller
@@ -33,14 +34,24 @@ class ForgotPasswordController extends Controller
             'email' => 'required|email',
         ]);
 
-        $status = Password::broker()->sendResetLink(
-            $request->only('email')
-        );
+        try {
+            $status = Password::broker()->sendResetLink(
+                $request->only('email')
+            );
 
-        if ($status === Password::RESET_LINK_SENT) {
-            return redirect()->route('login')->with('status', __($status));
+            if ($status === Password::RESET_LINK_SENT) {
+                return redirect()->route('login')->with('success', 'Link do resetu hasła został wysłany na Twój adres e-mail.');
+            }
+
+            return back()->withErrors(['email' => __($status)]);
+
+        } catch (\Exception $e) {
+            // Zapisujemy błąd w logach, aby administrator mógł go sprawdzić
+            Log::error('Błąd wysyłki maila (reset hasła): ' . $e->getMessage());
+
+            return back()->withErrors([
+                'email' => 'Wystąpił problem techniczny podczas wysyłania wiadomości e-mail. Skontaktuj się z administratorem lub spróbuj później.'
+            ]);
         }
-
-        return back()->withErrors(['email' => __($status)]);
     }
 }
