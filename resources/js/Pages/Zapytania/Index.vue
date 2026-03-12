@@ -26,14 +26,24 @@
         <table class="w-full table-fixed md:table-auto">
           <thead>
             <tr
-              class="text-left font-bold text-gray-400 text-[8px] uppercase tracking-widest bg-gray-50/50 border-b border-gray-100"
+              class="text-left text-gray-500 bg-gray-50/50 border-b border-gray-100"
             >
-              <th class="px-4 py-4 w-1/3 md:w-auto">Projekt</th>
-              <th class="px-4 py-4 w-1/4 md:w-auto">Klient</th>
-              <th class="px-4 py-4 hidden lg:table-cell">Kraj</th>
-              <th class="px-4 py-4 hidden sm:table-cell">Zakres</th>
-              <th class="px-4 py-4 hidden md:table-cell">Zarejestrował</th>
-              <th class="px-4 py-4 w-12" />
+              <th class="px-4 py-1.5 w-1/3 md:w-auto">
+                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Projekt</div>
+              </th>
+              <th class="px-4 py-1.5 w-1/4 md:w-auto">
+                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Klient</div>
+              </th>
+              <th class="px-4 py-1.5 hidden lg:table-cell">
+                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Kraj</div>
+              </th>
+              <th class="px-4 py-1.5 hidden sm:table-cell">
+                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Zakres</div>
+              </th>
+              <th class="px-4 py-1.5 hidden md:table-cell">
+                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Zarejestrował</div>
+              </th>
+              <th class="px-4 py-1.5 w-12" />
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">

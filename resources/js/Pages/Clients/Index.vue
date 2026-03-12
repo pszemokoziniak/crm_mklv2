@@ -11,7 +11,7 @@
     </div>
 
     <div class="flex items-center justify-between mb-6">
-      <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+      <search-filter v-model="form.search" class="mr-4 w-full max-md" @reset="reset">
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
           <select v-model="form.status" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -34,27 +34,29 @@
       <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
         <table class="w-full">
           <thead>
-            <tr class="text-left font-bold text-gray-400 text-xs uppercase tracking-widest bg-gray-50/50 border-b border-gray-100">
-              <th class="px-6 py-4 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('nazwa')">
-                <div class="flex items-center">
+            <tr class="text-left text-gray-500 bg-gray-50/50 border-b border-gray-100">
+              <th class="px-6 py-1.5 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('nazwa')">
+                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">
                   Nazwa
                   <icon v-if="form.field === 'nazwa'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
                 </div>
               </th>
-              <th class="px-6 py-4 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('branza')">
-                <div class="flex items-center">
+              <th class="px-6 py-1.5 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('branza')">
+                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">
                   Branża
                   <icon v-if="form.field === 'branza'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
                 </div>
               </th>
-              <th class="px-6 py-4 whitespace-nowrap">Z / O / K</th>
-              <th class="px-6 py-4 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('user')">
-                <div class="flex items-center">
+              <th class="px-6 py-1.5 whitespace-nowrap">
+                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Z / O / K</div>
+              </th>
+              <th class="px-6 py-1.5 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('user')">
+                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">
                   Opiekun
                   <icon v-if="form.field === 'user'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
                 </div>
               </th>
-              <th class="px-6 py-4" />
+              <th class="px-6 py-1.5 w-12" />
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
