@@ -1,11 +1,11 @@
-.PHONY: setup up down restart build shell composer-install migrate key-generate mysql
+.PHONY: setup up down restart build shell composer-install migrate key-generate mysql npm-prod
 
 # Default command
 all: up
 
 # Build and start containers
 up:
-	docker compose up -d
+	docker compose up -d & npm run watch
 
 # Stop containers
 down:
@@ -19,7 +19,7 @@ build:
 restart: down up
 
 # Full setup for the first time
-setup: build composer-install key-generate migrate
+setup: build composer-install key-generate migrate npm-prod
 
 # Install composer dependencies
 composer-install:
@@ -32,6 +32,10 @@ key-generate:
 # Run database migrations
 migrate:
 	docker exec -it crm-app php artisan migrate
+
+# Run npm production build
+npm-prod:
+	docker exec -it crm-app npm run production
 
 # Access the app container shell
 shell:
