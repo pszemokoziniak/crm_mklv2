@@ -101,7 +101,7 @@
       </div>
 
       <!-- Kontakty Section -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div id="historia-kontaktow" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
           <div class="flex items-center">
             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
@@ -117,7 +117,7 @@
 
         <div class="p-8">
           <div v-if="kontakty.length > 0" class="space-y-6">
-            <div v-for="kontakt in kontakty" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+            <div v-for="kontakt in kontakty" :id="`kontakt-${kontakt.id}`" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm target:ring-2 target:ring-indigo-500 transition-all">
               <!-- Główny wpis w wątku -->
               <div class="bg-gray-50/50 p-4 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-3">
@@ -287,6 +287,22 @@ export default {
         opis: this.oferta.opis,
         user_id: this.oferta.user_id,
       }),
+    }
+  },
+  mounted() {
+    const urlParams = new URLSearchParams(window.location.search)
+    const rememberKontakt = urlParams.get('remember_kontakt')
+
+    if (rememberKontakt) {
+      setTimeout(() => {
+        const el = document.getElementById(`kontakt-${rememberKontakt}`)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          el.classList.add('ring-4', 'ring-indigo-500', 'ring-opacity-50')
+        } else {
+          document.getElementById('historia-kontaktow')?.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
     }
   },
   methods: {

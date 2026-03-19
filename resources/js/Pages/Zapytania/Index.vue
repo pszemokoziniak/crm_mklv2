@@ -73,7 +73,7 @@
               </td>
               <td class="px-4 py-3 hidden sm:table-cell">
                 <Link class="flex items-center" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                  <span v-if="item.zakres" class="px-2 py-0.5 bg-gray-100 text-gray-600 text-[9px] font-bold rounded uppercase tracking-wider leading-tight">
+                  <span v-if="item.zakres" class="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded uppercase tracking-tighter leading-tight whitespace-nowrap scale-[0.7] origin-left inline-block">
                     {{ item.zakres.name }}
                   </span>
                 </Link>

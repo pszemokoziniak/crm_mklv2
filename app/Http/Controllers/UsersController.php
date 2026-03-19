@@ -60,6 +60,7 @@ class UsersController extends Controller
             'role' => ['required', 'exists:roles,name'],
             'photo' => ['nullable', 'image'],
             'active' => ['required'],
+            'preliminarz_email' => ['boolean'],
         ]);
 
         $user = Auth::user()->account->users()->create([
@@ -70,6 +71,7 @@ class UsersController extends Controller
             'owner' => false, // Domyślnie false, bo używamy ról Spatie
             'photo_path' => Request::file('photo') ? Request::file('photo')->store('users') : null,
             'active' => Request::get('active'),
+            'preliminarz_email' => Request::get('preliminarz_email', false),
         ]);
 
         $user->assignRole(Request::get('role'));
@@ -89,6 +91,7 @@ class UsersController extends Controller
                 'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
                 'deleted_at' => $user->deleted_at,
                 'active' => $user->active,
+                'preliminarz_email' => $user->preliminarz_email,
                 'role' => $user->getRoleNames()->first(),
             ],
             'roles' => Role::all()->map(fn ($role) => [
@@ -118,13 +121,14 @@ class UsersController extends Controller
             'password' => ['nullable'],
             'role' => ['nullable', 'exists:roles,name'],
             'photo' => ['nullable', 'image', 'max:2048'], // Dodano max size dla bezpieczeństwa
-            'active' => ['nullable']
+            'active' => ['nullable'],
+            'preliminarz_email' => ['boolean'],
         ]);
 
         $oldRole = $user->getRoleNames()->first();
         $newRole = Request::get('role');
 
-        $user->update(Request::only('first_name', 'last_name', 'email', 'active'));
+        $user->update(Request::only('first_name', 'last_name', 'email', 'active', 'preliminarz_email'));
 
         if ($newRole && (Auth::user()->hasRole('super-admin') || Auth::user()->hasRole('Administrator'))) {
             if ($oldRole !== $newRole) {

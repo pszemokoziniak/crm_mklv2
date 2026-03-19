@@ -133,7 +133,7 @@ class ZapytaniaController extends Controller
 
         $this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
-        $emails = $this->getEmails();
+        $emails = $this->getEmails($data->preliminarz);
 
         try {
             if ($emails->isNotEmpty()) {
@@ -238,12 +238,15 @@ class ZapytaniaController extends Controller
     }
     public function exchangeRate($id)
     {
-        $currency = Kursy::select('kurs')->where('waluta_id', $id)->latest()->first()->toArray();
-        return (string) $currency['kurs'];
+        $currency = Kursy::select('kurs')->where('waluta_id', $id)->latest()->first();
+        return $currency ? (string) $currency->kurs : '1.0';
     }
     public function changeRate($waluta, $kwota)
     {
         $waluta = Waluta::where('id', $waluta)->pluck('id');
+        if($waluta->isEmpty()) {
+            return [1.0, (float)$kwota];
+        }
         $kurs = $this->exchangeRate($waluta[0]);
         $kwotaPLN = (float) $kwota * (float) $kurs;
 
@@ -284,7 +287,7 @@ class ZapytaniaController extends Controller
     }
     public function mail(Zapytania $zapytania)
     {
-        $emails = $this->getEmails();
+        $emails = $this->getEmails($zapytania->preliminarz);
         try {
             if ($emails->isNotEmpty()) {
                 Mail::send(new ZapytaniaMail($this->zapytaniaById($zapytania->id), $emails));
@@ -310,7 +313,7 @@ class ZapytaniaController extends Controller
         $zapytania->wznowienie = 2;
         $zapytania->save();
 
-        $emails = $this->getEmails();
+        $emails = $this->getEmails($zapytania->preliminarz);
 
         try {
             if ($emails->isNotEmpty()) {
@@ -328,12 +331,19 @@ class ZapytaniaController extends Controller
         $zapytania->wznowienie = 1;
         $zapytania->save();
     }
-    public function getEmails()
+    public function getEmails($preliminarz = 'Nie')
     {
         $emails = Email::join('users', 'users.id', 'emails.user_id')
             ->select('email')
             ->where('emails.type_id', 1)
             ->get()->pluck('email');
+
+        if ($preliminarz === 'Tak') {
+            $preliminarzEmails = User::where('preliminarz_email', true)
+                ->pluck('email');
+            $emails = $emails->concat($preliminarzEmails)->unique();
+        }
+
         return $emails;
     }
 

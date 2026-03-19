@@ -48,6 +48,7 @@ class KontaktController extends Controller
                 ->through(fn ($kontakt) => [
                     'id' => $kontakt->id,
                     'subject' => $kontakt->subject,
+                    'contact_type' => $kontakt->contact_type,
                     'call_date' => $kontakt->call_date,
                     'client' => $kontakt->client ? $kontakt->client->nazwa : '-',
                     'user' => $kontakt->user ? $kontakt->user->first_name . ' ' . $kontakt->user->last_name : '-',
@@ -106,7 +107,7 @@ class KontaktController extends Controller
             'client_id' => $client ? $client->id : null,
             'client' => $client,
             'kontaktPersons' => $client ? KontaktPerson::where('client_id', $client->id)->get() : [],
-            'existingTopics' => $client ? Kontakt::where('client_id', $client->id)->whereNull('parent_id')->orderBy('created_at', 'desc')->get(['id', 'subject']) : [],
+            'existingTopics' => $client ? Kontakt::where('client_id', $client->id)->whereNull('parent_id')->orderBy('created_at', 'desc')->get(['id', 'subject', 'contact_type']) : [],
             'selected_kontakt_person_id' => $kontaktPersonId ?: ($parentKontakt ? $parentKontakt->kontakt_person_id : null),
             'parent_id' => $parentId,
             'parent_subject' => $parentKontakt ? $parentKontakt->subject : null,
@@ -114,6 +115,7 @@ class KontaktController extends Controller
             'selected_oferta_id' => $ofertaId ?: ($parentKontakt ? $parentKontakt->oferta_id : null),
             'selected_future_project_id' => $futureProjectId ?: ($parentKontakt ? $parentKontakt->future_project_id : null),
             'selected_opiekun_id' => $parentKontakt ? $parentKontakt->opiekun_id : auth()->id(),
+            'parent_contact_type' => $parentKontakt ? $parentKontakt->contact_type : null,
         ]);
     }
 
@@ -121,6 +123,7 @@ class KontaktController extends Controller
     {
         $request->validate([
             'subject' => 'required|string',
+            'contact_type' => 'nullable|string',
             'description' => 'required|string',
             'call_date' => 'nullable|date',
             'call_time' => 'required',
@@ -141,21 +144,30 @@ class KontaktController extends Controller
             $data['opiekun_id'] = auth()->id();
         }
 
-        Kontakt::create($data);
+        $kontakt = Kontakt::create($data);
 
-        if ($request->oferta_id) {
-            return redirect()->route('oferta.edit', $request->oferta_id)->with('success', 'Kontakt dodany.');
+        $targetId = $kontakt->parent_id ?? $kontakt->id;
+
+        // Powrót do standardowej metody Redirect::route()
+        if ($kontakt->zapytania_id) {
+            return Redirect::route('zapytania.edit', [
+                'zapytania' => $kontakt->zapytania_id,
+                'remember_kontakt' => $targetId
+            ])->with('success', 'Kontakt dodany.');
         }
 
-        if ($request->zapytania_id) {
-            return redirect()->route('zapytania.edit', $request->zapytania_id)->with('success', 'Kontakt dodany.');
+        if ($kontakt->oferta_id) {
+            return Redirect::route('oferta.edit', [
+                'oferta' => $kontakt->oferta_id,
+                'remember_kontakt' => $targetId
+            ])->with('success', 'Kontakt dodany.');
         }
 
-        if ($request->future_project_id) {
-            return redirect()->route('futureproject.edit', $request->future_project_id)->with('success', 'Kontakt dodany.');
+        if ($kontakt->future_project_id) {
+            return Redirect::route('futureproject.edit', $kontakt->future_project_id)->with('success', 'Kontakt dodany.');
         }
 
-        return redirect()->route('kontakt')->with('success', 'Kontakt dodany.');
+        return Redirect::route('kontakt')->with('success', 'Kontakt dodany.');
     }
 
     public function edit(Kontakt $kontakt)
@@ -164,6 +176,7 @@ class KontaktController extends Controller
             'kontakt' => [
                 'id' => $kontakt->id,
                 'subject' => $kontakt->subject,
+                'contact_type' => $kontakt->contact_type,
                 'description' => $kontakt->description,
                 'call_date' => $kontakt->call_date,
                 'call_time' => $kontakt->call_time,
@@ -197,7 +210,17 @@ class KontaktController extends Controller
     public function update(Kontakt $kontakt, \Illuminate\Http\Request $request)
     {
         $kontakt->update($request->all());
-        return Redirect::back()->with('success', 'Poprawione.');
+
+        // Check if the updated contact is associated with a zapytania
+        if ($kontakt->zapytania_id) {
+            return Redirect::route('zapytania.edit', [
+                'zapytania' => $kontakt->zapytania_id,
+                'remember_kontakt' => $kontakt->id // Use the current kontakt's ID
+            ])->with('success', 'Poprawiono kontakt.');
+        }
+
+        // If not associated with zapytania, redirect back as before
+        return Redirect::back()->with('success', 'Poprawiono kontakt.');
     }
 
     public function destroy(Kontakt $kontakt)

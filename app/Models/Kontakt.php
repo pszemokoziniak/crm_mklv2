@@ -18,6 +18,7 @@ class Kontakt extends Model
         'next_call_date',
         'next_call_time',
         'subject',
+        'contact_type',
         'description',
         'user_id',
         'opiekun_id',

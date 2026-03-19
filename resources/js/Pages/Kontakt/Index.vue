@@ -58,9 +58,12 @@
                 </Link>
               </td>
               <td class="px-6 py-3">
-                <Link class="flex items-center text-indigo-600 font-semibold text-xs" :href="`/kontakt/${item.id}/edit`">
-                  {{ item.subject }}
-                  <span v-if="item.replies_count > 0" class="ml-2 text-[10px] text-gray-500">({{ item.replies_count }})</span>
+                <Link class="flex flex-col text-indigo-600 font-semibold text-xs" :href="`/kontakt/${item.id}/edit`">
+                  <div class="flex items-center">
+                    {{ item.subject }}
+                    <span v-if="item.replies_count > 0" class="ml-2 text-[10px] text-gray-500">({{ item.replies_count }})</span>
+                  </div>
+                  <span v-if="item.contact_type" class="text-[9px] text-indigo-400 uppercase mt-0.5">{{ item.contact_type }}</span>
                 </Link>
               </td>
               <td class="px-6 py-3 whitespace-nowrap">

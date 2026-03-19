@@ -30,6 +30,7 @@ class User extends Authenticatable
         'owner',
         'password',
         'active',
+        'preliminarz_email',
     ];
 
     /**
@@ -50,6 +51,7 @@ class User extends Authenticatable
     protected $casts = [
         'owner' => 'boolean',
         'email_verified_at' => 'datetime',
+        'preliminarz_email' => 'boolean',
     ];
 
     public function getActivitylogOptions(): LogOptions

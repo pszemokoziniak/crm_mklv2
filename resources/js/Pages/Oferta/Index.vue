@@ -4,7 +4,7 @@
     <h1 class="mb-8 text-3xl font-bold text-gray-900">Oferty</h1>
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block text-gray-700">Status:</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
           <option :value="null">Wszystko</option>
           <option value="with">Z usuniętymi</option>
@@ -56,7 +56,7 @@
               </td>
               <td class="">
                 <Link class="flex items-center px-6 py-4" :href="`/oferta/${item.id}/edit`" tabindex="-1">
-                  <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded uppercase tracking-wider leading-tight">
+                  <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded uppercase tracking-tighter leading-tight whitespace-nowrap scale-[0.7] origin-left inline-block shadow-sm">
                     {{ item.typ || 'Brak' }}
                   </span>
                 </Link>
@@ -71,7 +71,7 @@
               <td class="">
                 <Link class="flex items-center px-6 py-4" :href="`/oferta/${item.id}/edit`" tabindex="-1">
                   <div v-if="item.status" class="flex items-center">
-                    <span class="px-2 py-1 text-[10px] font-bold leading-none text-white bg-indigo-500 rounded truncate shadow-sm">
+                    <span class="px-2 py-0.5 text-[10px] font-bold leading-none text-white bg-indigo-500 rounded truncate shadow-sm scale-[0.7] origin-left inline-block uppercase tracking-tighter">
                       {{ item.status.name }}
                     </span>
                   </div>

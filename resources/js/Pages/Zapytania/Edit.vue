@@ -168,7 +168,7 @@
       </div>
 
       <!-- Kontakty Section -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div id="historia-kontaktow" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
           <div class="flex items-center">
             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
@@ -184,12 +184,23 @@
 
         <div class="p-8">
           <div v-if="kontakty.length > 0" class="space-y-6">
-            <div v-for="kontakt in kontakty" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+            <div v-for="kontakt in kontakty" :id="`kontakt-${kontakt.id}`" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm target:ring-2 target:ring-indigo-500 transition-all">
               <!-- Główny wpis w wątku -->
               <div class="bg-gray-50/50 p-4 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                   <span class="font-bold text-indigo-900">{{ kontakt.subject }}</span>
-                  <span class="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full font-medium">Wątek</span>
+                  <span v-if="kontakt.contact_type" class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded text-xs uppercase font-bold flex items-center">
+                    <template v-if="kontakt.contact_type === 'telefon'">
+                      <icon name="phone" class="w-3 h-3 mr-1" />
+                    </template>
+                    <template v-else-if="kontakt.contact_type === 'email'">
+                      <icon name="mail" class="w-3 h-3 mr-1" />
+                    </template>
+                    <template v-else-if="kontakt.contact_type === 'osobisty'">
+                      <icon name="contact" class="w-3 h-3 mr-1" />
+                    </template>
+                    {{ kontakt.contact_type }}
+                  </span>
                 </div>
                 <div class="flex items-center gap-4">
                   <span class="text-xs text-gray-500">{{ kontakt.call_date }} {{ kontakt.call_time }}</span>
@@ -211,7 +222,21 @@
               <div v-if="kontakt.children && kontakt.children.length > 0" class="bg-white border-t border-gray-50">
                 <div v-for="reply in kontakt.children" :key="reply.id" class="p-4 border-b last:border-0 ml-8 border-l-2 border-indigo-100">
                   <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-bold text-gray-600">{{ reply.user.first_name }} {{ reply.user.last_name }}</span>
+                    <div class="flex items-center">
+                      <span class="text-xs font-bold text-gray-600">{{ reply.user.first_name }} {{ reply.user.last_name }}</span>
+                      <span v-if="reply.contact_type" class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded text-xs uppercase font-bold flex items-center">
+                        <template v-if="reply.contact_type === 'telefon'">
+                          <icon name="phone" class="w-3 h-3 mr-1" />
+                        </template>
+                        <template v-else-if="reply.contact_type === 'email'">
+                          <icon name="mail" class="w-3 h-3 mr-1" />
+                        </template>
+                        <template v-else-if="reply.contact_type === 'osobisty'">
+                          <icon name="contact" class="w-3 h-3 mr-1" />
+                        </template>
+                        {{ reply.contact_type }}
+                      </span>
+                    </div>
                     <div class="flex items-center gap-3">
                       <span class="text-xs text-gray-400">{{ reply.call_date }} {{ reply.call_time }}</span>
                       <Link :href="`/kontakt/${reply.id}/edit`" class="text-indigo-400 hover:text-indigo-600 text-xs">Edytuj</Link>
@@ -424,6 +449,22 @@ export default {
         waluta_id: this.zapytania.waluta_id,
         opis: this.zapytania.opis,
       }),
+    }
+  },
+  mounted() {
+    const urlParams = new URLSearchParams(window.location.search)
+    const rememberKontakt = urlParams.get('remember_kontakt')
+
+    if (rememberKontakt) {
+      setTimeout(() => {
+        const el = document.getElementById(`kontakt-${rememberKontakt}`)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          el.classList.add('ring-4', 'ring-indigo-500', 'ring-opacity-50')
+        } else {
+          document.getElementById('historia-kontaktow')?.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
     }
   },
   methods: {

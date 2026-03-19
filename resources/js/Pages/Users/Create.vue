@@ -24,6 +24,8 @@
           </select-input>
 
           <file-input v-model="form.photo" :error="form.errors.photo" class="pb-8 pr-6 w-full lg:w-1/2" type="file" accept="image/*" label="Zdjęcie" />
+
+          <checkbox-input v-model="form.preliminarz_email" :error="form.errors.preliminarz_email" class="pb-8 pr-6 w-full lg:w-1/2" label="Powiadomienia Preliminarz" description="Czy użytkownik otrzymuje powiadomienia e-mail dla nowych zapytań z opcją PRELIMINARZ - TAK" />
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
           <loading-button :loading="form.processing" class="btn-indigo" type="submit">Utwórz użytkownika</loading-button>
@@ -40,6 +42,7 @@ import FileInput from '@/Shared/FileInput'
 import TextInput from '@/Shared/TextInput'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
+import CheckboxInput from '@/Shared/CheckboxInput'
 
 export default {
   components: {
@@ -49,6 +52,7 @@ export default {
     LoadingButton,
     SelectInput,
     TextInput,
+    CheckboxInput,
   },
   layout: Layout,
   props: {
@@ -66,6 +70,7 @@ export default {
         role: null,
         photo: null,
         active: 1,
+        preliminarz_email: false,
       }),
     }
   },

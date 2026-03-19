@@ -21,7 +21,15 @@
         <div class="bg-white rounded-md shadow overflow-hidden mb-8">
           <form @submit.prevent="update">
             <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-              <text-input v-model="form.subject" :error="form.errors.subject" class="pb-8 pr-6 w-full" label="Temat" :disabled="!!kontakt.parent_id" />
+              <text-input v-model="form.subject" :error="form.errors.subject" class="pb-8 pr-6 w-full lg:w-3/4" label="Temat" :disabled="!!kontakt.parent_id" />
+
+              <select-input v-model="form.contact_type" :error="form.errors.contact_type" class="pb-8 pr-6 w-full lg:w-1/4" label="Typ kontaktu">
+                <option :value="null">Wybierz...</option>
+                <option value="telefon">Telefon</option>
+                <option value="email">Email</option>
+                <option value="osobisty">Osobisty</option>
+              </select-input>
+
               <textarea-input v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full" label="Opis / Notatki" />
 
               <select-input v-model="form.client_id" :error="form.errors.client_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Klient">
@@ -112,12 +120,24 @@
       <div v-if="replies.length > 0" class="space-y-4">
         <div v-for="reply in replies" :key="reply.id" class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-indigo-500">
           <div class="flex justify-between items-start mb-2">
-            <div class="text-sm text-gray-500">
+            <div class="text-sm text-gray-500 flex items-center">
               <span class="font-bold text-gray-700">{{ reply.user.first_name }} {{ reply.user.last_name }}</span>
               <span v-if="reply.opiekun_id && reply.opiekun_id !== reply.user_id" class="ml-2 text-indigo-600">
                 (Przekazano do: {{ reply.opiekun.first_name }} {{ reply.opiekun.last_name }})
               </span>
               • {{ reply.call_date }} {{ reply.call_time }}
+              <span v-if="reply.contact_type" class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded text-xs uppercase font-bold flex items-center">
+                <template v-if="reply.contact_type === 'telefon'">
+                  <icon name="phone" class="w-3 h-3 mr-1" />
+                </template>
+                <template v-else-if="reply.contact_type === 'email'">
+                  <icon name="mail" class="w-3 h-3 mr-1" />
+                </template>
+                <template v-else-if="reply.contact_type === 'osobisty'">
+                  <icon name="contact" class="w-3 h-3 mr-1" />
+                </template>
+                {{ reply.contact_type }}
+              </span>
             </div>
             <Link :href="`/kontakt/${reply.id}/edit`" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
               Edytuj
@@ -172,6 +192,7 @@ export default {
     return {
       form: this.$inertia.form({
         subject: this.kontakt.subject,
+        contact_type: this.kontakt.contact_type,
         description: this.kontakt.description,
         call_date: this.kontakt.call_date,
         call_time: this.kontakt.call_time,

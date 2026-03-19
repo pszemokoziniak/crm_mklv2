@@ -57,6 +57,10 @@
 
               <file-input v-model="form.photo" :error="form.errors.photo" :disabled="disable" type="file" accept="image/*" label="Zdjęcie profilowe" />
             </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <checkbox-input v-model="form.preliminarz_email" :error="form.errors.preliminarz_email" :disabled="disable" label="Powiadomienia Preliminarz" description="Czy użytkownik otrzymuje powiadomienia e-mail dla nowych zapytań z opcją PRELIMINARZ - TAK" />
+            </div>
           </div>
 
           <!-- Form Actions -->
@@ -156,6 +160,7 @@ import FileInput from '@/Shared/FileInput'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
+import CheckboxInput from '@/Shared/CheckboxInput'
 import Icon from '@/Shared/Icon.vue'
 
 export default {
@@ -167,6 +172,7 @@ export default {
     SelectInput,
     TextInput,
     TrashedMessage,
+    CheckboxInput,
     Icon,
   },
   layout: Layout,
@@ -188,6 +194,7 @@ export default {
         password: '',
         role: this.user.role,
         photo: null,
+        preliminarz_email: this.user.preliminarz_email,
       }),
     }
   },

@@ -43,7 +43,15 @@
           </select-input>
 
           <!-- 4. Temat -->
-          <text-input v-model="form.subject" :error="form.errors.subject" class="pb-8 pr-6 w-full" label="Temat rozmowy" :disabled="entryType === 'reply' || !!parent_id" placeholder="O czym rozmawialiście?" />
+          <text-input v-model="form.subject" :error="form.errors.subject" class="pb-8 pr-6 w-full lg:w-3/4" label="Temat rozmowy" :disabled="entryType === 'reply' || !!parent_id" placeholder="O czym rozmawialiście?" />
+
+          <!-- Typ kontaktu -->
+          <select-input v-model="form.contact_type" :error="form.errors.contact_type" class="pb-8 pr-6 w-full lg:w-1/4" label="Typ kontaktu">
+            <option :value="null">Wybierz...</option>
+            <option value="telefon">Telefon</option>
+            <option value="email">Email</option>
+            <option value="osobisty">Osobisty</option>
+          </select-input>
 
           <!-- 5. Opis -->
           <textarea-input v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full" label="Szczegóły rozmowy / Notatki" />
@@ -134,6 +142,7 @@ export default {
     selected_kontakt_person_id: [String, Number],
     parent_id: [String, Number],
     parent_subject: String,
+    parent_contact_type: String,
     selected_zapytania_id: [String, Number],
     selected_oferta_id: [String, Number],
     selected_future_project_id: [String, Number], // Dodane
@@ -153,6 +162,7 @@ export default {
       localKontaktPersons: this.kontaktPersons || [],
       form: this.$inertia.form({
         subject: this.parent_subject || '',
+        contact_type: this.parent_contact_type || null,
         description: '',
         call_date: currentDate,
         call_time: currentTime,
@@ -199,14 +209,17 @@ export default {
     resetParent() {
       this.form.parent_id = null
       this.form.subject = ''
+      this.form.contact_type = null
     },
     syncSubject() {
       const topic = this.existingTopics.find(t => t.id === this.form.parent_id)
       if (topic) {
         this.form.subject = topic.subject
+        this.form.contact_type = topic.contact_type
       }
     },
     store() {
+      // Używamy helpera route lub bezpośredniej ścieżki POST
       this.form.post('/kontakt/post')
     },
   },
