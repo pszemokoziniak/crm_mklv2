@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Wymuszamy http, skoro środowisko Docker ma problem z detekcją SSL
-        URL::forceScheme('http');
+        // Wymuszamy https, aby uniknąć błędów Mixed Content na produkcji
+        URL::forceScheme('https');
     }
 }
