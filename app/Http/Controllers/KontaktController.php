@@ -179,9 +179,9 @@ class KontaktController extends Controller
                 'subject' => $kontakt->subject,
                 'contact_type' => $kontakt->contact_type,
                 'description' => $kontakt->description,
-                'call_date' => $kontakt->call_date,
+                'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null, // Explicitly format
                 'call_time' => $kontakt->call_time,
-                'next_call_date' => $kontakt->next_call_date,
+                'next_call_date' => $kontakt->next_call_date ? $kontakt->next_call_date->format('Y-m-d') : null, // Explicitly format
                 'next_call_time' => $kontakt->next_call_time,
                 'zapytania_id' => $kontakt->zapytania_id,
                 'oferta_id' => $kontakt->oferta_id,

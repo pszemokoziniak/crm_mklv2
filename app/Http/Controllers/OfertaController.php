@@ -105,12 +105,24 @@ class OfertaController extends Controller
     public function edit(Oferta $oferta)
     {
         $sortedZapytania = Zapytania::select('id', 'nazwa_projektu')->withTrashed()->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get();
-        // Log::info('Sorted Zapytania for edit form:', $sortedZapytania->pluck('nazwa_projektu')->toArray()); // Usunięto log
 
         return Inertia::render('Oferta/Edit', [
-            'oferta' => $oferta,
+            'oferta' => [
+                'id' => $oferta->id,
+                'zapytania_id' => $oferta->zapytania_id,
+                'typ' => $oferta->typ,
+                'client_id' => $oferta->client_id,
+                'data_wyslania' => $oferta->data_wyslania ? $oferta->data_wyslania->format('Y-m-d') : null, // Explicitly format
+                'kwota' => $oferta->kwota,
+                'waluta_id' => $oferta->waluta_id,
+                'data_kontakt' => $oferta->data_kontakt ? $oferta->data_kontakt->format('Y-m-d') : null, // Explicitly format
+                'oferta_status_id' => $oferta->oferta_status_id,
+                'opis' => $oferta->opis,
+                'user_id' => $oferta->user_id,
+                'deleted_at' => $oferta->deleted_at,
+            ],
             'clients' => Client::select('id', 'nazwa')->orderBy(DB::raw('TRIM(nazwa)'))->get(),
-            'zapytanie' => $sortedZapytania, // Użyj posortowanej kolekcji
+            'zapytanie' => $sortedZapytania,
             'clientById' => Client::select('id', 'nazwa')->where('id', $oferta->client_id)->withTrashed()->first(),
             'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->first(),
             'statuses' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),

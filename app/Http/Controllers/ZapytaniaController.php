@@ -151,7 +151,7 @@ class ZapytaniaController extends Controller
                 'id_zapyt' => $zapytania->id_zapyt,
                 'user_otrzymal_id' => $zapytania->user_otrzymal_id,
                 'data_otrzymania' => $zapytania->data_otrzymania,
-                'data_zlozenia' => $zapytania->data_zlozenia,
+                'data_zlozenia' => $zapytania->data_zlozenia ? $zapytania->data_zlozenia->format('Y-m-d') : null,
                 'client_id' => $zapytania->client_id,
                 'nazwa_projektu' => $zapytania->nazwa_projektu,
                 'preliminarz' => $zapytania->preliminarz,

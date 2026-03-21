@@ -65,6 +65,7 @@
                 <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
 
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
+                  <span class="uppercase text-gray-400 font-bold leading-none mb-1" style="font-size: 9px;">Data złożenia</span>
                   <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.data_zlozenia), 'text-gray-500': !isOverdue(item.data_zlozenia)}">
                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     {{ item.data_zlozenia || 'Brak daty złożenia' }}
@@ -138,6 +139,8 @@
                 <div class="flex flex-col space-y-3 mt-auto pt-3 border-t border-gray-50">
                   <!-- Następny kontakt -->
                   <div v-if="item.next_call_date">
+                    <span class="uppercase text-gray-400 font-bold leading-none mb-1" style="font-size: 9px;">Termin
+                      kontaktu</span>
                     <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.next_call_date), 'text-indigo-700': !isOverdue(item.next_call_date)}">
                       <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                       <span class="whitespace-nowrap">{{ item.next_call_date }}</span>

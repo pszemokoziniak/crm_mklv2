@@ -435,7 +435,7 @@ export default {
         id_zapyt: this.zapytania.id_zapyt,
         user_otrzymal_id: this.zapytania.user_otrzymal_id,
         data_otrzymania: this.zapytania.data_otrzymania,
-        data_zlozenia: this.zapytania.data_zlozenia,
+        data_zlozenia: this.zapytania.data_zlozenia || null,
         client_id: this.zapytania.client_id,
         nazwa_projektu: this.zapytania.nazwa_projektu,
         preliminarz: this.zapytania.preliminarz,
