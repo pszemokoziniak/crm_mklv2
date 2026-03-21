@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use App\Traits\StoreActivityLog;
+use Illuminate\Support\Facades\DB; // Dodaj to
 
 class FutureProjectController extends Controller
 {
@@ -63,11 +64,11 @@ class FutureProjectController extends Controller
     {
 
         return Inertia::render('FutureProjects/Create', [
-            'objekt' => Objekt::get()->map->only('id', 'name'),
-            'faza' => Faza::get()->map->only('id', 'name'),
-            'kraj' => Kraj::get()->map->only('id', 'name', 'waluta'),
-            'users' => User::get()->map->only('id', 'first_name', 'last_name'),
-            'clients' => Client::get()->map->only('id', 'nazwa'),
+            'objekt' => Objekt::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'faza' => Faza::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'kraj' => Kraj::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name', 'waluta'),
+            'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get()->map->only('id', 'nazwa'),
         ]);
     }
     public function store(FutureProjectRequest $request)
@@ -100,11 +101,11 @@ class FutureProjectController extends Controller
                 'opiekun_id' => $futureProject->opiekun_id,
                 'deleted_at' => $futureProject->deleted_at,
             ],
-            'objekt' => Objekt::get()->map->only('id', 'name'),
-            'faza' => Faza::get()->map->only('id', 'name'),
-            'krajs' => Kraj::get()->map->only('id', 'name'),
-            'users' => User::get()->map->only('id', 'first_name', 'last_name'),
-            'clients' => Client::withTrashed()->get()->map->only('id', 'nazwa'),
+            'objekt' => Objekt::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'faza' => Faza::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'krajs' => Kraj::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'clients' => Client::withTrashed()->orderBy(DB::raw('TRIM(nazwa)'))->get()->map->only('id', 'nazwa'),
             'kontakty' => Kontakt::with(['user', 'opiekun', 'kontaktperson', 'children.user', 'children.opiekun', 'children.kontaktperson'])
                 ->where('future_project_id', $futureProject->id)
                 ->whereNull('parent_id')

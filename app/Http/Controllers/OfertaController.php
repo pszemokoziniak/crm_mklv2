@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use App\Traits\StoreActivityLog;
+use Illuminate\Support\Facades\DB; // Dodaj to
 
 class OfertaController extends Controller
 {
@@ -52,11 +53,11 @@ class OfertaController extends Controller
     public function create()
     {
         return Inertia::render('Oferta/Create', [
-            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->get(),
-            'clients' => Client::select('id', 'nazwa')->get(),
-            'users' => User::select('id', 'first_name', 'last_name')->get(),
-            'statuses' => OfertaStatus::select('id', 'name')->get(),
-            'waluta' => Waluta::select('id', 'name')->get(),
+            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get(),
+            'clients' => Client::select('id', 'nazwa')->orderBy(DB::raw('TRIM(nazwa)'))->get(),
+            'users' => User::select('id', 'first_name', 'last_name')->orderBy('first_name')->orderBy('last_name')->get(),
+            'statuses' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
+            'waluta' => Waluta::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
         ]);
     }
 
@@ -69,10 +70,10 @@ class OfertaController extends Controller
         }
 
         return Inertia::render('Oferta/Create', [
-            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->get(),
-            'clients' => Client::select('id', 'nazwa')->get(),
-            'statuses' => OfertaStatus::select('id', 'name')->get(),
-            'waluta' => Waluta::select('id', 'name')->get(),
+            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get(),
+            'clients' => Client::select('id', 'nazwa')->orderBy(DB::raw('TRIM(nazwa)'))->get(),
+            'statuses' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
+            'waluta' => Waluta::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'zapytaniaById' => $zapytania->id,
             'clientById' => $client->id,
         ]);
@@ -103,14 +104,17 @@ class OfertaController extends Controller
 
     public function edit(Oferta $oferta)
     {
+        $sortedZapytania = Zapytania::select('id', 'nazwa_projektu')->withTrashed()->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get();
+        // Log::info('Sorted Zapytania for edit form:', $sortedZapytania->pluck('nazwa_projektu')->toArray()); // Usunięto log
+
         return Inertia::render('Oferta/Edit', [
             'oferta' => $oferta,
-            'clients' => Client::select('id', 'nazwa')->get(),
-            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->withTrashed()->get(),
+            'clients' => Client::select('id', 'nazwa')->orderBy(DB::raw('TRIM(nazwa)'))->get(),
+            'zapytanie' => $sortedZapytania, // Użyj posortowanej kolekcji
             'clientById' => Client::select('id', 'nazwa')->where('id', $oferta->client_id)->withTrashed()->first(),
             'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->first(),
-            'statuses' => OfertaStatus::select('id', 'name')->get(),
-            'waluta' => Waluta::select('id', 'name')->get(),
+            'statuses' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
+            'waluta' => Waluta::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'kontakty' => Kontakt::with(['user', 'kontaktperson', 'children.user', 'children.kontaktperson'])
                 ->where('oferta_id', $oferta->id)
                 ->whereNull('parent_id')

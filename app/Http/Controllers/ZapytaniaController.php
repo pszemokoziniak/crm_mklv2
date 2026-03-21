@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ArchiwumStoreRequest;
-use App\Http\Requests\ClientRequest;
-use App\Http\Requests\ContactStoreRequest;
 use App\Http\Requests\WznowienieStoreRequest;
 use App\Http\Requests\ZapytaniaStoreRequest;
 use App\Mail\ZapytaniaMail;
@@ -21,7 +18,6 @@ use App\Models\Zakres;
 use App\Models\Zapytania;
 use App\Models\Kontakt;
 use Carbon\Carbon;
-//use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Request;
@@ -29,6 +25,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use App\Traits\StoreActivityLog;
+use Illuminate\Support\Facades\DB;
 
 class ZapytaniaController extends Controller
 {
@@ -97,11 +94,11 @@ class ZapytaniaController extends Controller
     public function create()
     {
         return Inertia::render('Zapytania/Create', [
-            'zakres' => Zakres::get()->map->only('id', 'name'),
-            'kraj' => Kraj::get()->map->only('id', 'name', 'waluta'),
-            'waluta' => Waluta::get()->map->only('id', 'name'),
-            'users' => User::get()->map->only('id', 'first_name', 'last_name'),
-            'clients' => Client::get()->map->only('id', 'nazwa'),
+            'zakres' => Zakres::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'kraj' => Kraj::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name', 'waluta'),
+            'waluta' => Waluta::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get()->map->only('id', 'nazwa'),
             'id_zapyt' => $this->generateNextIdZapyt(),
         ]);
     }
@@ -175,11 +172,11 @@ class ZapytaniaController extends Controller
                 ]
             ],
             'branzas' => Branza::get(),
-            'krajs' => Kraj::get(),
-            'waluta' => Waluta::get(),
-            'users' => User::get(),
-            'zakres' => Zakres::get(),
-            'clients' => Client::get(),
+            'krajs' => Kraj::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name', 'waluta'),
+            'waluta' => Waluta::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'zakres' => Zakres::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get()->map->only('id', 'nazwa'),
             'oferty' => Oferta::with('user')->where('zapytania_id', $zapytania->id)->get(),
             'clientById' => Client::where('id', $zapytania->client_id)->withTrashed()->firstOrFail(),
             'archiwumOpis' => ArchiwumZapytania::with('user')->where('zapytania_id', $zapytania->id)->get(),

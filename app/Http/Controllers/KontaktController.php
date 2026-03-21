@@ -12,6 +12,7 @@ use App\Models\FutureProject;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB; // Dodaj to
 
 class KontaktController extends Controller
 {
@@ -93,20 +94,20 @@ class KontaktController extends Controller
         $futureProjectId = Request::get('future_project_id');
 
         return Inertia::render('Kontakt/Create', [
-            'clients' => Client::orderBy('nazwa')->get(),
-            'users' => User::orderBy('last_name')->get()->map(fn($u) => [
+            'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get(),
+            'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map(fn($u) => [
                 'id' => $u->id,
                 'name' => $u->first_name . ' ' . $u->last_name,
             ]),
-            'zapytanias' => $client ? Zapytania::where('client_id', $client->id)->get() : [],
-            'ofertas' => $client ? Oferta::where('client_id', $client->id)->get()->map(fn($o) => [
+            'zapytanias' => $client ? Zapytania::where('client_id', $client->id)->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get() : [],
+            'ofertas' => $client ? Oferta::where('client_id', $client->id)->orderBy('id')->get()->map(fn($o) => [
                 'id' => $o->id,
                 'label' => 'Oferta #' . $o->id . ' (' . $o->kwota . ' ' . ($o->waluta ? $o->waluta->name : '') . ')',
             ]) : [],
-            'futureProjects' => $client ? FutureProject::where('client_id', $client->id)->get() : [],
+            'futureProjects' => $client ? FutureProject::where('client_id', $client->id)->orderBy(DB::raw('TRIM(nazwa)'))->get() : [],
             'client_id' => $client ? $client->id : null,
             'client' => $client,
-            'kontaktPersons' => $client ? KontaktPerson::where('client_id', $client->id)->get() : [],
+            'kontaktPersons' => $client ? KontaktPerson::where('client_id', $client->id)->orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get() : [],
             'existingTopics' => $client ? Kontakt::where('client_id', $client->id)->whereNull('parent_id')->orderBy('created_at', 'desc')->get(['id', 'subject', 'contact_type']) : [],
             'selected_kontakt_person_id' => $kontaktPersonId ?: ($parentKontakt ? $parentKontakt->kontakt_person_id : null),
             'parent_id' => $parentId,
@@ -190,20 +191,20 @@ class KontaktController extends Controller
                 'client_id' => $kontakt->client_id,
                 'opiekun_id' => $kontakt->opiekun_id,
             ],
-            'users' => User::orderBy('last_name')->get()->map(fn($u) => [
+            'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map(fn($u) => [
                 'id' => $u->id,
                 'name' => $u->first_name . ' ' . $u->last_name,
             ]),
             'replies' => $kontakt->children()->with(['user', 'opiekun', 'kontaktperson'])->get(),
-            'zapytanias' => Zapytania::where('client_id', $kontakt->client_id)->get(),
-            'ofertas' => Oferta::where('client_id', $kontakt->client_id)->get()->map(fn($o) => [
+            'zapytanias' => Zapytania::where('client_id', $kontakt->client_id)->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get(),
+            'ofertas' => Oferta::where('client_id', $kontakt->client_id)->orderBy('id')->get()->map(fn($o) => [
                 'id' => $o->id,
                 'label' => 'Oferta #' . $o->id . ' (' . $o->kwota . ' ' . ($o->waluta ? $o->waluta->name : '') . ')',
             ]),
-            'futureProjects' => FutureProject::where('client_id', $kontakt->client_id)->get(),
-            'kontaktPersons' => KontaktPerson::where('client_id', $kontakt->client_id)->get(),
+            'futureProjects' => FutureProject::where('client_id', $kontakt->client_id)->orderBy(DB::raw('TRIM(nazwa)'))->get(),
+            'kontaktPersons' => KontaktPerson::where('client_id', $kontakt->client_id)->orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get(),
             'client' => Client::find($kontakt->client_id),
-            'clients' => Client::orderBy('nazwa')->get(),
+            'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get(),
         ]);
     }
 
