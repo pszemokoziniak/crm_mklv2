@@ -16,6 +16,8 @@ class Oferta extends Model
 
     protected $casts = [
         'created_at' => 'date:Y-m-d',
+        'data_kontakt' => 'date',
+        'data_wyslania' => 'date',
     ];
 
     public function getActivitylogOptions(): LogOptions

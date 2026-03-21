@@ -23,6 +23,7 @@ class Zapytania extends Model
      */
     protected $casts = [
         'created_at' => 'date:Y-m-d',
+        'data_zlozenia' => 'date', // Added this line
     ];
 
     public function getActivitylogOptions(): LogOptions

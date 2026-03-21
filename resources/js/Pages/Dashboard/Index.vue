@@ -65,7 +65,7 @@
                 <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
 
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
-                  <div class="text-xs text-gray-500 flex items-center">
+                  <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.data_zlozenia), 'text-gray-500': !isOverdue(item.data_zlozenia)}">
                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     {{ item.data_zlozenia || 'Brak daty złożenia' }}
                   </div>
@@ -99,14 +99,14 @@
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                   <div v-if="item.data_kontakt" class="flex flex-col">
                     <span class="text-[9px] uppercase text-indigo-500 font-bold leading-none mb-1">Data kontaktu</span>
-                    <div class="text-xs text-indigo-700 font-bold flex items-center">
+                    <div class="text-xs font-bold flex items-center" :class="{'text-red-500': isOverdue(item.data_kontakt), 'text-indigo-700': !isOverdue(item.data_kontakt)}">
                       <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                       {{ item.data_kontakt }}
                     </div>
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-[9px] uppercase text-gray-400 font-bold leading-none mb-1">Wysłano</span>
-                    <div class="text-xs text-gray-500 flex items-center">
+                    <span class="uppercase text-gray-400 font-bold leading-none mb-1" style="font-size: 9px;">Wysłano</span>
+                    <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.data_wyslania), 'text-gray-500': !isOverdue(item.data_wyslania)}">
                       <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                       {{ item.data_wyslania || 'Brak daty' }}
                     </div>
@@ -136,31 +136,28 @@
                 <div class="text-sm text-gray-600 mb-3 line-clamp-2 italic">"{{ item.subject }}"</div>
 
                 <div class="flex flex-col space-y-3 mt-auto pt-3 border-t border-gray-50">
-                  <!-- Następny kontakt - Wyróżniony -->
-                  <div v-if="item.next_call_date" class="bg-indigo-50 p-2 rounded-md border border-indigo-100">
-                    <div class="text-[9px] uppercase font-bold text-indigo-400 mb-0.5">Następny:</div>
-                    <div class="flex flex-col text-indigo-700 font-bold text-xs">
-                      <div class="flex items-center mb-1">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                        <span class="whitespace-nowrap">{{ item.next_call_date }}</span>
-                      </div>
-                      <div v-if="item.next_call_time" class="flex items-center">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span class="bg-indigo-200 text-indigo-800 px-1 py-0.5 rounded text-[9px]">{{ item.next_call_time }}</span>
-                      </div>
+                  <!-- Następny kontakt -->
+                  <div v-if="item.next_call_date">
+                    <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.next_call_date), 'text-indigo-700': !isOverdue(item.next_call_date)}">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      <span class="whitespace-nowrap">{{ item.next_call_date }}</span>
+                    </div>
+                    <div v-if="item.next_call_time" class="flex items-center">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      <span class="bg-indigo-200 text-indigo-800 px-1 py-0.5 rounded text-[9px]">{{ item.next_call_time }}</span>
                     </div>
                   </div>
 
-                  <!-- Ostatni i Opiekun - Każdy w nowej linii z małym fontem -->
+                  <!-- Ostatni i Opiekun -->
                   <div class="space-y-2">
                     <div class="flex flex-col">
-                      <span class="text-[9px] uppercase text-gray-400 font-bold leading-none mb-1">Ostatni kontakt</span>
-                      <span class="text-[10px] text-gray-500 whitespace-nowrap">{{ item.call_date }}</span>
+                      <span class="uppercase text-gray-400 font-bold leading-none mb-1" style="font-size: 9px;">Ostatni kontakt</span>
+                      <span class="text-xs whitespace-nowrap text-gray-500">{{ item.call_date }}</span>
                     </div>
-                    <div v-if="item.user" class="flex flex-col">
-                      <span class="text-[9px] uppercase text-gray-400 font-bold leading-none mb-1">Opiekun</span>
-                      <span class="text-[10px] text-gray-500 truncate">{{ item.user.first_name }} {{ item.user.last_name }}</span>
+                    <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
+                      {{ item.user.first_name }} {{ item.user.last_name }}
                     </div>
+                    <div v-else class="text-xs text-gray-400 italic">Nieprzypisane</div>
                   </div>
                 </div>
               </Link>
@@ -180,13 +177,14 @@
                 <div class="font-bold text-gray-900 mb-1 truncate">{{ item.subject }}</div>
 
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
-                  <div class="text-xs text-gray-500 flex items-center">
+                  <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.deadline), 'text-gray-500': !isOverdue(item.deadline)}">
                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     {{ item.deadline || 'Brak terminu' }}
                   </div>
                   <div v-if="item.users" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
                     {{ item.users.first_name }} {{ item.users.last_name }}
                   </div>
+                  <div v-else class="text-xs text-gray-400 italic">Nieprzypisane</div>
                 </div>
               </Link>
             </div>
@@ -264,6 +262,16 @@ export default {
       if (s.includes('przegrana') || s.includes('odrzucona') || s.includes('rezygnacja')) return 'bg-red-100 text-red-800'
       if (s.includes('toczy') || s.includes('wysłana') || s.includes('oczekuje')) return 'bg-blue-100 text-blue-800'
       return 'bg-gray-100 text-gray-800'
+    },
+    isOverdue(dateString) {
+      if (!dateString) return false
+      const today = new Date()
+      today.setHours(0, 0, 0, 0) // Ignore time for comparison
+
+      const itemDate = new Date(dateString)
+      itemDate.setHours(0, 0, 0, 0) // Ignore time for comparison
+
+      return itemDate < today
     },
   },
 }

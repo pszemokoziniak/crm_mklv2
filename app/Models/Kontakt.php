@@ -30,6 +30,11 @@ class Kontakt extends Model
         'updated_at',
     ];
 
+    protected $casts = [
+        'call_date' => 'date',
+        'next_call_date' => 'date',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -16,6 +16,12 @@ class FutureProject extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'data_kontakt' => 'date',
+        'data_start' => 'date',
+        'data_end' => 'date',
+    ];
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

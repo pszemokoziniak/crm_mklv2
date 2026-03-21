@@ -18,6 +18,10 @@ class Zadania extends Model
         'user_id',
     ];
 
+    protected $casts = [
+        'deadline' => 'date',
+    ];
+
     protected static function booted()
     {
         static::created(function ($zadania) {

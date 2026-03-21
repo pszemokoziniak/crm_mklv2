@@ -61,7 +61,17 @@ class DashboardController extends Controller
                     ->filter(Request::only('search'))
                     ->orderBy('next_call_date', 'asc')
                     ->orderBy('next_call_time', 'asc')
-                    ->get(),
+                    ->get()
+                    ->map(fn ($kontakt) => [
+                        'id' => $kontakt->id,
+                        'client' => $kontakt->client ? $kontakt->client : null,
+                        'kontaktperson' => $kontakt->kontaktperson ? $kontakt->kontaktperson : null,
+                        'subject' => $kontakt->subject,
+                        'next_call_date' => $kontakt->next_call_date ? $kontakt->next_call_date->format('Y-m-d') : null,
+                        'next_call_time' => $kontakt->next_call_time,
+                        'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null,
+                        'user' => $kontakt->user ? $kontakt->user : null,
+                    ]),
                 'zapytanias' => Zapytania::with(['user', 'opracowuje', 'client'])
                     ->where(function ($query) {
                         $query->whereNull('wznowienie')
@@ -86,11 +96,11 @@ class DashboardController extends Controller
                         'id_zapyt' => $zapytania->id_zapyt,
                         'nazwa_projektu' => $zapytania->nazwa_projektu,
                         'client' => $zapytania->client ? $zapytania->client : null,
-                        'data_zlozenia' => $zapytania->data_zlozenia,
+                        'data_zlozenia' => $zapytania->data_zlozenia ? $zapytania->data_zlozenia->format('Y-m-d') : null,
                         'opracowuje' => $zapytania->opracowuje ? $zapytania->opracowuje : null,
                         'wznowienie' => $zapytania->wznowienie,
                         'user' => $zapytania->user ? $zapytania->user : null,
-                        'created_at' => date($zapytania->created_at)
+                        'created_at' => $zapytania->created_at->format('Y-m-d H:i:s')
                     ]),
                 'ofertas' => Oferta::with(['user', 'client', 'zapytania', 'ofertastatus'])
                     ->whereHas('zapytania', function ($query) {
@@ -110,11 +120,11 @@ class DashboardController extends Controller
                         'nazwa_projektu' => $oferta->zapytania ? $oferta->zapytania->nazwa_projektu : 'Brak projektu',
                         'zapytania' => $oferta->zapytania ? $oferta->zapytania : null,
                         'client' => $oferta->client ? $oferta->client : null,
-                        'data_kontakt' => $oferta->data_kontakt,
-                        'data_wyslania' => $oferta->data_wyslania,
+                        'data_kontakt' => $oferta->data_kontakt ? $oferta->data_kontakt->format('Y-m-d') : null,
+                        'data_wyslania' => $oferta->data_wyslania ? $oferta->data_wyslania->format('Y-m-d') : null,
                         'status' => $oferta->ofertastatus ? $oferta->ofertastatus->name : null,
                         'user' => $oferta->user ? $oferta->user : null,
-                        'created_at' => date($oferta->created_at)
+                        'created_at' => $oferta->created_at->format('Y-m-d H:i:s')
                     ]),
                 'futureProjects' => FutureProject::with(['user', 'client', 'faza', 'kontakty' => function($query) {
                         $query->orderBy('created_at', 'desc');
@@ -131,9 +141,9 @@ class DashboardController extends Controller
                             'id' => $futureProject->id,
                             'nazwa' => $futureProject->nazwa,
                             'client' => $futureProject->client ? $futureProject->client : null,
-                            'data_kontakt' => ($lastKontakt && $lastKontakt->next_call_date) ? $lastKontakt->next_call_date : $futureProject->data_kontakt,
-                            'data_start' => $futureProject->data_start,
-                            'data_end' => $futureProject->data_end,
+                            'data_kontakt' => ($lastKontakt && $lastKontakt->next_call_date) ? Carbon::parse($lastKontakt->next_call_date)->format('Y-m-d') : ($futureProject->data_kontakt ? $futureProject->data_kontakt->format('Y-m-d') : null),
+                            'data_start' => $futureProject->data_start ? $futureProject->data_start->format('Y-m-d') : null,
+                            'data_end' => $futureProject->data_end ? $futureProject->data_end->format('Y-m-d') : null,
                             'faza' => $futureProject->faza ? $futureProject->faza->name : null,
                             'user' => $futureProject->user ? $futureProject->user : null,
                         ];
@@ -152,7 +162,13 @@ class DashboardController extends Controller
                     })
                     ->filter(Request::only('search'))
                     ->orderBy('deadline')
-                    ->get(),
+                    ->get()
+                    ->map(fn ($zadanie) => [
+                        'id' => $zadanie->id,
+                        'subject' => $zadanie->subject,
+                        'deadline' => $zadanie->deadline ? $zadanie->deadline->format('Y-m-d') : null,
+                        'users' => $zadanie->user ? $zadanie->user : null,
+                    ]),
             ]);
     }
 
