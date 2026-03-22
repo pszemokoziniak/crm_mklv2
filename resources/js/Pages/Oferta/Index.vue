@@ -25,13 +25,13 @@
                 <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Zapytanie</div>
               </th>
               <th class="px-6 py-1.5 w-40">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Typ</div>
+                <div class="text-[4px] font-semibold uppercase tracking-tight whitespace-nowrap">Typ</div>
               </th>
               <th class="px-6 py-1.5">
                 <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Klient</div>
               </th>
               <th class="px-6 py-1.5 w-32">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Status</div>
+                <div class="text-[4px] font-semibold uppercase tracking-tight whitespace-nowrap">Status</div>
               </th>
               <th class="px-6 py-1.5 w-40">
                 <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Dodał</div>
@@ -55,8 +55,10 @@
                 </Link>
               </td>
               <td class="">
-                <Link class="flex items-center px-6 py-4" :href="`/oferta/${item.id}/edit`" tabindex="-1">
-                  <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded uppercase tracking-tighter leading-tight whitespace-nowrap scale-[0.7] origin-left inline-block shadow-sm">
+                <Link class="" :href="`/oferta/${item.id}/edit`" tabindex="-1">
+                  <span
+                    class=""
+                  >
                     {{ item.typ || 'Brak' }}
                   </span>
                 </Link>
@@ -71,7 +73,7 @@
               <td class="">
                 <Link class="flex items-center px-6 py-4" :href="`/oferta/${item.id}/edit`" tabindex="-1">
                   <div v-if="item.status" class="flex items-center">
-                    <span class="px-2 py-0.5 text-[10px] font-bold leading-none text-white bg-indigo-500 rounded truncate shadow-sm scale-[0.7] origin-left inline-block uppercase tracking-tighter">
+                    <span class="px-2 py-0.5 text-[4px] font-bold leading-none text-white bg-indigo-500 rounded truncate shadow-sm inline-block uppercase tracking-tighter">
                       {{ item.status.name }}
                     </span>
                   </div>

@@ -92,7 +92,7 @@
                 <div class="font-bold text-gray-900 mb-1 truncate">{{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak projektu' }}</div>
                 <div class="text-sm text-gray-600 mb-1">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
                 <div v-if="item.status" class="mb-3">
-                  <span :class="statusClasses(item.status)" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">
+                  <span class="inline-flex">
                     {{ item.status }}
                   </span>
                 </div>
