@@ -24,13 +24,15 @@ class EditRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required']
+            'name' => ['required'],
+            // 'description' removed as it's not in Spatie's default Permission model
         ];
     }
     public function messages() {
         return [
             'required'  => 'Pole :attribute jest wymagane.',
             'max' => 'Nazwa możne zawierać',
+            // 'string' message for description removed
         ];
     }
 
@@ -38,6 +40,7 @@ class EditRequest extends FormRequest
     {
         return [
             'name' => 'Nazwa',
+            // 'description' attribute removed
         ];
     }
 }

@@ -212,8 +212,8 @@ export default {
       return this.isSuperAdmin || this.isAdmin || this.isOwnProfile
     },
     canChangeRole() {
-      // Może zmieniać rolę jeśli jest adminem/super-adminem I NIE edytuje własnego profilu
-      return (this.isSuperAdmin || this.isAdmin) && !this.isOwnProfile
+      // Super-admin zawsze może zmieniać rolę. Administrator może zmieniać rolę, ale nie swoją własną.
+      return this.isSuperAdmin || (this.isAdmin && !this.isOwnProfile)
     },
   },
   methods: {

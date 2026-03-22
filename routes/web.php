@@ -114,8 +114,17 @@ Route::middleware(['auth'])->group(function () {
         // Activity Log / Historia
         Route::get('activity', [ActivityLogController::class, 'index'])->name('activity');
 
-        // Inne potencjalnie wrażliwe trasy ustawień
+        // Uprawnienia
         Route::get('uprawnienia', [UprawnieniaController::class, 'index'])->name('uprawnienia');
+        Route::get('uprawnienia/create', [UprawnieniaController::class, 'create'])->name('uprawnienia.create');
+        Route::post('uprawnienia', [UprawnieniaController::class, 'store'])->name('uprawnienia.store');
+        Route::get('uprawnienia/{uprawnienia}/edit', [UprawnieniaController::class, 'edit'])->name('uprawnienia.edit');
+        Route::put('uprawnienia/{uprawnienia}', [UprawnieniaController::class, 'update'])->name('uprawnienia.update');
+        Route::delete('uprawnienia/{uprawnienia}', [UprawnieniaController::class, 'destroy'])->name('uprawnienia.destroy');
+        Route::put('uprawnienia/{uprawnienia}/restore', [UprawnieniaController::class, 'restore'])->name('uprawnienia.restore');
+        Route::put('uprawnienia/{uprawnienia}/sync-main-menus', [UprawnieniaController::class, 'syncMainMenus'])->name('uprawnienia.syncMainMenus'); // Dodana trasa
+
+        // Inne potencjalnie wrażliwe trasy ustawień
         Route::get('backup', [BackUpController::class, 'index'])->name('backup');
     });
 

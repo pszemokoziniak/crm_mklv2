@@ -53,10 +53,7 @@ class DashboardController extends Controller
                               ->orWhere('call_date', Carbon::today());
                     })
                     ->when($filterUserId, function($query) use ($filterUserId) {
-                        $query->where(function($q) use ($filterUserId) {
-                            $q->where('opiekun_id', $filterUserId)
-                              ->orWhere('user_id', $filterUserId);
-                        });
+                        $query->where('opiekun_id', $filterUserId);
                     })
                     ->filter(Request::only('search'))
                     ->orderBy('next_call_date', 'asc')
@@ -82,10 +79,7 @@ class DashboardController extends Controller
                         $query->whereNull('deleted_at');
                     })
                     ->when($filterUserId, function($query) use ($filterUserId) {
-                        $query->where(function($q) use ($filterUserId) {
-                            $q->where('user_opracowuje_id', $filterUserId)
-                              ->orWhere('user_id', $filterUserId);
-                        });
+                        $query->where('user_opracowuje_id', $filterUserId);
                     })
                     ->pendingOrOld()
                     ->filter(Request::only('search'))
@@ -155,10 +149,7 @@ class DashboardController extends Controller
                               ->orWhere('deadline', '<=', Carbon::today()->addDays(7));
                     })
                     ->when($filterUserId, function($query) use ($filterUserId) {
-                        $query->where(function($q) use ($filterUserId) {
-                            $q->where('responsible_person_id', $filterUserId)
-                              ->orWhere('user_id', $filterUserId);
-                        });
+                        $query->where('responsible_person_id', $filterUserId);
                     })
                     ->filter(Request::only('search'))
                     ->orderBy('deadline')

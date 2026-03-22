@@ -11,9 +11,12 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 class UsersController extends Controller
 {
+    use HasRoles;
+
     public function index()
     {
         return Inertia::render('Users/Index', [

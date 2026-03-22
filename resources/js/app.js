@@ -1,6 +1,7 @@
 import { createApp, h } from 'vue'
 import { InertiaProgress } from '@inertiajs/progress'
 import { createInertiaApp } from '@inertiajs/inertia-vue3'
+// Usunięto import ZiggyVue, ponieważ pakiet nie może być zainstalowany
 
 InertiaProgress.init()
 
@@ -14,8 +15,9 @@ createInertiaApp({
     return title ? `${title} - ${baseTitle}` : baseTitle
   },
   setup({ el, App, props, plugin }) {
-    createApp({ render: () => h(App, props) })
+    const app = createApp({ render: () => h(App, props) })
       .use(plugin)
-      .mount(el)
+    app.config.globalProperties.route = window.route
+    app.mount(el)
   },
 })
