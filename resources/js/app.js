@@ -17,7 +17,7 @@ createInertiaApp({
   setup({ el, App, props, plugin }) {
     const app = createApp({ render: () => h(App, props) })
       .use(plugin)
-    app.config.globalProperties.route = window.route
+    // app.config.globalProperties.route = window.route // Removed this line
     app.mount(el)
   },
 })
