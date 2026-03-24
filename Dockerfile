@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libjpeg-dev \
-    libfreetype6-dev
+    libfreetype6-dev \
+    nodejs \
+    npm # Added nodejs and npm
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -25,10 +27,19 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory contents
-COPY . /var/www
+# Copy package.json and package-lock.json for caching npm install
+COPY package.json package-lock.json ./
 
-# Copy existing application directory permissions
+# Install Node.js dependencies
+RUN npm install
+
+# Copy the rest of the application files
+COPY . .
+
+# Compile frontend assets
+RUN npm run production
+
+# Copy existing application directory permissions (including compiled assets)
 COPY --chown=www-data:www-data . /var/www
 
 # Change current user to www
