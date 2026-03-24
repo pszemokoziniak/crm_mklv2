@@ -77,7 +77,8 @@ class UsersController extends Controller
             'preliminarz_email' => Request::get('preliminarz_email', false),
         ]);
 
-        $user->assignRole(Request::get('role'));
+        // Explicitly cast to string to prevent JSON object saving
+        $user->assignRole((string) Request::get('role'));
 
         return Redirect::route('users')->with('success', 'User created.');
     }
@@ -129,7 +130,8 @@ class UsersController extends Controller
         ]);
 
         $oldRole = $user->getRoleNames()->first();
-        $newRole = Request::get('role');
+        // Explicitly cast to string to prevent JSON object saving
+        $newRole = (string) Request::get('role');
 
         $user->update(Request::only('first_name', 'last_name', 'email', 'active', 'preliminarz_email'));
 

@@ -13,7 +13,7 @@
 
           <div class="pb-8 pr-6 w-full lg:w-1/2">
             <label class="form-label">Przypisane Menu:</label>
-            <select v-model="form.main_menu_ids" multiple class="form-select">
+            <select v-model="form.main_menu_ids" multiple size="5" class="form-select">
               <option v-for="menu in allMainMenus" :key="menu.id" :value="menu.id">
                 {{ menu.name }}
               </option>
@@ -62,15 +62,7 @@ export default {
     update() {
       this.form.put(`/uprawnienia/${this.uprawnienia.id}`, {
         onSuccess: () => {
-          // After updating the permission name, sync the main menus
-          this.$inertia.put(`/uprawnienia/${this.uprawnienia.id}/sync-main-menus`, {
-            main_menu_ids: this.form.main_menu_ids,
-          }, {
-            preserveScroll: true,
-            onSuccess: () => {
-              this.$inertia.visit(route('uprawnienia'))
-            },
-          })
+          this.$inertia.visit(route('uprawnienia'))
         },
       })
     },

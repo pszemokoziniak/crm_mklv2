@@ -42,6 +42,7 @@ export default {
         { label: 'Waluta', href: '/waluta/', icon: 'oferty' },
         { label: 'Uprawnienia', href: '/uprawnienia/', icon: 'users' },
         { label: 'Email', href: '/email/', icon: 'mail' },
+        { label: 'Menu', href: '/menu', icon: 'menu' }, // Added Menu item
       ],
     }
   },

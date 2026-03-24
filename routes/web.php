@@ -20,6 +20,7 @@ use App\Http\Controllers\KontaktPersonController;
 use App\Http\Controllers\KrajController;
 use App\Http\Controllers\KursyController;
 use App\Http\Controllers\LinkedinController;
+use App\Http\Controllers\MenuController; // Added MenuController
 use App\Http\Controllers\ObjektController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\OfertaStatusController;
@@ -122,7 +123,16 @@ Route::middleware(['auth'])->group(function () {
         Route::put('uprawnienia/{uprawnienia}', [UprawnieniaController::class, 'update'])->name('uprawnienia.update');
         Route::delete('uprawnienia/{uprawnienia}', [UprawnieniaController::class, 'destroy'])->name('uprawnienia.destroy');
         Route::put('uprawnienia/{uprawnienia}/restore', [UprawnieniaController::class, 'restore'])->name('uprawnienia.restore');
-        Route::put('uprawnienia/{uprawnienia}/sync-main-menus', [UprawnieniaController::class, 'syncMainMenus'])->name('uprawnienia.syncMainMenus'); // Dodana trasa
+//        Route::put('uprawnienia/{uprawnienia}/sync-main-menus', [UprawnieniaController::class, 'syncMainMenus'])->name('uprawnienia.syncMainMenus'); // Dodana trasa
+
+        // Menu
+        Route::get('menu', [MenuController::class, 'index'])->name('menu');
+        Route::get('menu/create', [MenuController::class, 'create'])->name('menu.create');
+        Route::post('menu', [MenuController::class, 'store'])->name('menu.store');
+        Route::get('menu/{menu}/edit', [MenuController::class, 'edit'])->name('menu.edit');
+        Route::put('menu/{menu}', [MenuController::class, 'update'])->name('menu.update');
+        Route::delete('menu/{menu}', [MenuController::class, 'destroy'])->name('menu.destroy');
+        Route::put('menu/{menu}/restore', [MenuController::class, 'restore'])->name('menu.restore');
 
         // Inne potencjalnie wrażliwe trasy ustawień
         Route::get('backup', [BackUpController::class, 'index'])->name('backup');

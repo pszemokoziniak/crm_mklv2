@@ -14,7 +14,7 @@
           <th class="pb-4 pt-6 px-6">Przypisane Menu</th>
           <th class="pb-4 pt-6 px-6" colspan="2" />
         </tr>
-        <tr v-for="uprawnienie in uprawnienia" :key="uprawnienie.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+        <tr v-for="uprawnienie in filteredUprawnienia" :key="uprawnienie.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/uprawnienia/${uprawnienie.id}/edit`">
               {{ uprawnienie.name }}
@@ -34,8 +34,8 @@
             </Link>
           </td>
         </tr>
-        <tr v-if="uprawnienia.length === 0">
-          <td class="px-6 py-4 border-t" colspan="4">Brak uprawnień.</td>
+        <tr v-if="filteredUprawnienia.length === 0">
+          <td class="px-6 py-4 border-t" colspan="4">Brak uprawnień do wyświetlenia.</td>
         </tr>
       </table>
     </div>
@@ -55,6 +55,13 @@ export default {
   layout: Layout,
   props: {
     uprawnienia: Array,
+  },
+  computed: {
+    filteredUprawnienia() {
+      return this.uprawnienia.filter(uprawnienie =>
+        uprawnienie.name !== 'super-admin' && uprawnienie.name !== 'Administrator',
+      )
+    },
   },
 }
 </script>

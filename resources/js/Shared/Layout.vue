@@ -14,7 +14,7 @@
               </template>
               <template #dropdown>
                 <div class="mt-2 px-8 py-4 bg-indigo-800 rounded shadow-lg">
-                  <main-menu />
+                  <main-menu :main-menus="mainMenus" />
                 </div>
               </template>
             </dropdown>
@@ -36,7 +36,7 @@
               <template #dropdown>
                 <div class="mt-2 py-2 text-sm bg-white rounded-lg shadow-xl border border-gray-100 min-w-[160px]">
                   <Link class="block px-6 py-2 text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors" :href="`/users/${auth.user.id}/edit`">Profil</Link>
-                  <Link v-if="auth.user.roles.includes('super-admin') || auth.user.roles.includes('Administrator')" class="block px-6 py-2 text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors" href="/users">Użytkownicy</Link>
+                  <Link class="block px-6 py-2 text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors" href="/users">Użytkownicy</Link>
                   <div class="border-t border-gray-100 my-1" />
                   <Link class="block px-6 py-2 w-full text-left text-red-600 hover:text-white hover:bg-red-500 transition-colors" href="/logout" method="delete" as="button">Wyloguj</Link>
                 </div>
@@ -45,7 +45,7 @@
           </div>
         </div>
         <div class="md:flex md:flex-grow md:overflow-hidden">
-          <main-menu class="hidden flex-shrink-0 px-4 py-8 w-64 bg-indigo-800 overflow-y-auto md:block border-r border-indigo-900" />
+          <main-menu :main-menus="mainMenus" class="hidden flex-shrink-0 px-4 py-8 w-64 bg-indigo-800 overflow-y-auto md:block border-r border-indigo-900" />
           <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto bg-gray-50">
             <flash-messages />
             <slot />
@@ -75,6 +75,7 @@ export default {
   },
   props: {
     auth: Object,
+    mainMenus: Array, // Add mainMenus to props
   },
 }
 </script>

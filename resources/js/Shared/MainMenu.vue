@@ -1,17 +1,17 @@
 <template>
   <div class="space-y-1">
-    <div v-for="item in filteredMenuItems" :key="item.href">
+    <div v-for="item in filteredMainMenus" :key="item.route">
       <Link
         class="group flex items-center px-4 py-3 rounded-lg transition-all duration-200"
-        :href="item.href"
-        :class="isUrl(item.activeRule) ? 'bg-indigo-900 text-white shadow-inner' : 'text-indigo-100 hover:bg-indigo-700 hover:text-white'"
+        :href="item.route"
+        :class="isUrl(item.route) ? 'bg-indigo-900 text-white shadow-inner' : 'text-indigo-100 hover:bg-indigo-700 hover:text-white'"
       >
         <icon
           :name="item.icon"
           class="mr-3 w-5 h-5 transition-colors duration-200"
-          :class="isUrl(item.activeRule) ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'"
+          :class="isUrl(item.route) ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'"
         />
-        <div class="font-medium">{{ item.label }}</div>
+        <div class="font-medium">{{ item.name }}</div>
       </Link>
     </div>
   </div>
@@ -26,54 +26,22 @@ export default {
     Icon,
     Link,
   },
-  data() {
-    return {
-      menuItems: [
-        { label: 'Home', href: '/', icon: 'home', activeRule: '' },
-        { label: 'Klienci', href: '/clients', icon: 'clients', activeRule: 'clients', permission: 'view_clients' },
-        { label: 'Zapytania', href: '/zapytania', icon: 'zapytania', activeRule: 'zapytania', permission: 'view_zapytania' },
-        { label: 'Oferty', href: '/oferta', icon: 'oferty', activeRule: 'oferta', permission: 'view_oferty' },
-        { label: 'Kontakty', href: '/kontakt', icon: 'contact', activeRule: 'kontakt', permission: 'view_kontakt' },
-        { label: 'Zadania', href: '/zadania', icon: 'tasks', activeRule: 'zadania', permission: 'view_zadania' },
-        { label: 'Kalendarz', href: '/calendar', icon: 'calendar', activeRule: 'calendar', permission: 'view_calendar' },
-        { label: 'Przyszłe projekty', href: '/futureproject', icon: 'future', activeRule: 'futureproject', permission: 'view_future_projects' },
-        { label: 'LinkedIn', href: '/linkedin', icon: 'linkedin', activeRule: 'linkedin', permission: 'view_linkedin' },
-        { label: 'Linki www', href: '/stronywww', icon: 'www', activeRule: 'stronywww', permission: 'view_stronywww' },
-        { label: 'Statystyki', href: '/stats', icon: 'statystyki', activeRule: 'stats', permission: 'view_stats' },
-        { label: 'Ustawienia', href: '/edit', icon: 'edit', activeRule: 'edit', permission: 'manage_settings' },
-        { label: 'Użytkownicy', href: '/users', icon: 'users', activeRule: 'users', permission: 'manage_users' },
-        { label: 'Historia', href: '/activity', icon: 'historia', activeRule: 'activity', permission: 'view_activity' },
-      ],
-    }
+  props: {
+    mainMenus: Array, // This prop will now hold the menu items from the database
   },
   computed: {
-    filteredMenuItems() {
-      const userPermissions = this.$page.props.auth.user.permissions || []
-      const isSuperAdmin = this.$page.props.auth.user.is_super_admin // Assuming you have a flag for super admin
-
-      return this.menuItems.filter(item => {
-        // Super admin sees everything
-        if (isSuperAdmin) {
-          return true
-        }
-
-        // If an item has no specific permission, it's visible to everyone (unless other filters apply)
-        if (!item.permission) {
-          return true
-        }
-
-        // Check if the user has the required permission
-        return userPermissions.includes(item.permission)
-      })
+    filteredMainMenus() {
+      return [...this.mainMenus].sort((a, b) => a.order - b.order)
     },
   },
   methods: {
-    isUrl(...urls) {
+    isUrl(url) {
       let currentUrl = this.$page.url.substr(1)
-      if (urls[0] === '') {
+      if (url === '/') {
         return currentUrl === ''
       }
-      return urls.filter((url) => currentUrl.startsWith(url)).length
+      const cleanUrl = url.startsWith('/') ? url.substring(1) : url
+      return currentUrl.startsWith(cleanUrl)
     },
   },
 }
