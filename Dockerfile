@@ -1,5 +1,8 @@
 FROM php:8.2-fpm
 
+# Set frontend to noninteractive to prevent debconf issues
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
@@ -39,8 +42,8 @@ COPY . .
 # Compile frontend assets
 RUN npm run production
 
-# Copy existing application directory permissions (including compiled assets)
-COPY --chown=www-data:www-data . /var/www
+# Set ownership for the application directory
+RUN chown -R www-data:www-data /var/www
 
 # Change current user to www
 USER www-data

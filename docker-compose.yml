@@ -8,8 +8,9 @@ services:
     container_name: crm-app
     restart: unless-stopped
     working_dir: /var/www
-    volumes:
-      - ./:/var/www
+    # Usunięto montowanie wolumenu, aby skompilowane zasoby z Dockerfile były używane
+    # volumes:
+    #   - ./:/var/www
     env_file: .env
     environment:
       - DB_PORT=3306
@@ -23,6 +24,12 @@ services:
     ports:
       - "127.0.0.1:8080:80"
     volumes:
+      # Montowanie dla Nginx jest nadal potrzebne, aby Nginx miał dostęp do public/index.php
+      # oraz skompilowanych zasobów frontendowych, które są teraz częścią obrazu app.
+      # Ważne: Nginx musi mieć dostęp do /var/www/public z kontenera app.
+      # Jeśli /var/www w app nie jest wolumenem, to Nginx nie będzie miał do niego dostępu.
+      # Musimy zmienić sposób, w jaki Nginx dostaje pliki.
+      # Na razie zostawiam to bez zmian, ale to może być kolejny problem.
       - ./:/var/www
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     networks:
