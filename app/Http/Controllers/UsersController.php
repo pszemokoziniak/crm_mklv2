@@ -126,7 +126,7 @@ class UsersController extends Controller
         Request::validate([
             'first_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
-            'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($user->id)],
+            'email' => ['required', 'max:50', 'email'],
             'password' => ['nullable'],
             'role' => ['nullable', 'exists:roles,name'],
             'photo' => ['nullable', 'image', 'max:2048'], // Dodano max size dla bezpieczeństwa
