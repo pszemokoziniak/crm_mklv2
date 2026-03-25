@@ -6,8 +6,6 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
-    @routes
-
     <script src="{{ mix('/js/app.js') }}" defer></script>
     <title>MKL CRM</title>
     @inertiaHead
