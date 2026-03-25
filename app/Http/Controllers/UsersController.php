@@ -117,7 +117,7 @@ class UsersController extends Controller
 
     public function update(User $user)
     {
-        Log::warning('UPDATE METHOD HIT! User ID from Route: ' . $user->id);
+        Log::info('UPDATE METHOD HIT! User ID from Route: ' . $user->id);
 
         if (App::environment('demo') && $user->isDemoUser()) {
             return Redirect::back()->with('error', 'Updating the demo user is not allowed.');
