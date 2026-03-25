@@ -2,7 +2,7 @@
   <div>
     <Head :title="`${form.name}`" />
     <h1 class="mb-8 font-bold text-3xl">
-      <Link class="text-indigo-400 hover:text-indigo-600" :href="route('uprawnienia')">Uprawnienia</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/uprawnienia">Uprawnienia</Link>
       <span class="text-indigo-400 font-medium">/</span>
       {{ form.name }}
     </h1>
@@ -62,7 +62,7 @@ export default {
     update() {
       this.form.put(`/uprawnienia/${this.uprawnienia.id}`, {
         onSuccess: () => {
-          this.$inertia.visit(route('uprawnienia'))
+          this.$inertia.visit('/uprawnienia')
         },
       })
     },
