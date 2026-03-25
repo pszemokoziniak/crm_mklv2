@@ -56,6 +56,8 @@ class UsersController extends Controller
 
     public function store()
     {
+        Log::warning('STORE METHOD HIT! Request Data: ' . json_encode(Request::all()));
+
         Request::validate([
             'first_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
@@ -115,7 +117,7 @@ class UsersController extends Controller
 
     public function update(User $user)
     {
-        Log::info('Updating user with ID: ' . $user->id);
+        Log::warning('UPDATE METHOD HIT! User ID from Route: ' . $user->id);
 
         if (App::environment('demo') && $user->isDemoUser()) {
             return Redirect::back()->with('error', 'Updating the demo user is not allowed.');
