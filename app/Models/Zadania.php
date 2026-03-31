@@ -19,8 +19,13 @@ class Zadania extends Model
     ];
 
     protected $casts = [
-        'deadline' => 'date',
+        'deadline' => 'date:Y-m-d',
     ];
+
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d');
+    }
 
     protected static function booted()
     {

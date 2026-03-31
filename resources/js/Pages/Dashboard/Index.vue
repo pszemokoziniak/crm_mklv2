@@ -107,7 +107,7 @@
                   </div>
                   <div class="flex flex-col">
                     <span class="uppercase text-gray-400 font-bold leading-none mb-1" style="font-size: 9px;">Wysłano</span>
-                    <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.data_wyslania), 'text-gray-500': !isOverdue(item.data_wyslania)}">
+                    <div class="text-xs flex items-center">
                       <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                       {{ item.data_wyslania || 'Brak daty' }}
                     </div>

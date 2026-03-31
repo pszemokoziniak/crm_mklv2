@@ -30,8 +30,7 @@ class ZadaniaController extends Controller
                     'responsible_person_id' => $zadania->responsiblePerson,
                     'subject' => $zadania->subject,
                     'description' => $zadania->description,
-                    'deadline' => $zadania->deadline,
-                    'user' => $zadania->user,
+                    'deadline' => $zadania->deadline ? $zadania->deadline->format('Y-m-d') : null,                    'user' => $zadania->user,
                     'deleted_at' => $zadania->deleted_at,
                     'created_at' => $zadania->created_at->format('Y-m-d H:i')
                 ])
@@ -86,8 +85,7 @@ class ZadaniaController extends Controller
                 'responsible_person_id' => $zadania->responsible_person_id,
                 'subject' => $zadania->subject,
                 'description' => $zadania->description,
-                'deadline' => $zadania->deadline,
-                'user_id' => $zadania->user_id,
+                'deadline' => $zadania->deadline ? $zadania->deadline->format('Y-m-d') : null,                'user_id' => $zadania->user_id,
                 'deleted_at' => $zadania->deleted_at,
                 'assignments' => $zadania->assignments()->with(['assignedUser', 'assigner'])->get(),
                 'milestones' => $zadania->milestones()->with('stages')->get(),

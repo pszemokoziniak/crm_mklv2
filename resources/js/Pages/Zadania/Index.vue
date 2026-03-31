@@ -48,7 +48,7 @@
               <td class="px-6 py-4">
                 <Link class="flex items-center" :href="`/zadania/${item.id}/edit`" tabindex="-1">
                   <div v-if="item.deadline" :class="getDeadlineClass(item.deadline)" class="px-2 py-0.5 rounded text-xs font-bold shadow-sm">
-                    {{ item.deadline }}
+                    {{ item.deadline ? item.deadline.split('T')[0] : '-' }}
                   </div>
                 </Link>
               </td>

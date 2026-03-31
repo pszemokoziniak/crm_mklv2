@@ -21,7 +21,6 @@
                 <text-area v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full" label="Opis" />
               </div>
 
-              <!-- Sekcja Kamieni Milowych -->
               <div class="mt-8 border-t pt-8">
                 <div class="flex items-center justify-between mb-6">
                   <h2 class="text-2xl font-bold text-gray-800">Kamienie milowe</h2>
@@ -39,7 +38,6 @@
                     </button>
                   </div>
 
-                  <!-- Pod-sekcja Etapów -->
                   <div class="ml-8 mt-4 border-l-4 border-indigo-200 pl-6">
                     <div class="flex items-center justify-between mb-3">
                       <h3 class="text-lg font-semibold text-gray-700">Etapy w tym kamieniu</h3>
@@ -154,9 +152,14 @@ export default {
         responsible_person_id: this.zadanie.responsible_person_id,
         subject: this.zadanie.subject,
         description: this.zadanie.description,
-        deadline: this.zadanie.deadline,
+        // WYMUSZENIE FORMATU: Jeśli data zawiera czas, zostanie on odcięty
+        deadline: this.zadanie.deadline ? this.zadanie.deadline.split('T')[0] : '',
         user_id: this.zadanie.user_id,
-        milestones: this.zadanie.milestones || [],
+        // Mapowanie kamieni milowych, aby ich daty też działały
+        milestones: (this.zadanie.milestones || []).map(m => ({
+          ...m,
+          deadline: m.deadline ? m.deadline.split('T')[0] : '',
+        })),
       }),
     }
   },

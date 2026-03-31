@@ -171,47 +171,51 @@
         </div>
       </div>
 
-      <!-- Historia zmian (Activity Log) - NA SAMYM DOLE -->
+      <!-- Historia zmian (Activity Log) -->
       <div class="mt-12 mb-12">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div class="flex items-center px-8 py-6 border-b border-gray-50 bg-gray-50/30">
-            <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">
-              <icon name="printer" class="w-6 h-6 fill-amber-600" />
+          <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100 bg-gray-50/30 cursor-pointer hover:bg-gray-100/50 transition-colors" @click="isHistoryVisible = !isHistoryVisible">
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">
+                <icon name="printer" class="w-6 h-6 fill-amber-600" />
+              </div>
+              <h2 class="text-xl font-bold text-gray-800">Historia zmian systemowych</h2>
             </div>
-            <h2 class="text-xl font-bold text-gray-800">Historia zmian systemowych</h2>
+            <icon name="cheveron-down" class="w-5 h-5 text-gray-400 transition-transform" :class="{ 'rotate-180': isHistoryVisible }" />
           </div>
-          <div class="p-8">
-            <div v-if="activities && activities.length > 0" class="flow-root">
+          <div v-if="isHistoryVisible" class="p-8">
+            <div v-if="filteredActivities && filteredActivities.length > 0" class="flow-root">
               <ul role="list" class="-mb-8">
-                <li v-for="(activity, index) in activities" :key="activity.id">
+                <li v-for="(activity, index) in filteredActivities" :key="activity.id">
                   <div class="relative pb-8">
-                    <span v-if="index !== activities.length - 1" class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+                    <span v-if="index !== filteredActivities.length - 1" class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
                     <div class="relative flex space-x-3">
                       <div>
                         <span
                           :class="[
-                            activity.description === 'created' ? 'bg-green-500' :
                             activity.description === 'deleted' ? 'bg-red-500' : 'bg-blue-500',
                             'h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white'
                           ]"
                         >
-                          <icon :name="activity.description === 'created' ? 'plus' : 'edit'" class="w-4 h-4 text-white" />
+                          <icon name="edit" class="w-4 h-4 text-white" />
                         </span>
                       </div>
                       <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                         <div>
                           <p class="text-sm text-gray-500">
                             <span class="font-medium text-gray-900">{{ activity.user }}</span>
-                            {{ activity.description === 'created' ? 'utworzył(a) rekord' :
-                              activity.description === 'updated' ? 'zaktualizował(a) dane' :
+                            {{ activity.description === 'updated' ? 'zaktualizował(a) dane' :
                               activity.description === 'deleted' ? 'usunął/ęła rekord' : activity.description }}
                           </p>
                           <!-- Wyświetlanie zmian -->
                           <div v-if="activity.changes && activity.changes.attributes" class="mt-2 text-xs bg-gray-50 p-3 rounded-lg border border-gray-100">
                             <div v-for="(val, key) in activity.changes.attributes" :key="key" class="mb-1 last:mb-0">
                               <span class="font-bold text-gray-600">{{ key }}:</span>
-                              <span v-if="activity.changes.old" class="text-red-500 line-through mx-1">{{ activity.changes.old[key] }}</span>
-                              <span class="text-green-600 font-medium">{{ val }}</span>
+                              <template v-if="activity.changes.old && activity.changes.old[key] !== undefined">
+                                <span class="text-red-500 line-through mx-1">{{ formatActivityValue(key, activity.changes.old[key]) }}</span>
+                                <span class="text-gray-400"> &rarr; </span>
+                              </template>
+                              <span class="text-green-600 font-medium">{{ formatActivityValue(key, val) }}</span>
                             </div>
                           </div>
                         </div>
@@ -225,7 +229,7 @@
               </ul>
             </div>
             <div v-else class="text-center py-6 text-gray-400 italic">
-              Brak zarejestrowanych zmian systemowych.
+              Brak zarejestrowanych zmian.
             </div>
           </div>
         </div>
@@ -274,6 +278,7 @@ export default {
     return {
       disable: true,
       isActive: false,
+      isHistoryVisible: false,
       form: this.$inertia.form({
         id: this.oferta.id,
         zapytania_id: this.oferta.zapytania_id,
@@ -288,6 +293,14 @@ export default {
         user_id: this.oferta.user_id,
       }),
     }
+  },
+  computed: {
+    filteredActivities() {
+      if (!this.activities) {
+        return []
+      }
+      return this.activities.filter(activity => activity.description !== 'created')
+    },
   },
   mounted() {
     const urlParams = new URLSearchParams(window.location.search)
@@ -327,6 +340,47 @@ export default {
     disableForm() {
       this.isActive = !this.isActive
       this.disable = !this.disable
+    },
+    formatNumber (num) {
+      if (num === null || num === undefined) return ''
+      return new Intl.NumberFormat('pl-PL',{
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(num)
+    },
+    formatDateTime(dateTimeString) {
+      if (!dateTimeString) return ''
+      try {
+        const date = new Date(dateTimeString)
+        return date.toLocaleString('pl-PL', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        })
+      } catch (e) {
+        console.error('Error formatting date:', e)
+        return dateTimeString // Return original if parsing fails
+      }
+    },
+    formatActivityValue(key, value) {
+      if (value === null || value === undefined) return 'Brak'
+
+      if (key === 'kwota' || key === 'kwotaPLN') {
+        return this.formatNumber(value)
+      }
+
+      // Check if the key suggests a date/time field
+      if (key.includes('date') || key.includes('at') || key.includes('time')) {
+        // Attempt to format as date, but only if it looks like a date string
+        if (typeof value === 'string' && (value.includes('T') || (value.includes('-') && value.includes(':')))) {
+          return this.formatDateTime(value)
+        }
+      }
+
+      return value
     },
   },
 }
