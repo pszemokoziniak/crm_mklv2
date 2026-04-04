@@ -330,7 +330,7 @@
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
           <div class="flex items-center">
             <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-              <icon name="refresh" class="w-6 h-6 fill-green-600" />
+              <icon name="rotate-cw" class="w-6 h-6 fill-green-600" />
             </div>
             <h2 class="text-xl font-bold text-gray-800">Wznowienia</h2>
           </div>
