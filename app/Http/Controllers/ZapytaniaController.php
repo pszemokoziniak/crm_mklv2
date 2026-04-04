@@ -17,6 +17,7 @@ use App\Models\Waluta;
 use App\Models\Zakres;
 use App\Models\Zapytania;
 use App\Models\Kontakt;
+use App\Models\ZapytaniaWznowienie; // Assuming this model exists or will be created
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -201,6 +202,28 @@ class ZapytaniaController extends Controller
                 'changes' => $activity->changes,
                 'created_at' => $activity->created_at->format('Y-m-d H:i:s'),
             ]),
+            'wznowienia' => ZapytaniaWznowienie::with('user')
+                ->where('id_zapytania', $zapytania->id)
+                ->orderBy('time', 'desc')
+                ->get()
+                ->map(fn ($wznowienie) => [
+                    'id' => $wznowienie->id,
+                    'text' => $wznowienie->text,
+                    'user' => $wznowienie->user ? $wznowienie->user->only('first_name', 'last_name') : null,
+                    'time' => $wznowienie->time->format('Y-m-d H:i:s'),
+                ]),
+        ]);
+    }
+
+    public function createWznowienie(Zapytania $zapytania)
+    {
+        return Inertia::render('Zapytania/WznowienieCreate', [
+            'zapytania' => [
+                'id' => $zapytania->id,
+                'id_zapyt' => $zapytania->id_zapyt,
+                'nazwa_projektu' => $zapytania->nazwa_projektu,
+            ],
+            'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
         ]);
     }
 
@@ -311,11 +334,12 @@ class ZapytaniaController extends Controller
     }
     public function storeWznowienie(Zapytania $zapytania, WznowienieStoreRequest $request)
     {
-        $data = new ArchiwumZapytania();
-        $data->zapytania_id = $request->zapytania_id;
-        $data->description = $request->description;
-        $data->user_id = $request->user_id;
-        $data->save();
+        $wznowienie = new ZapytaniaWznowienie();
+        $wznowienie->text = $request->text;
+        $wznowienie->id_zapytania = $request->id_zapytania;
+        $wznowienie->id_user = $request->id_user;
+        $wznowienie->time = Carbon::now(); // Set current timestamp
+        $wznowienie->save();
 
         $zapytania->wznowienie = 2;
         $zapytania->save();
@@ -330,8 +354,7 @@ class ZapytaniaController extends Controller
             Log::error('Błąd wysyłki maila (wznowienie): ' . $e->getMessage());
         }
 
-        return Redirect::route('zapytania.edit', $request->zapytania_id)->with('success', 'Wznowienie dodane.');
-
+        return Redirect::route('zapytania.edit', $zapytania->id)->with('success', 'Wznowienie dodane.');
     }
     public function deleteWznowienie(Zapytania $zapytania)
     {
