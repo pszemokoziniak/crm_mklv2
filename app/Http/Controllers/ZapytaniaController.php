@@ -64,10 +64,12 @@ class ZapytaniaController extends Controller
     {
         $year = Carbon::now()->format('Y');
 
-        // Szukamy ostatniego numeru w bazie (nawet usuniętego)
+        // Pobieramy numer ostatniego zapytania w bieżącym roku (z wyłączeniem transakcji konkurencyjnych),
+        // używając LOCK IN SHARE MODE lub FOR UPDATE, jeśli wywoływane w transakcji
         $lastZapytanie = Zapytania::withTrashed()
             ->where('id_zapyt', 'like', "%/$year")
             ->orderByRaw('CAST(SUBSTRING_INDEX(id_zapyt, "/", 1) AS UNSIGNED) DESC')
+            ->lockForUpdate()
             ->first();
 
         if ($lastZapytanie) {
@@ -75,9 +77,10 @@ class ZapytaniaController extends Controller
             $nextNumber = (int)$parts[0] + 1;
         } else {
             // Jeśli nie ma w tym roku, sprawdzamy ogólnie ostatni i zwiększamy,
-            // lub zaczynamy od 1 (albo od konkretnego progu jeśli system był migrowany)
+            // lub zaczynamy od 1
             $lastAny = Zapytania::withTrashed()
                 ->orderByRaw('CAST(SUBSTRING_INDEX(id_zapyt, "/", 1) AS UNSIGNED) DESC')
+                ->lockForUpdate()
                 ->first();
 
             if ($lastAny) {
@@ -99,7 +102,7 @@ class ZapytaniaController extends Controller
             'waluta' => Waluta::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
             'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
             'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get()->map->only('id', 'nazwa'),
-            'id_zapyt' => $this->generateNextIdZapyt(),
+            'id_zapyt' => $this->generateNextIdZapyt(), // Tu generujemy orientacyjnie na potrzeby widoku
         ]);
     }
     public function store(ZapytaniaStoreRequest $request)
@@ -107,26 +110,32 @@ class ZapytaniaController extends Controller
         $kurs = $this->changeRate($request->waluta_id, $request->kwota);
 
         $data = new Zapytania();
-        $data->id_zapyt = $request->id_zapyt;
-        $data->user_otrzymal_id = $request->user_otrzymal_id;
-        $data->data_otrzymania = $request->data_otrzymania;
-        $data->data_zlozenia = $request->data_zlozenia;
-        $data->client_id = $request->client_id;
-        $data->nazwa_projektu = $request->nazwa_projektu;
-        $data->preliminarz = $request->preliminarz;
-        $data->miejscowosc = $request->miejscowosc;
-        $data->kwotaPLN = $kurs[1];
-        $data->kurs = $kurs[0];
-        $data->kraj_id = $request->kraj_id;
-        $data->zakres_id = $request->zakres_id;
-        $data->user_opracowuje_id = $request->user_opracowuje_id;
-        $data->start = $request->start;
-        $data->end = $request->end;
-        $data->kwota = $request->kwota;
-        $data->waluta_id = $request->waluta_id;
-        $data->opis = $request->opis;
-        $data->user_id = Auth::id(); // Zmieniono na Auth::id() dla pewności
-        $data->save();
+
+        DB::transaction(function () use ($request, $kurs, &$data) {
+            // Przypisanie nowego identyfikatora tuż przed zapisem w ramach transakcji
+            // Używamy lockForUpdate w generowaniu ID, co zapobiega przypisaniu tego samego ID
+            $data->id_zapyt = $this->generateNextIdZapyt();
+
+            $data->user_otrzymal_id = $request->user_otrzymal_id;
+            $data->data_otrzymania = $request->data_otrzymania;
+            $data->data_zlozenia = $request->data_zlozenia;
+            $data->client_id = $request->client_id;
+            $data->nazwa_projektu = $request->nazwa_projektu;
+            $data->preliminarz = $request->preliminarz;
+            $data->miejscowosc = $request->miejscowosc;
+            $data->kwotaPLN = $kurs[1];
+            $data->kurs = $kurs[0];
+            $data->kraj_id = $request->kraj_id;
+            $data->zakres_id = $request->zakres_id;
+            $data->user_opracowuje_id = $request->user_opracowuje_id;
+            $data->start = $request->start;
+            $data->end = $request->end;
+            $data->kwota = $request->kwota;
+            $data->waluta_id = $request->waluta_id;
+            $data->opis = $request->opis;
+            $data->user_id = Auth::id(); // Zmieniono na Auth::id() dla pewności
+            $data->save();
+        });
 
         $this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
@@ -199,7 +208,8 @@ class ZapytaniaController extends Controller
     {
         $this->authorize('update', $zapytania);
 
-        $zapytania->update($request->all());
+        // Zapobiegamy przypadkowej zmianie id_zapyt podczas update
+        $zapytania->update($request->except('id_zapyt'));
         $this->saveRate($zapytania->id, $request->kurs, $request->kwota);
         ($zapytania)??$this->storeActivityLog('Poprawiono zapytanie', $zapytania->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 

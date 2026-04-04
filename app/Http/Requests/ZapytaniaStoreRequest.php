@@ -23,23 +23,35 @@ class ZapytaniaStoreRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-        'id_zapyt' => ['required'],
-        'user_otrzymal_id' => ['required'],
-        'data_otrzymania' => ['required', 'date'],
-        'data_zlozenia' => ['required', 'date'],
-        'client_id' => ['required'],
-        'nazwa_projektu' => ['required', 'max:100'],
-        'miejscowosc' => ['required', 'max:50'],
-        'kraj_id' => ['required'],
-        'zakres_id' => ['required'],
-//        'user_id' => ['required'],
-        'start' => ['required', 'date'],
-        'end' => ['required', 'date'],
-        'kwota' => ['required', 'numeric'],
-        'waluta_id' => ['required'],
-        'opis' => ['required', 'max:5000'],
+        // Usunięto 'id_zapyt' => ['required'] ponieważ jest teraz
+        // generowane podczas tworzenia automatycznie na backendzie
+        // podczas update jest to i tak wyłączone z update() lub powinno
+        // być pomijane jeśli nie przesyłamy go w body.
+        // Ewentualnie id_zapyt mogło zostać tylko do odczytu.
+
+        $rules = [
+            'user_otrzymal_id' => ['required'],
+            'data_otrzymania' => ['required', 'date'],
+            'data_zlozenia' => ['required', 'date'],
+            'client_id' => ['required'],
+            'nazwa_projektu' => ['required', 'max:100'],
+            'miejscowosc' => ['required', 'max:50'],
+            'kraj_id' => ['required'],
+            'zakres_id' => ['required'],
+            'start' => ['required', 'date'],
+            'end' => ['required', 'date'],
+            'kwota' => ['required', 'numeric'],
+            'waluta_id' => ['required'],
+            'opis' => ['required', 'max:5000'],
         ];
+
+        // Przy update nadal może przychodzić id_zapyt i możemy chcieć to zwalidować,
+        // ale de facto nie jest to zmieniane. Zostawiamy 'id_zapyt' jako nullable lub pomijamy
+        if ($this->isMethod('put') || $this->isMethod('patch')) {
+             $rules['id_zapyt'] = ['required'];
+        }
+
+        return $rules;
     }
 
     public function messages() {
