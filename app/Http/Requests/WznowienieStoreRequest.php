@@ -24,9 +24,9 @@ class WznowienieStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'zapytania_id' => ['required'],
-            'description' => ['required'],
-            'user_id' => ['required'],
+            'text' => ['required', 'string'],
+            'id_zapytania' => ['required', 'exists:zapytanias,id'],
+            'id_user' => ['required', 'exists:users,id'],
         ];
     }
 }

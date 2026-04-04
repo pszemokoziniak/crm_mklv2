@@ -206,6 +206,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('zapytania/{zapytania}/restore', [ZapytaniaController::class, 'restore'])->name('zapytania.restore');
     Route::get('zapytania/{zapytania}/pdf', [ZapytaniaController::class, 'pdf'])->name('zapytania.pdf');
     Route::post('zapytania/{zapytania}/wznowienie', [ZapytaniaController::class, 'wznowienie'])->name('zapytania.wznowienie');
+    Route::get('zapytania/{zapytania}/wznowienia/create', [ZapytaniaController::class, 'createWznowienie'])->name('zapytania.wznowienia.create');
     Route::post('zapytania/{zapytania}/storeWznowienie', [ZapytaniaController::class, 'storeWznowienie'])->name('zapytania.wznowienie.store');
     Route::get('zapytania/{zapytania}/mail', [ZapytaniaController::class, 'mail'])->name('mail.zapytania');
     Route::get('zapytania/{zapytania}/deletewznowienie', [ZapytaniaController::class, 'deleteWznowienie'])->name('zapytania.delete.wznowienie');

@@ -325,6 +325,44 @@
         </div>
       </div>
 
+      <!-- Wznowienia Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+              <icon name="refresh" class="w-6 h-6 fill-green-600" />
+            </div>
+            <h2 class="text-xl font-bold text-gray-800">Wznowienia</h2>
+          </div>
+          <Link v-if="zapytania.can.edit" :href="`/zapytania/${zapytania.id}/wznowienia/create`" class="btn-indigo flex items-center px-6 py-3 rounded-lg shadow-md transition-all hover:shadow-lg active:scale-95">
+            <icon name="plus" class="w-4 h-4 mr-2" />
+            <span>Dodaj wznowienie</span>
+          </Link>
+        </div>
+
+        <div class="p-8">
+          <div v-if="wznowienia && wznowienia.length > 0" class="space-y-6">
+            <div v-for="wznowienie in wznowienia" :key="wznowienie.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+              <div class="bg-gray-50/50 p-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-gray-900">{{ wznowienie.user.first_name }} {{ wznowienie.user.last_name }}</span>
+                </div>
+                <div class="flex items-center gap-4">
+                  <span class="text-xs text-gray-500">{{ wznowienie.time }}</span>
+                </div>
+              </div>
+              <div class="p-4 text-gray-700 whitespace-pre-wrap text-sm">
+                {{ wznowienie.text }}
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-center py-12 text-gray-400">
+            <icon name="refresh" class="w-12 h-12 mx-auto mb-3 opacity-20" />
+            <p>Brak zarejestrowanych wznowień dla tego zapytania.</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Historia zmian (Activity Log) -->
       <div class="mt-12 mb-12">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -426,6 +464,7 @@ export default {
     oferty: Object,
     kontakty: Array,
     activities: Array,
+    wznowienia: Array, // Added wznowienia prop
   },
   remember: 'form',
   data() {
