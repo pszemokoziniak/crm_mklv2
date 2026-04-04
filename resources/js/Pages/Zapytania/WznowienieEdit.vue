@@ -1,12 +1,14 @@
 <template>
   <div>
-    <Head :title="`Dodaj wznowienie dla ${zapytania.nazwa_projektu}`" />
+    <Head :title="`Edytuj wznowienie dla ${zapytania.nazwa_projektu}`" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania.id}/edit`">Zapytania</Link>
-      <span class="text-indigo-400 font-medium">/</span> Dodaj wznowienie
+      <span class="text-indigo-400 font-medium">/</span>
+      <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania.id}/edit`">Wznowienia</Link>
+      <span class="text-indigo-400 font-medium">/</span> Edytuj
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-area v-model="form.text" :error="form.errors.text" class="pb-8 pr-6 w-full" label="Opis wznowienia" />
           <select-input v-model="form.id_user" :error="form.errors.id_user" class="pb-8 pr-6 w-full lg:w-1/2" label="Użytkownik">
@@ -40,8 +42,9 @@
             <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select-input>
         </div>
-        <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Dodaj wznowienie</loading-button>
+        <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
+          <button class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Usuń wznowienie</button>
+          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Aktualizuj wznowienie</loading-button>
         </div>
       </form>
     </div>
@@ -54,8 +57,8 @@ import Layout from '@/Shared/Layout'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
 import TextArea from '@/Shared/TextareaInput.vue'
-import TextInput from '@/Shared/TextInput.vue' // Import TextInput
-import NumberInput from '@/Shared/NumberInput.vue' // Import NumberInput
+import TextInput from '@/Shared/TextInput.vue'
+import NumberInput from '@/Shared/NumberInput.vue'
 
 export default {
   components: {
@@ -64,38 +67,44 @@ export default {
     LoadingButton,
     SelectInput,
     TextArea,
-    TextInput, // Register TextInput
-    NumberInput, // Register NumberInput
+    TextInput,
+    NumberInput,
   },
   layout: Layout,
   props: {
     zapytania: Object,
+    wznowienie: Object, // Prop for the specific wznowienie being edited
     users: Array,
-    zakres: Array, // Add zakres prop
-    waluta: Array, // Add waluta prop
+    zakres: Array,
+    waluta: Array,
   },
   remember: 'form',
   data() {
     return {
       form: this.$inertia.form({
-        text: null,
-        id_zapytania: this.zapytania.id,
-        id_user: this.$page.props.auth.user.id, // Default to current user
-        data_otrzymania: null,
-        data_zlozenia: null,
-        preliminarz: null,
-        zakres_id: null,
-        user_opracowuje_id: null,
-        start: null,
-        end: null,
-        kwota: null,
-        waluta_id: null,
+        text: this.wznowienie.text,
+        id_zapytania: this.wznowienie.id_zapytania,
+        id_user: this.wznowienie.id_user,
+        data_otrzymania: this.wznowienie.data_otrzymania,
+        data_zlozenia: this.wznowienie.data_zlozenia,
+        preliminarz: this.wznowienie.preliminarz,
+        zakres_id: this.wznowienie.zakres_id,
+        user_opracowuje_id: this.wznowienie.user_opracowuje_id,
+        start: this.wznowienie.start,
+        end: this.wznowienie.end,
+        kwota: this.wznowienie.kwota,
+        waluta_id: this.wznowienie.waluta_id,
       }),
     }
   },
   methods: {
-    store() {
-      this.form.post(`/zapytania/${this.zapytania.id}/storeWznowienie`)
+    update() {
+      this.form.put(`/zapytania/${this.zapytania.id}/wznowienia/${this.wznowienie.id}`)
+    },
+    destroy() {
+      if (confirm('Czy na pewno chcesz usunąć to wznowienie?')) {
+        this.$inertia.delete(`/zapytania/${this.zapytania.id}/wznowienia/${this.wznowienie.id}`)
+      }
     },
   },
 }

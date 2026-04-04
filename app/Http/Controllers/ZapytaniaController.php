@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WznowienieStoreRequest;
+use App\Http\Requests\WznowienieUpdateRequest; // Import the new request
 use App\Http\Requests\ZapytaniaStoreRequest;
 use App\Mail\ZapytaniaMail;
 use App\Models\ArchiwumZapytania;
@@ -17,7 +18,7 @@ use App\Models\Waluta;
 use App\Models\Zakres;
 use App\Models\Zapytania;
 use App\Models\Kontakt;
-use App\Models\ZapytaniaWznowienie; // Assuming this model exists or will be created
+use App\Models\ZapytaniaWznowienie;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -202,7 +203,7 @@ class ZapytaniaController extends Controller
                 'changes' => $activity->changes,
                 'created_at' => $activity->created_at->format('Y-m-d H:i:s'),
             ]),
-            'wznowienia' => ZapytaniaWznowienie::with('user')
+            'wznowienia' => ZapytaniaWznowienie::with(['user', 'zakres', 'waluta', 'opracowuje']) // Eager load new relationships
                 ->where('id_zapytania', $zapytania->id)
                 ->orderBy('time', 'desc')
                 ->get()
@@ -211,6 +212,15 @@ class ZapytaniaController extends Controller
                     'text' => $wznowienie->text,
                     'user' => $wznowienie->user ? $wznowienie->user->only('first_name', 'last_name') : null,
                     'time' => $wznowienie->time->format('Y-m-d H:i:s'),
+                    'data_otrzymania' => $wznowienie->data_otrzymania ? $wznowienie->data_otrzymania->format('Y-m-d') : null,
+                    'data_zlozenia' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d') : null,
+                    'preliminarz' => $wznowienie->preliminarz,
+                    'zakres' => $wznowienie->zakres ? $wznowienie->zakres->only('name') : null,
+                    'opracowuje' => $wznowienie->opracowuje ? $wznowienie->opracowuje->only('first_name', 'last_name') : null,
+                    'start' => $wznowienie->start ? $wznowienie->start->format('Y-m-d') : null,
+                    'end' => $wznowienie->end ? $wznowienie->end->format('Y-m-d') : null,
+                    'kwota' => $wznowienie->kwota,
+                    'waluta' => $wznowienie->waluta ? $wznowienie->waluta->only('name') : null,
                 ]),
         ]);
     }
@@ -224,7 +234,52 @@ class ZapytaniaController extends Controller
                 'nazwa_projektu' => $zapytania->nazwa_projektu,
             ],
             'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'zakres' => Zakres::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'waluta' => Waluta::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
         ]);
+    }
+
+    public function editWznowienie(Zapytania $zapytania, ZapytaniaWznowienie $wznowienie)
+    {
+        return Inertia::render('Zapytania/WznowienieEdit', [
+            'zapytania' => [
+                'id' => $zapytania->id,
+                'id_zapyt' => $zapytania->id_zapyt,
+                'nazwa_projektu' => $zapytania->nazwa_projektu,
+            ],
+            'wznowienie' => [
+                'id' => $wznowienie->id,
+                'text' => $wznowienie->text,
+                'id_zapytania' => $wznowienie->id_zapytania,
+                'id_user' => $wznowienie->id_user,
+                'data_otrzymania' => $wznowienie->data_otrzymania ? $wznowienie->data_otrzymania->format('Y-m-d') : null,
+                'data_zlozenia' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d') : null,
+                'preliminarz' => $wznowienie->preliminarz,
+                'zakres_id' => $wznowienie->zakres_id,
+                'user_opracowuje_id' => $wznowienie->user_opracowuje_id,
+                'start' => $wznowienie->start ? $wznowienie->start->format('Y-m-d') : null,
+                'end' => $wznowienie->end ? $wznowienie->end->format('Y-m-d') : null,
+                'kwota' => $wznowienie->kwota,
+                'waluta_id' => $wznowienie->waluta_id,
+            ],
+            'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'zakres' => Zakres::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+            'waluta' => Waluta::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
+        ]);
+    }
+
+    public function updateWznowienie(Zapytania $zapytania, ZapytaniaWznowienie $wznowienie, WznowienieUpdateRequest $request)
+    {
+        $wznowienie->update($request->validated());
+
+        return Redirect::route('zapytania.edit', $zapytania->id)->with('success', 'Wznowienie zaktualizowane.');
+    }
+
+    public function destroyWznowienie(Zapytania $zapytania, ZapytaniaWznowienie $wznowienie)
+    {
+        $wznowienie->delete();
+
+        return Redirect::route('zapytania.edit', $zapytania->id)->with('success', 'Wznowienie usunięte.');
     }
 
     public function update(Zapytania $zapytania, ZapytaniaStoreRequest $request)
@@ -338,6 +393,15 @@ class ZapytaniaController extends Controller
         $wznowienie->text = $request->text;
         $wznowienie->id_zapytania = $request->id_zapytania;
         $wznowienie->id_user = $request->id_user;
+        $wznowienie->data_otrzymania = $request->data_otrzymania;
+        $wznowienie->data_zlozenia = $request->data_zlozenia;
+        $wznowienie->preliminarz = $request->preliminarz;
+        $wznowienie->zakres_id = $request->zakres_id;
+        $wznowienie->user_opracowuje_id = $request->user_opracowuje_id;
+        $wznowienie->start = $request->start;
+        $wznowienie->end = $request->end;
+        $wznowienie->kwota = $request->kwota;
+        $wznowienie->waluta_id = $request->waluta_id;
         $wznowienie->time = Carbon::now(); // Set current timestamp
         $wznowienie->save();
 

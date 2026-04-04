@@ -343,16 +343,41 @@
         <div class="p-8">
           <div v-if="wznowienia && wznowienia.length > 0" class="space-y-6">
             <div v-for="wznowienie in wznowienia" :key="wznowienie.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm">
-              <div class="bg-gray-50/50 p-4 flex justify-between items-center">
+              <div class="bg-gray-50/50 p-4 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                   <span class="font-bold text-gray-900">{{ wznowienie.user.first_name }} {{ wznowienie.user.last_name }}</span>
+                  <span class="text-xs text-gray-500 ml-2">{{ wznowienie.time }}</span>
                 </div>
-                <div class="flex items-center gap-4">
-                  <span class="text-xs text-gray-500">{{ wznowienie.time }}</span>
-                </div>
+                <Link :href="`/zapytania/${zapytania.id}/wznowienia/${wznowienie.id}/edit`" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold uppercase tracking-wider">Edytuj</Link>
               </div>
-              <div class="p-4 text-gray-700 whitespace-pre-wrap text-sm">
-                {{ wznowienie.text }}
+              <div class="p-4 text-gray-700 text-sm">
+                <p class="mb-2 whitespace-pre-wrap">{{ wznowienie.text }}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs text-gray-600">
+                  <div v-if="wznowienie.data_otrzymania">
+                    <span class="font-semibold">Data otrzymania:</span> {{ wznowienie.data_otrzymania }}
+                  </div>
+                  <div v-if="wznowienie.data_zlozenia">
+                    <span class="font-semibold">Termin złożenia:</span> {{ wznowienie.data_zlozenia }}
+                  </div>
+                  <div v-if="wznowienie.preliminarz">
+                    <span class="font-semibold">Preliminarz:</span> {{ wznowienie.preliminarz }}
+                  </div>
+                  <div v-if="wznowienie.zakres">
+                    <span class="font-semibold">Zakres:</span> {{ wznowienie.zakres.name }}
+                  </div>
+                  <div v-if="wznowienie.opracowuje">
+                    <span class="font-semibold">Opracowuje:</span> {{ wznowienie.opracowuje.first_name }} {{ wznowienie.opracowuje.last_name }}
+                  </div>
+                  <div v-if="wznowienie.start">
+                    <span class="font-semibold">Planowany start:</span> {{ wznowienie.start }}
+                  </div>
+                  <div v-if="wznowienie.end">
+                    <span class="font-semibold">Planowany koniec:</span> {{ wznowienie.end }}
+                  </div>
+                  <div v-if="wznowienie.kwota">
+                    <span class="font-semibold">Kwota:</span> {{ formatNumber(wznowienie.kwota) }} <span v-if="wznowienie.waluta">{{ wznowienie.waluta.name }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
