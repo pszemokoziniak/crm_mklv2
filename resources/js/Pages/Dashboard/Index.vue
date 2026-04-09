@@ -56,7 +56,7 @@
           </div>
           <div class="space-y-3">
             <div v-for="item in zapytanias" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
-              <Link :href="`/zapytania/${item.id}/edit`" class="block p-4">
+              <Link :href="item.link || `/zapytania/${item.id}/edit`" class="block p-4">
                 <div v-if="item.wznowienie===2" class="mb-2">
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Wznowienie</span>
                 </div>

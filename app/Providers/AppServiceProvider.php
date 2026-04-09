@@ -26,6 +26,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         // Wymuszamy https, aby uniknąć błędów Mixed Content na produkcji
-        URL::forceScheme('https');
+        URL::forceScheme('http');
     }
 }

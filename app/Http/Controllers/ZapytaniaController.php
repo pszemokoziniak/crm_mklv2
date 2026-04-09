@@ -154,8 +154,10 @@ class ZapytaniaController extends Controller
         return Redirect::route('zapytania')->with('success', 'Zapisano. Mail wysłany');
     }
 
-    public function edit(Zapytania $zapytania)
+    public function edit($id) // Changed type hint from Zapytania $zapytania to $id
     {
+        $zapytania = Zapytania::withTrashed()->findOrFail($id); // Manually find the model
+
         return Inertia::render('Zapytania/Edit', [
             'zapytania' => [
                 'id' => $zapytania->id,

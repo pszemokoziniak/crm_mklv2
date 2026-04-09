@@ -28,16 +28,10 @@
                   <icon v-if="form.field === 'subject'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
                 </div>
               </th>
-              <th class="px-6 py-3 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('call_date')">
+              <th class="px-6 py-3 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('call_date')">
                 <div class="flex items-center">
                   Data
                   <icon v-if="form.field === 'call_date'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
-                </div>
-              </th>
-              <th class="px-6 py-3 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('user')">
-                <div class="flex items-center">
-                  Dodał
-                  <icon v-if="form.field === 'user'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
                 </div>
               </th>
               <th class="px-6 py-3 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('opiekun')">
@@ -46,7 +40,7 @@
                   <icon v-if="form.field === 'opiekun'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
                 </div>
               </th>
-              <th class="px-6 py-3">Zapytanie / Oferta</th>
+              <th class="px-6 py-3 text-wrap">Zapytanie / Oferta</th>
               <th class="px-6 py-3" />
             </tr>
           </thead>
@@ -66,14 +60,9 @@
                   <span v-if="item.contact_type" class="text-[9px] text-indigo-400 uppercase mt-0.5">{{ item.contact_type }}</span>
                 </Link>
               </td>
-              <td class="px-6 py-3 whitespace-nowrap">
-                <Link class="flex items-center text-gray-600 text-xs" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
-                  {{ item.call_date }}
-                </Link>
-              </td>
               <td class="px-6 py-3">
                 <Link class="flex items-center text-gray-600 text-xs" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
-                  {{ item.user }}
+                  {{ $filters.formatDate(item.call_date) }}
                 </Link>
               </td>
               <td class="px-6 py-3">
@@ -82,7 +71,7 @@
                 </Link>
               </td>
               <td class="px-6 py-3">
-                <Link class="flex flex-col text-gray-500 text-[10px]" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
+                <Link class="flex flex-col text-gray-500 text-[9px]" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
                   <span class="whitespace-nowrap">Z: {{ truncateText(item.zapytanie, 15) }}</span>
                   <span class="whitespace-nowrap">O: {{ truncateText(item.oferta, 15) }}</span>
                 </Link>
@@ -94,7 +83,7 @@
               </td>
             </tr>
             <tr v-if="kontakty.data.length === 0">
-              <td class="px-6 py-12 text-center text-gray-400" colspan="7">
+              <td class="px-6 py-12 text-center text-gray-400" colspan="6">
                 <div class="flex flex-col items-center">
                   <icon name="contact" class="w-12 h-12 mb-2 opacity-20" />
                   <p class="text-xs">Nie znaleziono żadnych kontaktów.</p>

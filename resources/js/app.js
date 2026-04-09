@@ -1,6 +1,7 @@
 import { createApp, h } from 'vue'
 import { InertiaProgress } from '@inertiajs/progress'
 import { createInertiaApp } from '@inertiajs/inertia-vue3'
+import DateFilter from './Filters/DateFilter' // Import the DateFilter
 // Usunięto import ZiggyVue, ponieważ pakiet nie może być zainstalowany
 
 InertiaProgress.init()
@@ -17,6 +18,7 @@ createInertiaApp({
   setup({ el, App, props, plugin }) {
     const app = createApp({ render: () => h(App, props) })
       .use(plugin)
+      .use(DateFilter) // Register the DateFilter plugin
     app.config.globalProperties.route = window.route
     app.mount(el)
   },

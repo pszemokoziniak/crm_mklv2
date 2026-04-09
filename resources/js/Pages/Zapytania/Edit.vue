@@ -50,7 +50,7 @@
                 <p class="font-bold text-amber-900 mb-1 uppercase text-xs tracking-widest">Powód archiwizacji</p>
                 <p class="leading-relaxed">{{ archiwumOpis[0].description }}</p>
                 <div class="mt-2 text-xs text-amber-700 italic opacity-80">
-                  Przez: {{ archiwumOpis[0].user.last_name }} {{ archiwumOpis[0].user.first_name }} • {{ archiwumOpis[0].created_at }}
+                  Przez: {{ archiwumOpis[0].user.last_name }} {{ archiwumOpis[0].user.first_name }} • {{ $filters.formatDateTime(archiwumOpis[0].created_at) }}
                 </div>
               </div>
             </div>
@@ -203,7 +203,7 @@
                   </span>
                 </div>
                 <div class="flex items-center gap-4">
-                  <span class="text-xs text-gray-500">{{ kontakt.call_date }} {{ kontakt.call_time }}</span>
+                  <span class="text-xs text-gray-500">{{ $filters.formatDateTime(`${kontakt.call_date} ${kontakt.call_time}`) }}</span>
                   <Link :href="`/kontakt/${kontakt.id}/edit`" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold uppercase tracking-wider">Edytuj</Link>
                 </div>
               </div>
@@ -238,7 +238,7 @@
                       </span>
                     </div>
                     <div class="flex items-center gap-3">
-                      <span class="text-xs text-gray-400">{{ reply.call_date }} {{ reply.call_time }}</span>
+                      <span class="text-xs text-gray-400">{{ $filters.formatDateTime(`${reply.call_date} ${reply.call_time}`) }}</span>
                       <Link :href="`/kontakt/${reply.id}/edit`" class="text-indigo-400 hover:text-indigo-600 text-xs">Edytuj</Link>
                     </div>
                   </div>
@@ -296,14 +296,14 @@
                 </td>
                 <td class="px-8 py-5">
                   <Link class="flex items-center text-gray-600" :href="`/oferta/${item.id}/edit`">
-                    {{ item.data_kontakt }}
+                    {{ $filters.formatDate(item.data_kontakt) }}
                     <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                   </Link>
                 </td>
                 <td class="px-8 py-5">
                   <Link class="flex flex-col" :href="`/oferta/${item.id}/edit`">
                     <span class="text-sm font-medium text-gray-700">{{ item.user.last_name }} {{ item.user.first_name }}</span>
-                    <span class="text-xs text-gray-400">{{ item.created_at }}</span>
+                    <span class="text-xs text-gray-400">{{ $filters.formatDateTime(item.created_at) }}</span>
                   </Link>
                 </td>
                 <td class="px-8 py-5 text-right">
@@ -346,7 +346,7 @@
               <div class="bg-gray-50/50 p-4 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                   <span class="font-bold text-gray-900">{{ wznowienie.user.first_name }} {{ wznowienie.user.last_name }}</span>
-                  <span class="text-xs text-gray-500 ml-2">{{ wznowienie.time }}</span>
+                  <span class="text-xs text-gray-500 ml-2">{{ $filters.formatDateTime(wznowienie.time) }}</span>
                 </div>
                 <Link :href="`/zapytania/${zapytania.id}/wznowienia/${wznowienie.id}/edit`" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold uppercase tracking-wider">Edytuj</Link>
               </div>
@@ -354,10 +354,10 @@
                 <p class="mb-2 whitespace-pre-wrap">{{ wznowienie.text }}</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs text-gray-600">
                   <div v-if="wznowienie.data_otrzymania">
-                    <span class="font-semibold">Data otrzymania:</span> {{ wznowienie.data_otrzymania }}
+                    <span class="font-semibold">Data otrzymania:</span> {{ $filters.formatDate(wznowienie.data_otrzymania) }}
                   </div>
                   <div v-if="wznowienie.data_zlozenia">
-                    <span class="font-semibold">Termin złożenia:</span> {{ wznowienie.data_zlozenia }}
+                    <span class="font-semibold">Termin złożenia:</span> {{ $filters.formatDate(wznowienie.data_zlozenia) }}
                   </div>
                   <div v-if="wznowienie.preliminarz">
                     <span class="font-semibold">Preliminarz:</span> {{ wznowienie.preliminarz }}
@@ -369,10 +369,10 @@
                     <span class="font-semibold">Opracowuje:</span> {{ wznowienie.opracowuje.first_name }} {{ wznowienie.opracowuje.last_name }}
                   </div>
                   <div v-if="wznowienie.start">
-                    <span class="font-semibold">Planowany start:</span> {{ wznowienie.start }}
+                    <span class="font-semibold">Planowany start:</span> {{ $filters.formatDate(wznowienie.start) }}
                   </div>
                   <div v-if="wznowienie.end">
-                    <span class="font-semibold">Planowany koniec:</span> {{ wznowienie.end }}
+                    <span class="font-semibold">Planowany koniec:</span> {{ $filters.formatDate(wznowienie.end) }}
                   </div>
                   <div v-if="wznowienie.kwota">
                     <span class="font-semibold">Kwota:</span> {{ formatNumber(wznowienie.kwota) }} <span v-if="wznowienie.waluta">{{ wznowienie.waluta.name }}</span>
@@ -434,7 +434,7 @@
                           </div>
                         </div>
                         <div class="whitespace-nowrap text-right text-sm text-gray-500">
-                          <time :datetime="activity.created_at">{{ activity.created_at }}</time>
+                          <time :datetime="activity.created_at">{{ $filters.formatDateTime(activity.created_at) }}</time>
                         </div>
                       </div>
                     </div>

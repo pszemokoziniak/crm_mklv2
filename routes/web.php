@@ -208,7 +208,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('zapytania/{zapytania}/wznowienie', [ZapytaniaController::class, 'wznowienie'])->name('zapytania.wznowienie');
     Route::get('zapytania/{zapytania}/wznowienia/create', [ZapytaniaController::class, 'createWznowienie'])->name('zapytania.wznowienia.create');
     Route::post('zapytania/{zapytania}/storeWznowienie', [ZapytaniaController::class, 'storeWznowienie'])->name('zapytania.wznowienie.store');
-    Route::get('zapytania/{zapytania}/wznowienia/{wznowienie}/edit', [ZapytaniaController::class, 'editWznowienie'])->name('zapytania.wznowienia.edit');
+    Route::get('zapytania/{zapytania}/wznowienia/{wznowienie}/edit', [ZapytaniaController::class, 'editWznowienie'])->name('zapytania.wznowienia.edit')->scopeBindings();
     Route::put('zapytania/{zapytania}/wznowienia/{wznowienie}', [ZapytaniaController::class, 'updateWznowienie'])->name('zapytania.wznowienia.update');
     Route::delete('zapytania/{zapytania}/wznowienia/{wznowienie}', [ZapytaniaController::class, 'destroyWznowienie'])->name('zapytania.wznowienia.destroy');
     Route::get('zapytania/{zapytania}/mail', [ZapytaniaController::class, 'mail'])->name('mail.zapytania');

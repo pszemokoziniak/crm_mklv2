@@ -9,6 +9,7 @@ use App\Models\Kontakt;
 use App\Models\Oferta;
 use App\Models\Zadania;
 use App\Models\Zapytania;
+use App\Models\ZapytaniaWznowienie; // Added ZapytaniaWznowienie model
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
@@ -27,6 +28,68 @@ class DashboardController extends Controller
         // Jeśli Kierownictwo nie wybrało nikogo, $filterUserId jest null (widzą wszystko).
         // Jeśli to nie Kierownictwo (np. Eksport Techniczny), zawsze filtrujemy po ich ID.
         $filterUserId = $isKierownictwo ? $selectedUserId : $user->id;
+
+        // Fetch Zapytania
+        $zapytanias = Zapytania::with(['user', 'opracowuje', 'client'])
+            ->where(function ($query) {
+                $query->whereNull('wznowienie')
+                    ->orWhere('wznowienie', 0)
+                    ->orWhere('wznowienie', 2);
+            })
+            ->whereDoesntHave('oferty', function ($query) {
+                $query->whereNull('deleted_at');
+            })
+            ->when($filterUserId, function($query) use ($filterUserId) {
+                $query->where('user_opracowuje_id', $filterUserId);
+            })
+            ->pendingOrOld()
+            ->filter(Request::only('search'))
+            ->get();
+
+        // Fetch ZapytaniaWznowienie
+        $zapytaniaWznowienie = ZapytaniaWznowienie::with(['user', 'opracowuje', 'zapytanie.client', 'zapytanie'])
+            ->when($filterUserId, function($query) use ($filterUserId) {
+                $query->where('user_opracowuje_id', $filterUserId);
+            })
+            // Assuming ZapytaniaWznowienie does not have a 'filter' scope similar to Zapytania.
+            // If it does, uncomment the line below:
+            // ->filter(Request::only('search'))
+            ->get();
+
+        // Map Zapytania to a consistent structure
+        $combinedZapytania = $zapytanias->map(fn ($zapytania) => [
+            'id' => $zapytania->id,
+            'id_zapyt' => $zapytania->id_zapyt,
+            'nazwa_projektu' => $zapytania->nazwa_projektu,
+            'client' => $zapytania->client ? $zapytania->client : null,
+            'data_zlozenia' => $zapytania->data_zlozenia ? $zapytania->data_zlozenia->format('Y-m-d') : null,
+            'opracowuje' => $zapytania->opracowuje ? $zapytania->opracowuje : null,
+            'wznowienie' => $zapytania->wznowienie,
+            'user' => $zapytania->user ? $zapytania->user : null,
+            'created_at' => $zapytania->created_at->format('Y-m-d H:i:s'),
+            'type' => 'zapytanie', // Add a type to distinguish
+            'link' => "/zapytania/{$zapytania->id}/edit", // Direct link for base zapytanie
+        ]);
+
+        // Map ZapytaniaWznowienie to the same consistent structure
+        $combinedZapytaniaWznowienie = $zapytaniaWznowienie->map(fn ($wznowienie) => [
+            'id' => $wznowienie->id,
+            'id_zapyt' => $wznowienie->zapytanie ? $wznowienie->zapytanie->id_zapyt : null, // Reference base zapytanie's id_zapyt
+            'nazwa_projektu' => $wznowienie->zapytanie ? $wznowienie->zapytanie->nazwa_projektu . ' (Wznowienie)' : 'Wznowienie', // Indicate it's a renewal
+            'client' => $wznowienie->zapytanie && $wznowienie->zapytanie->client ? $wznowienie->zapytanie->client : null,
+            'data_zlozenia' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d') : null,
+            'opracowuje' => $wznowienie->opracowuje ? $wznowienie->opracowuje : null,
+            'wznowienie' => 1, // Mark as wznowienie
+            'user' => $wznowienie->user ? $wznowienie->user : null,
+            'created_at' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d H:i:s') : null, // Use data_zlozenia for created_at if no timestamps
+            'type' => 'wznowienie', // Add a type to distinguish
+            'original_zapytanie_id' => $wznowienie->id_zapytania, // Keep reference to original
+            'link' => "/zapytania/{$wznowienie->id_zapytania}/wznowienia/{$wznowienie->id}/edit", // Correct link for wznowienie
+        ]);
+
+        // Combine and sort all zapytania entries
+        $finalZapytanias = $combinedZapytania->concat($combinedZapytaniaWznowienie)->sortBy('data_zlozenia')->values();
+
 
         return Inertia::render('Dashboard/Index',
             [
@@ -69,33 +132,7 @@ class DashboardController extends Controller
                         'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null,
                         'user' => $kontakt->user ? $kontakt->user : null,
                     ]),
-                'zapytanias' => Zapytania::with(['user', 'opracowuje', 'client'])
-                    ->where(function ($query) {
-                        $query->whereNull('wznowienie')
-                            ->orWhere('wznowienie', 0)
-                            ->orWhere('wznowienie', 2);
-                    })
-                    ->whereDoesntHave('oferty', function ($query) {
-                        $query->whereNull('deleted_at');
-                    })
-                    ->when($filterUserId, function($query) use ($filterUserId) {
-                        $query->where('user_opracowuje_id', $filterUserId);
-                    })
-                    ->pendingOrOld()
-                    ->filter(Request::only('search'))
-                    ->orderBy('data_zlozenia')
-                    ->get()
-                    ->map(fn ($zapytania) => [
-                        'id' => $zapytania->id,
-                        'id_zapyt' => $zapytania->id_zapyt,
-                        'nazwa_projektu' => $zapytania->nazwa_projektu,
-                        'client' => $zapytania->client ? $zapytania->client : null,
-                        'data_zlozenia' => $zapytania->data_zlozenia ? $zapytania->data_zlozenia->format('Y-m-d') : null,
-                        'opracowuje' => $zapytania->opracowuje ? $zapytania->opracowuje : null,
-                        'wznowienie' => $zapytania->wznowienie,
-                        'user' => $zapytania->user ? $zapytania->user : null,
-                        'created_at' => $zapytania->created_at->format('Y-m-d H:i:s')
-                    ]),
+                'zapytanias' => $finalZapytanias, // Use the combined and sorted collection
                 'ofertas' => Oferta::with(['user', 'client', 'zapytania', 'ofertastatus'])
                     ->whereHas('zapytania', function ($query) {
                         $query->whereNull('deleted_at');
@@ -171,6 +208,9 @@ class DashboardController extends Controller
             'client' => 'clients',
             'zapytania' => 'zapytania',
             'oferta' => 'oferta',
+            // The activity log for ZapytaniaWznowienie might need a different link structure
+            // depending on how it's logged. For now, we'll keep it as a generic route.
+            'zapytaniawznowienie' => 'zapytania-wznowienie',
         ];
 
         $route = $map[$type] ?? null;

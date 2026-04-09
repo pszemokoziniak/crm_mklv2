@@ -73,6 +73,20 @@ class Zapytania extends Model
         return $this->hasMany(Oferta::class, 'zapytania_id')->withTrashed();
     }
 
+    public function wznowienia(): HasMany
+    {
+        return $this->hasMany(ZapytaniaWznowienie::class, 'id_zapytania');
+    }
+
+    /**
+     * Alias for Laravel's implicit route model binding (scopeBindings)
+     * which incorrectly pluralizes Polish words.
+     */
+    public function wznowienies(): HasMany
+    {
+        return $this->wznowienia();
+    }
+
     public function scopeOrderByCreatedAt($query)
     {
         $query->orderBy('created_at', 'DESC');
