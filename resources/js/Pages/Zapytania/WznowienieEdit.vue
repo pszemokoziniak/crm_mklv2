@@ -4,8 +4,8 @@
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania.id}/edit`">Zapytania</Link>
       <span class="text-indigo-400 font-medium">/</span>
-      <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania.id}/edit`">Wznowienia</Link>
-      <span class="text-indigo-400 font-medium">/</span> Edytuj
+      <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania.id}/edit`">{{ zapytania.nazwa_projektu }}</Link>
+      <span class="text-indigo-400 font-medium">/</span> Wznowienie {{ wznowienie.id }}
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
