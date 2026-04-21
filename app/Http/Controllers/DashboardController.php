@@ -43,7 +43,7 @@ class DashboardController extends Controller
                 $query->where('user_opracowuje_id', $filterUserId);
             })
             ->pendingOrOld()
-            ->filter(Request::only('search'))
+            ->filter(['search' => Request::input('search', '')]) // Changed this line
             ->get();
 
         // Fetch ZapytaniaWznowienie
@@ -51,9 +51,7 @@ class DashboardController extends Controller
             ->when($filterUserId, function($query) use ($filterUserId) {
                 $query->where('user_opracowuje_id', $filterUserId);
             })
-            // Assuming ZapytaniaWznowienie does not have a 'filter' scope similar to Zapytania.
-            // If it does, uncomment the line below:
-            // ->filter(Request::only('search'))
+            ->filter(['search' => Request::input('search', '')]) // Changed this line
             ->get();
 
         // Map Zapytania to a consistent structure

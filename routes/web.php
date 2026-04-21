@@ -226,6 +226,7 @@ Route::middleware(['auth'])->group(function () {
     // Oferta
     Route::get('oferta', [OfertaController::class, 'index'])->name('oferta');
     Route::get('oferta/create', [OfertaController::class, 'create'])->name('oferta.create');
+    Route::get('oferta/create-from-wznowienie', [OfertaController::class, 'createFromWznowienie'])->name('oferta.createFromWznowienie'); // New route for wznowienie
     Route::get('/oferta/create/data/{zapytania}/{client}', [OfertaController::class, 'createData'])->name('oferta.create.data');
     Route::post('oferta', [OfertaController::class, 'store'])->name('oferta.store');
     Route::get('oferta/{oferta}/edit', [OfertaController::class, 'edit'])->name('oferta.edit');

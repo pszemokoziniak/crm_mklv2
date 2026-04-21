@@ -5,6 +5,12 @@
       <Link class="text-indigo-400 hover:text-indigo-600" href="/oferta">Oferty</Link>
       <span class="text-indigo-400 font-medium">/</span> Utwórz
     </h1>
+
+    <div v-if="wznowienieInfo" class="mb-6 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4" role="alert">
+      <p class="font-bold">Wznowienie</p>
+      <p>Zapytanie: <strong>{{ wznowienieInfo.zapytania_nazwa }}</strong> (ID: {{ wznowienieInfo.zapytania_id }})</p>
+    </div>
+
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
@@ -73,21 +79,29 @@ export default {
     waluta: Object,
     clientById: [String, Number],
     zapytaniaById: [String, Number],
+    wznowienieInfo: {
+      type: Object,
+      default: null,
+    },
+    prefillData: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   remember: 'form',
   data() {
     return {
       form: this.$inertia.form({
-        zapytania_id: this.zapytaniaById || '',
-        typ: '',
-        client_id: this.clientById || '',
-        data_wyslania: '',
-        kwota: '',
-        waluta_id: '',
-        kurs: '',
-        data_kontakt: '',
-        oferta_status_id: '',
-        opis: '',
+        zapytania_id: this.zapytaniaById || this.prefillData.zapytania_id || '',
+        typ: this.prefillData.typ || '',
+        client_id: this.clientById || this.prefillData.client_id || '',
+        data_wyslania: this.prefillData.data_wyslania || '',
+        kwota: this.prefillData.kwota || '',
+        waluta_id: this.prefillData.waluta_id || '',
+        kurs: this.prefillData.kurs || '',
+        data_kontakt: this.prefillData.data_kontakt || '',
+        oferta_status_id: this.prefillData.oferta_status_id || '',
+        opis: this.prefillData.opis || '',
         user_id: this.$page.props.auth.user.id,
       }),
     }

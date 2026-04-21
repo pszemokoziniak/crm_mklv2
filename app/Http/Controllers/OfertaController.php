@@ -14,12 +14,13 @@ use App\Models\Zakres;
 use App\Models\Zapytania;
 use App\Models\Branza;
 use App\Models\Kontakt;
+use App\Models\ZapytaniaWznowienie as Wznowienie;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use App\Traits\StoreActivityLog;
-use Illuminate\Support\Facades\DB; // Dodaj to
+use Illuminate\Support\Facades\DB;
 
 class OfertaController extends Controller
 {
@@ -52,12 +53,80 @@ class OfertaController extends Controller
 
     public function create()
     {
-        return Inertia::render('Oferta/Create', [
+        $wznowienieId = Request::input('wznowienie_id');
+        $zapytaniaId = Request::input('zapytania_id');
+
+        $props = [
             'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get(),
             'clients' => Client::select('id', 'nazwa')->orderBy(DB::raw('TRIM(nazwa)'))->get(),
             'users' => User::select('id', 'first_name', 'last_name')->orderBy('first_name')->orderBy('last_name')->get(),
             'statuses' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'waluta' => Waluta::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
+            'wznowienieInfo' => null,
+        ];
+
+        if ($wznowienieId && $zapytaniaId) {
+            $wznowienie = Wznowienie::find($wznowienieId);
+            $zapytania = Zapytania::find($zapytaniaId);
+
+            if ($wznowienie && $zapytania) {
+                $oferta = $this->checkStatusOpen($zapytania->id);
+
+                if ($oferta !== null) {
+                    return Redirect::route('oferta.edit', $oferta->id)->with('error', 'Nie można dodać nowej oferty, ponieważ do tego zapytania jest otwarta oferta ze statusem => Toczy się.');
+                }
+
+                $props['wznowienieInfo'] = [
+                    'id' => $wznowienie->id,
+                    'zapytania_nazwa' => $zapytania->nazwa_projektu,
+                    'zapytania_id' => $zapytania->id,
+                ];
+                $props['zapytaniaById'] = $zapytania->id;
+                $props['clientById'] = $zapytania->client_id;
+                $props['prefillData'] = [
+                    'opis' => $wznowienie->text,
+                    'kwota' => $wznowienie->kwota,
+                    'waluta_id' => $wznowienie->waluta_id,
+                    'data_wyslania' => optional($wznowienie->data_zlozenia)->format('Y-m-d'),
+                ];
+            }
+        }
+
+        return Inertia::render('Oferta/Create', $props);
+    }
+
+    public function createFromWznowienie()
+    {
+        $wznowienieId = Request::input('wznowienie_id');
+        $zapytaniaId = Request::input('zapytania_id');
+
+        $wznowienie = Wznowienie::find($wznowienieId);
+        $zapytania = Zapytania::find($zapytaniaId);
+
+        if (!$wznowienie || !$zapytania) {
+            return Redirect::back()->with('error', 'Nie znaleziono wznowienia lub zapytania.');
+        }
+
+        $oferta = $this->checkStatusOpen($zapytania->id);
+
+        if ($oferta !== null) {
+            return Redirect::route('oferta.edit', $oferta->id)->with('error', 'Nie można dodać nowej oferty, ponieważ do tego zapytania jest otwarta oferta ze statusem => Toczy się.');
+        }
+
+        return Inertia::render('Oferta/Create', [
+            'zapytanie' => Zapytania::select('id', 'nazwa_projektu')->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get(),
+            'clients' => Client::select('id', 'nazwa')->orderBy(DB::raw('TRIM(nazwa)'))->get(),
+            'users' => User::select('id', 'first_name', 'last_name')->orderBy('first_name')->orderBy('last_name')->get(), // Added this line
+            'statuses' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
+            'waluta' => Waluta::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
+            'zapytaniaById' => $zapytania->id,
+            'clientById' => $zapytania->client_id, // Assuming zapytania has client_id
+            'prefillData' => [
+                'opis' => $wznowienie->text,
+                'kwota' => $wznowienie->kwota,
+                'waluta_id' => $wznowienie->waluta_id,
+                'data_wyslania' => $wznowienie->data_zlozenia, // Assuming data_zlozenia from wznowienie can be data_wyslania for oferta
+            ],
         ]);
     }
 

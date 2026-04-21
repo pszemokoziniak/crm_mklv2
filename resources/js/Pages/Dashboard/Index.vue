@@ -57,8 +57,11 @@
           <div class="space-y-3">
             <div v-for="item in zapytanias" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
               <Link :href="item.link || `/zapytania/${item.id}/edit`" class="block p-4">
-                <div v-if="item.wznowienie===2" class="mb-2">
+                <div v-if="item.wznowienie===2" class="mb-2 flex items-center">
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Wznowienie</span>
+                  <Link :href="`/oferta/create?zapytanie_id=${item.id}&wznowienie=true`" class="ml-2 inline-flex items-center px-2.5 py-0.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Stwórz ofertę
+                  </Link>
                 </div>
                 <div class="text-xs font-mono text-gray-500 mb-1">{{ item.id_zapyt }}</div>
                 <div class="font-bold text-gray-900 mb-1 truncate">{{ item.nazwa_projektu }}</div>
@@ -208,8 +211,10 @@ import Layout from '@/Shared/Layout'
 import Historia from '@/Pages/ActivityLog/Index.vue'
 import SearchFilterSimple from '@/Shared/SearchFilterSimple.vue'
 import throttle from 'lodash/throttle'
-import pickBy from 'lodash/pickBy'
-import mapValues from 'lodash/mapValues'
+// Removed pickBy as we'll construct params manually
+// import pickBy from 'lodash/pickBy'
+// Removed mapValues as we'll reset fields explicitly
+// import mapValues from 'lodash/mapValues'
 
 export default {
   components: {
@@ -233,7 +238,7 @@ export default {
     return {
       activeTab: this.filters.tab || 'todo',
       form: {
-        search: this.filters.search,
+        search: this.filters.search || '', // Ensure search is an empty string if null
         user_id: this.filters.user_id,
         tab: this.filters.tab || 'todo',
       },
@@ -243,7 +248,19 @@ export default {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get('/', pickBy(this.form), { preserveState: true })
+        const params = {}
+        // Always include search, even if empty, so backend can filter
+        if (this.form.search !== null && this.form.search !== undefined) {
+          params.search = this.form.search
+        }
+        // Include user_id only if it has a value
+        if (this.form.user_id !== null && this.form.user_id !== undefined) {
+          params.user_id = this.form.user_id
+        }
+        // Always include tab
+        params.tab = this.form.tab
+
+        this.$inertia.get('/', params, { preserveState: true })
       }, 150),
     },
   },
@@ -256,8 +273,9 @@ export default {
       this.form.tab = this.activeTab
     },
     reset() {
-      this.form = mapValues(this.form, () => null)
-      this.form.tab = this.activeTab
+      this.form.search = '' // Explicitly set search to empty string
+      this.form.user_id = null // Explicitly set user_id to null
+      this.form.tab = this.activeTab // Keep the current active tab
     },
     statusClasses(status) {
       const s = status.toLowerCase()

@@ -59,4 +59,32 @@ class ZapytaniaWznowienie extends Model
     {
         return $this->belongsTo(User::class, 'user_opracowuje_id');
     }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            // Only apply search conditions if $search is not an empty string
+            if (!empty($search)) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('text', 'like', '%' . $search . '%')
+                        ->orWhere('id_zapytania', 'like', '%' . $search . '%')
+                        ->orWhereHas('zapytanie', function ($query) use ($search) {
+                            $query->where('nazwa_projektu', 'like', '%' . $search . '%')
+                                ->orWhere('id_zapyt', 'like', '%' . $search . '%')
+                                ->orWhereHas('client', function ($query) use ($search) {
+                                    $query->where('nazwa', 'like', '%' . $search . '%');
+                                });
+                        })
+                        ->orWhereHas('user', function ($query) use ($search) {
+                            $query->where('first_name', 'like', '%' . $search . '%')
+                                ->orWhere('last_name', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('opracowuje', function ($query) use ($search) {
+                            $query->where('first_name', 'like', '%' . $search . '%')
+                                ->orWhere('last_name', 'like', '%' . $search . '%');
+                        });
+                });
+            }
+        });
+    }
 }

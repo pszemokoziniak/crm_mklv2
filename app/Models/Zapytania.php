@@ -103,24 +103,12 @@ class Zapytania extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $keywords = array_filter(explode('+', $search), 'trim');
-
-            foreach ($keywords as $keyword) {
-                $keyword = trim($keyword);
-                $query->where(function ($query) use ($keyword) {
-                    $query->where('nazwa_projektu', 'like', '%'.$keyword.'%')
-                        ->orWhereHas('zakres', function ($query) use ($keyword) {
-                            $query->where('name', 'like', '%'.$keyword.'%');
-                        })
-                        ->orWhereHas('kraj', function ($query) use ($keyword) {
-                            $query->where('name', 'like', '%'.$keyword.'%');
-                        })
-                        ->orWhereHas('client', function ($query) use ($keyword) {
-                            $query->where('nazwa', 'like', '%'.$keyword.'%');
-                        })
-                        ->orWhereHas('user', function ($query) use ($keyword) {
-                            $query->where('first_name', 'like', '%'.$keyword.'%')
-                                ->orWhere('last_name', 'like', '%'.$keyword.'%');
+            // Only apply search conditions if $search is not an empty string
+            if (!empty($search)) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('nazwa_projektu', 'like', '%'.$search.'%')
+                        ->orWhereHas('client', function ($query) use ($search) {
+                            $query->where('nazwa', 'like', '%'.$search.'%');
                         });
                 });
             }

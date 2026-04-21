@@ -348,7 +348,10 @@
                   <span class="font-bold text-gray-900">{{ wznowienie.user.first_name }} {{ wznowienie.user.last_name }}</span>
                   <span class="text-xs text-gray-500 ml-2">{{ $filters.formatDateTime(wznowienie.time) }}</span>
                 </div>
-                <Link :href="`/zapytania/${zapytania.id}/wznowienia/${wznowienie.id}/edit`" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold uppercase tracking-wider">Edytuj</Link>
+                <div class="flex items-center gap-2">
+                  <Link :href="`/zapytania/${zapytania.id}/wznowienia/${wznowienie.id}/edit`" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold uppercase tracking-wider">Edytuj</Link>
+                  <Link :href="`/oferta/create?wznowienie_id=${wznowienie.id}&zapytania_id=${zapytania.id}`" class="ml-4 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded shadow-sm transition-colors">Stwórz ofertę</Link>
+                </div>
               </div>
               <div class="p-4 text-gray-700 text-sm">
                 <p class="mb-2 whitespace-pre-wrap">{{ wznowienie.text }}</p>
