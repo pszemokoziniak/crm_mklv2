@@ -33,8 +33,7 @@ class DashboardController extends Controller
         $zapytanias = Zapytania::with(['user', 'opracowuje', 'client'])
             ->where(function ($query) {
                 $query->whereNull('wznowienie')
-                    ->orWhere('wznowienie', 0)
-                    ->orWhere('wznowienie', 2);
+                    ->orWhere('wznowienie', 0);
             })
             ->whereDoesntHave('oferty', function ($query) {
                 $query->whereNull('deleted_at');
@@ -48,6 +47,9 @@ class DashboardController extends Controller
 
         // Fetch ZapytaniaWznowienie
         $zapytaniaWznowienie = ZapytaniaWznowienie::with(['user', 'opracowuje', 'zapytanie.client', 'zapytanie'])
+            ->whereHas('zapytanie', function ($query) {
+                $query->where('wznowienie', 2);
+            })
             ->when($filterUserId, function($query) use ($filterUserId) {
                 $query->where('user_opracowuje_id', $filterUserId);
             })
@@ -72,12 +74,13 @@ class DashboardController extends Controller
         // Map ZapytaniaWznowienie to the same consistent structure
         $combinedZapytaniaWznowienie = $zapytaniaWznowienie->map(fn ($wznowienie) => [
             'id' => $wznowienie->id,
+            'wznowienie_id' => $wznowienie->id,
             'id_zapyt' => $wznowienie->zapytanie ? $wznowienie->zapytanie->id_zapyt : null, // Reference base zapytanie's id_zapyt
             'nazwa_projektu' => $wznowienie->zapytanie ? $wznowienie->zapytanie->nazwa_projektu . ' (Wznowienie)' : 'Wznowienie', // Indicate it's a renewal
             'client' => $wznowienie->zapytanie && $wznowienie->zapytanie->client ? $wznowienie->zapytanie->client : null,
             'data_zlozenia' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d') : null,
             'opracowuje' => $wznowienie->opracowuje ? $wznowienie->opracowuje : null,
-            'wznowienie' => 1, // Mark as wznowienie
+            'wznowienie' => 2, // Mark as wznowienie=2 so frontend badge and button appear
             'user' => $wznowienie->user ? $wznowienie->user : null,
             'created_at' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d H:i:s') : null, // Use data_zlozenia for created_at if no timestamps
             'type' => 'wznowienie', // Add a type to distinguish

@@ -59,7 +59,7 @@
               <Link :href="item.link || `/zapytania/${item.id}/edit`" class="block p-4">
                 <div v-if="item.wznowienie===2" class="mb-2 flex items-center">
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Wznowienie</span>
-                  <Link :href="`/oferta/create?zapytanie_id=${item.id}&wznowienie=true`" class="ml-2 inline-flex items-center px-2.5 py-0.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <Link :href="`/oferta/create?zapytania_id=${item.original_zapytanie_id || item.id}&wznowienie_id=${item.wznowienie_id || ''}&wznowienie=true`" class="ml-2 inline-flex items-center px-2.5 py-0.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Stwórz ofertę
                   </Link>
                 </div>
