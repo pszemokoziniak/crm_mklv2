@@ -307,7 +307,7 @@
                   </Link>
                 </td>
                 <td class="px-8 py-5 text-right">
-                  <Link class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all" :href="`/oferta/${item.id}/edit`" tabindex="-1">
+                  <Link class="inline-flex items-center justify-jcenter w-8 h-8 rounded-full bg-gray-100 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all" :href="`/oferta/${item.id}/edit`" tabindex="-1">
                     <icon name="cheveron-right" class="w-5 h-5" />
                   </Link>
                 </td>
@@ -350,7 +350,14 @@
                 </div>
                 <div class="flex items-center gap-2">
                   <Link :href="`/zapytania/${zapytania.id}/wznowienia/${wznowienie.id}/edit`" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold uppercase tracking-wider">Edytuj</Link>
-                  <Link :href="`/oferta/create?wznowienie_id=${wznowienie.id}&zapytania_id=${zapytania.id}`" class="ml-4 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded shadow-sm transition-colors">Stwórz ofertę</Link>
+                  <template v-if="wznowienie.oferta_id">
+                    <Link :href="`/oferta/${wznowienie.oferta_id}/edit`" class="ml-4 text-xs font-bold text-green-600 hover:text-green-800 px-3 py-1.5 rounded shadow-sm transition-colors">
+                      Oferta ({{ $filters.formatDate(wznowienie.oferta_created_at) }})
+                    </Link>
+                  </template>
+                  <template v-else>
+                    <Link :href="`/oferta/create?wznowienie_id=${wznowienie.id}&zapytania_id=${zapytania.id}`" class="ml-4 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded shadow-sm transition-colors">Stwórz ofertę</Link>
+                  </template>
                 </div>
               </div>
               <div class="p-4 text-gray-700 text-sm">

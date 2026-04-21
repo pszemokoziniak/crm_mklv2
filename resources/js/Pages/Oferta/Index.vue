@@ -11,10 +11,10 @@
           <option value="only">Tylko usunięte</option>
         </select>
       </search-filter>
-      <Link class="btn-indigo flex items-center justify-center px-6 py-2 rounded-lg shadow-md transition-all hover:shadow-lg active:scale-95" href="/oferta/create">
-        <icon name="plus" class="w-4 h-4 mr-2" />
-        <span>Dodaj ofertę</span>
-      </Link>
+<!--      <Link class="btn-indigo flex items-center justify-center px-6 py-2 rounded-lg shadow-md transition-all hover:shadow-lg active:scale-95" href="/oferta/create">-->
+<!--        <icon name="plus" class="w-4 h-4 mr-2" />-->
+<!--        <span>Dodaj ofertę</span>-->
+<!--      </Link>-->
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">

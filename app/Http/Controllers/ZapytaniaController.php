@@ -158,6 +158,11 @@ class ZapytaniaController extends Controller
     {
         $zapytania = Zapytania::withTrashed()->findOrFail($id); // Manually find the model
 
+        // Fetch the latest offer for this zapytania
+        $latestOferta = Oferta::where('zapytania_id', $zapytania->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
         return Inertia::render('Zapytania/Edit', [
             'zapytania' => [
                 'id' => $zapytania->id,
@@ -223,6 +228,8 @@ class ZapytaniaController extends Controller
                     'end' => $wznowienie->end ? $wznowienie->end->format('Y-m-d') : null,
                     'kwota' => $wznowienie->kwota,
                     'waluta' => $wznowienie->waluta ? $wznowienie->waluta->only('name') : null,
+                    'oferta_created_at' => ($latestOferta && $latestOferta->created_at->greaterThan($wznowienie->time)) ? $latestOferta->created_at->format('Y-m-d H:i:s') : null,
+                    'oferta_id' => ($latestOferta && $latestOferta->created_at->greaterThan($wznowienie->time)) ? $latestOferta->id : null,
                 ]),
         ]);
     }
