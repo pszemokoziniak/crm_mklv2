@@ -417,8 +417,7 @@ class ZapytaniaController extends Controller
         $zapytania->wznowienie = 2;
         $zapytania->save();
 
-        $emails = $this->getEmails($zapytania->preliminarz);
-
+        $emails = $this->getEmails($wznowienie->preliminarz);
         try {
             if ($emails->isNotEmpty()) {
                 Mail::send(new ZapytaniaMail($this->zapytaniaById($zapytania->id), $emails));

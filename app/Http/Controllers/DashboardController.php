@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB; // Import DB facade
 
 class DashboardController extends Controller
 {
@@ -42,7 +43,7 @@ class DashboardController extends Controller
                 $query->where('user_opracowuje_id', $filterUserId);
             })
             ->pendingOrOld()
-            ->filter(['search' => Request::input('search', '')]) // Changed this line
+            ->filter(['search' => Request::input('search', '')])
             ->get();
 
         // Fetch ZapytaniaWznowienie
@@ -50,10 +51,19 @@ class DashboardController extends Controller
             ->whereHas('zapytanie', function ($query) {
                 $query->where('wznowienie', 2);
             })
-            ->when($filterUserId, function($query) use ($filterUserId) {
-                $query->where('user_opracowuje_id', $filterUserId);
+            // Exclude ZapytaniaWznowienie if there's an offer for its parent Zapytania
+            // that was created AFTER this specific ZapytaniaWznowienie.
+            ->leftJoin('ofertas', function ($join) {
+                $join->on('ofertas.zapytania_id', '=', 'zapytania_wznowienias.id_zapytania') // Corrected
+                ->whereNull('ofertas.deleted_at') // Consider only active offers
+                ->whereColumn('ofertas.created_at', '>', 'zapytania_wznowienias.time'); // Corrected
             })
-            ->filter(['search' => Request::input('search', '')]) // Changed this line
+            ->whereNull('ofertas.id') // Only include wznowienia that do NOT have such an offer
+            ->when($filterUserId, function($query) use ($filterUserId) {
+                $query->where('zapytania_wznowienias.user_opracowuje_id', $filterUserId); // Corrected
+            })
+            // Removed the filter call as ZapytaniaWznowienie model does not have a filter scope
+            ->select('zapytania_wznowienias.*') // Corrected
             ->get();
 
         // Map Zapytania to a consistent structure
@@ -114,7 +124,7 @@ class DashboardController extends Controller
                     ->where(function($query) {
                         // Pokazujemy kontakty zaplanowane na najbliższe 7 dni lub zaległe
                         $query->where('next_call_date', '<=', Carbon::today()->addDays(7))
-                              ->orWhere('call_date', Carbon::today());
+                            ->orWhere('call_date', Carbon::today());
                     })
                     ->when($filterUserId, function($query) use ($filterUserId) {
                         $query->where('opiekun_id', $filterUserId);
@@ -159,8 +169,8 @@ class DashboardController extends Controller
                         'created_at' => $oferta->created_at->format('Y-m-d H:i:s')
                     ]),
                 'futureProjects' => FutureProject::with(['user', 'client', 'faza', 'kontakty' => function($query) {
-                        $query->orderBy('created_at', 'desc');
-                    }])
+                    $query->orderBy('created_at', 'desc');
+                }])
                     ->when($filterUserId, function($query) use ($filterUserId) {
                         $query->where('user_id', $filterUserId);
                     })
@@ -184,7 +194,7 @@ class DashboardController extends Controller
                     ->with('user')
                     ->where(function ($query) {
                         $query->whereNull('deadline')
-                              ->orWhere('deadline', '<=', Carbon::today()->addDays(7));
+                            ->orWhere('deadline', '<=', Carbon::today()->addDays(7));
                     })
                     ->when($filterUserId, function($query) use ($filterUserId) {
                         $query->where('responsible_person_id', $filterUserId);
