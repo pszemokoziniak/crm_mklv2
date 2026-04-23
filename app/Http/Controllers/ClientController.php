@@ -84,7 +84,7 @@ class ClientController extends Controller
     {
         return Inertia::render('Clients/Create', [
             'branza' => Branza::get()->map->only('id', 'name'),
-            'kraj' => Kraj::get()->map->only('id', 'name', 'waluta'),
+            'kraj' => Kraj::orderBy('name')->get()->map->only('id', 'name', 'waluta'),
         ]);
     }
 
@@ -141,7 +141,7 @@ class ClientController extends Controller
                 'id' => $activity->id,
                 'description' => $activity->description,
                 'user' => $activity->causer ? $activity->causer->first_name . ' ' . $activity->causer->last_name : 'System',
-                'changes' => $activity->changes,
+                'changes' => $activity->properties,
                 'created_at' => $activity->created_at->format('Y-m-d H:i:s'),
             ]),
         ]);

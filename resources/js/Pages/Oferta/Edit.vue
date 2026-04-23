@@ -48,7 +48,7 @@
             <select-input v-model="form.typ" :error="form.errors.typ" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Typ">
               <option :value="null" />
               <option value="Klient oferuje">Klient oferuje</option>
-              <option value="Klient ma kontakt">Klient ma kontakt</option>
+              <option value="Klient ma kontrakt">Klient ma kontrakt</option>
             </select-input>
 
             <select-input v-model="form.client_id" :error="form.errors.client_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Klient">

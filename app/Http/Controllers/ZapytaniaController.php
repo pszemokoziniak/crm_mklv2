@@ -102,7 +102,7 @@ class ZapytaniaController extends Controller
             'zakres' => Zakres::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
             'kraj' => Kraj::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name', 'waluta'),
             'waluta' => Waluta::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
-            'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
             'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get()->map->only('id', 'nazwa'),
             'id_zapyt' => $this->generateNextIdZapyt(), // Tu generujemy orientacyjnie na potrzeby widoku
         ]);
