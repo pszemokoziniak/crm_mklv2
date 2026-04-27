@@ -38,7 +38,7 @@ class LinkedinController extends Controller
     {
         $request->validate([
             'client_id' => ['required', 'exists:clients,id'],
-            'link' => ['required', 'string'],
+            'link'      => ['required', 'string', 'url', 'max:255'],
         ]);
 
         Linkedin::create([
