@@ -34,7 +34,8 @@ class DashboardController extends Controller
         $zapytanias = Zapytania::with(['user', 'opracowuje', 'client'])
             ->where(function ($query) {
                 $query->whereNull('wznowienie')
-                    ->orWhere('wznowienie', 0);
+                    ->orWhere('wznowienie', 0)
+                    ->orWhere('wznowienie', 1); // Added this line to include wznowienie = 1
             })
             ->whereDoesntHave('oferty', function ($query) {
                 $query->whereNull('deleted_at');
