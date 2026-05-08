@@ -20,3 +20,11 @@ yarn-error.log
 /.idea
 /.vscode
 CLAUDE.md
+.cache/
+.config/
+.local/
+.lesshst
+/bootstrap/cache/
+composer.phar
+/legacy_old_crm/
+.rnd
