@@ -78,7 +78,6 @@ class DashboardController extends Controller
             ->when($filterUserId, function($query) use ($filterUserId) {
                 $query->where('user_opracowuje_id', $filterUserId);
             })
-            ->pendingOrOld()
             ->filter(['search' => Request::input('search', '')])
             ->get();
 
