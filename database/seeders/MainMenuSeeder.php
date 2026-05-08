@@ -99,12 +99,6 @@ class MainMenuSeeder extends Seeder
                 'icon' => 'historia',
                 'order' => 14,
             ],
-            [
-                'name' => 'Menu',
-                'route' => '/menu',
-                'icon' => 'menu',
-                'order' => 15,
-            ],
         ];
 
         foreach ($menuItems as $item) {

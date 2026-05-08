@@ -3,7 +3,7 @@
     <Head title="Contacts" />
     <h1 class="mb-8 text-3xl font-bold">Kraje</h1>
     <div class="flex items-center justify-between mb-6">
-      <Link class="btn-indigo" :href="$route('kraj.create')">
+      <Link class="btn-indigo" href="/kraj/create">
         <span>Dodaj</span>
         <!--        <span class="hidden md:inline">&nbsp;Branza</span>-->
       </Link>
@@ -16,20 +16,20 @@
         </tr>
         <tr v-for="item in krajs" :key="item.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="$route('kraj.edit', item.id)">
+            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/kraj/${item.id}/edit`">
               {{ item.name }}
               <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
             </Link>
           </td>
           <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="$route('kraj.edit', item.id)">
+            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/kraj/${item.id}/edit`">
               {{ item.waluta }}
               <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
             </Link>
           </td>
 
           <td class="w-px border-t">
-            <Link class="flex items-center px-4" :href="$route('kraj.edit', item.id)" tabindex="-1">
+            <Link class="flex items-center px-4" :href="`/kraj/${item.id}/edit`" tabindex="-1">
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
             </Link>
           </td>

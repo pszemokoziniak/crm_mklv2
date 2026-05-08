@@ -2,7 +2,7 @@
   <div>
     <Head title="Dodaj Uprawnienie" />
     <h1 class="mb-8 font-bold text-3xl">
-      <Link class="text-indigo-400 hover:text-indigo-600" :href="$route('uprawnienia')">Uprawnienia</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/uprawnienia">Uprawnienia</Link>
       <span class="text-indigo-400 font-medium">/</span> Dodaj
     </h1>
     <div class="bg-white rounded-md shadow overflow-hidden max-w-3xl">

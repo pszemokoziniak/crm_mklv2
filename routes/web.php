@@ -92,7 +92,7 @@ Route::get('/', [DashboardController::class, 'index'])
     ->middleware('auth');
 
 // Główne trasy aplikacji
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'menu.access'])->group(function () {
 
     // Sekcje ZABLOKOWANE dla roli 'eksport'
     Route::group(['middleware' => [function ($request, $next) {

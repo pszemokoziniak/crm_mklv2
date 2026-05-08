@@ -12,6 +12,7 @@ use App\Models\FutureProject;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use App\Models\Zadania;
 use Illuminate\Support\Facades\DB; // Dodaj to
 
 class KontaktController extends Controller
@@ -159,6 +160,23 @@ class KontaktController extends Controller
         if ($kontakt->oferta_id && $kontakt->next_call_date) {
             \App\Models\Oferta::where('id', $kontakt->oferta_id)
                 ->update(['data_kontakt' => $kontakt->next_call_date]);
+
+            // Auto-create Zadanie for opiekun
+            $client = Client::find($kontakt->client_id);
+            $oferta = Oferta::find($kontakt->oferta_id);
+
+            Zadania::create([
+                'responsible_person_id' => $kontakt->opiekun_id,
+                'user_id' => auth()->id(),
+                'deadline' => $kontakt->next_call_date,
+                'subject' => 'Kontakt: ' . ($client->nazwa ?? 'Klient') . ' - ' . ($oferta->projekt ?? 'Oferta'),
+                'description' => 'Zaplanowany kontakt z klientem.'
+                    . "\nData: " . $kontakt->next_call_date->format('Y-m-d')
+                    . ($kontakt->next_call_time ? ' ' . $kontakt->next_call_time : '')
+                    . "\nTemat kontaktu: " . $kontakt->subject
+                    . "\nOferta: /oferta/" . $kontakt->oferta_id . "/edit",
+                'status' => 'aktywne',
+            ]);
         }
 
         $targetId = $kontakt->parent_id ?? $kontakt->id;

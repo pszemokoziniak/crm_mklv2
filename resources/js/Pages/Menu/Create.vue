@@ -2,7 +2,7 @@
   <div>
     <Head title="Create Menu Item" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" :href="route('menu')">Menu</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/menu">Menu</Link>
       <span class="text-indigo-400 font-medium">/</span> Create
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     store() {
-      this.form.post(this.route('menu.store'))
+      this.form.post('/menu')
     },
   },
 }

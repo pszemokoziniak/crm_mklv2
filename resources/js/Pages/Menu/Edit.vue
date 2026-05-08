@@ -3,7 +3,7 @@
     <Head :title="form.name" />
 
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" :href="route('menu')">Menu</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/menu">Menu</Link>
       <span class="text-indigo-400 font-medium">/</span>
       {{ form.name }}
     </h1>
@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     update() {
-      this.form.post(this.route('menu.update', this.menuItem.id), {
+      this.form.post(`/menu/${this.menuItem.id}`, {
         onSuccess: () => {
           // Optionally reset form or show success message
         },
@@ -64,7 +64,7 @@ export default {
     },
     destroy() {
       if (confirm('Are you sure you want to delete this menu item?')) {
-        this.$inertia.delete(this.route('menu.destroy', this.menuItem.id))
+        this.$inertia.delete(`/menu/${this.menuItem.id}`)
       }
     },
   },
