@@ -272,7 +272,7 @@ class ZapytaniaController extends Controller
                 'end' => $wznowienie->end ? $wznowienie->end->format('Y-m-d') : null,
                 'kwota' => $wznowienie->kwota,
                 'waluta_id' => $wznowienie->waluta_id,
-                'created_at' => $wznowienie->created_at ? $wznowienie->created_at->format('Y-m-d') : null,
+                'created_at' => $wznowienie->time ? $wznowienie->time->format('Y-m-d') : null,
             ],
             'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
             'zakres' => Zakres::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
