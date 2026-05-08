@@ -21,7 +21,7 @@ services:
     container_name: crm-web
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8080:80"
+      - "127.0.0.1:${NGINX_PORT:-8081}:80"
     volumes:
       # Montowanie dla Nginx jest nadal potrzebne, aby Nginx miał dostęp do public/index.php
       # oraz skompilowanych zasobów frontendowych, które są teraz częścią obrazu app.
