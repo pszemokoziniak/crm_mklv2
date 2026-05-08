@@ -30,6 +30,41 @@ class DashboardController extends Controller
         // Jeśli to nie Kierownictwo (np. Eksport Techniczny), zawsze filtrujemy po ich ID.
         $filterUserId = $isKierownictwo ? $selectedUserId : $user->id;
 
+        // === Statystyki miesiąc do miesiąca ===
+        $currentMonthStart = Carbon::now()->startOfMonth();
+        $currentMonthEnd = Carbon::now()->endOfMonth();
+        $previousMonthStart = Carbon::now()->subMonth()->startOfMonth();
+        $previousMonthEnd = Carbon::now()->subMonth()->endOfMonth();
+
+        $statsQuery = function ($model, $dateColumn, $aggregate, $aggregateColumn = null) use ($currentMonthStart, $currentMonthEnd, $previousMonthStart, $previousMonthEnd, $filterUserId) {
+            $baseQuery = $model::query();
+
+            if ($filterUserId) {
+                $userColumn = 'user_id';
+                if ($model === Zapytania::class) {
+                    $userColumn = 'user_opracowuje_id';
+                }
+                $baseQuery->where($userColumn, $filterUserId);
+            }
+
+            if ($aggregate === 'count') {
+                $current = (clone $baseQuery)->whereBetween($dateColumn, [$currentMonthStart, $currentMonthEnd])->count();
+                $previous = (clone $baseQuery)->whereBetween($dateColumn, [$previousMonthStart, $previousMonthEnd])->count();
+            } else {
+                $current = (clone $baseQuery)->whereBetween($dateColumn, [$currentMonthStart, $currentMonthEnd])->sum($aggregateColumn) ?? 0;
+                $previous = (clone $baseQuery)->whereBetween($dateColumn, [$previousMonthStart, $previousMonthEnd])->sum($aggregateColumn) ?? 0;
+            }
+
+            return ['current' => $current, 'previous' => $previous];
+        };
+
+        $stats = [
+            'zapytania' => $statsQuery(Zapytania::class, 'created_at', 'count'),
+            'oferty' => $statsQuery(Oferta::class, 'created_at', 'count'),
+            'klienci' => $statsQuery(Client::class, 'created_at', 'count'),
+            'wartoscOfert' => $statsQuery(Oferta::class, 'created_at', 'sum', 'kwotaPLN'),
+        ];
+
         // Fetch Zapytania
         $zapytanias = Zapytania::with(['user', 'opracowuje', 'client'])
             ->where(function ($query) {
@@ -61,10 +96,10 @@ class DashboardController extends Controller
             })
             ->whereNull('ofertas.id') // Only include wznowienia that do NOT have such an offer
             ->when($filterUserId, function($query) use ($filterUserId) {
-                $query->where('zapytania_wznowienias.user_opracowuje_id', $filterUserId); // Corrected
+                $query->where('zapytania_wznowienias.user_opracowuje_id', $filterUserId);
             })
-            // Removed the filter call as ZapytaniaWznowienie model does not have a filter scope
-            ->select('zapytania_wznowienias.*') // Corrected
+            ->filter(['search' => Request::input('search', '')])
+            ->select('zapytania_wznowienias.*')
             ->get();
 
         // Map Zapytania to a consistent structure
@@ -105,6 +140,7 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard/Index',
             [
+                'stats' => $stats,
                 'filters' => Request::all('search', 'user_id', 'tab'),
                 'users' => $isKierownictwo ? User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get() : [],
                 'historia' => Activity::with(['causer', 'subject'])
