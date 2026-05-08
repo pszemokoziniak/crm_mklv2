@@ -63,6 +63,10 @@ class HandleInertiaRequests extends Middleware
                     'error' => $request->session()->get('error'),
                 ];
             },
+            'unreadNotificationsCount' => function () use ($request) {
+                return $request->user() ? $request->user()->unreadNotifications()->count() : 0;
+            },
+            'vapidPublicKey' => config('webpush.vapid.public_key'),
             'mainMenus' => function () use ($request) {
                 if (!$request->user()) {
                     Log::info('No user logged in, returning empty mainMenus.');

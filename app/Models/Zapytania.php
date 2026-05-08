@@ -107,8 +107,13 @@ class Zapytania extends Model
             if (!empty($search)) {
                 $query->where(function ($query) use ($search) {
                     $query->where('nazwa_projektu', 'like', '%'.$search.'%')
+                        ->orWhere('id_zapyt', 'like', '%'.$search.'%')
                         ->orWhereHas('client', function ($query) use ($search) {
                             $query->where('nazwa', 'like', '%'.$search.'%');
+                        })
+                        ->orWhereHas('user', function ($query) use ($search) {
+                            $query->where('first_name', 'like', '%'.$search.'%')
+                                ->orWhere('last_name', 'like', '%'.$search.'%');
                         });
                 });
             }

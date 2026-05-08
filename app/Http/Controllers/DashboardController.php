@@ -229,6 +229,7 @@ class DashboardController extends Controller
                     }),
                 'zadania' => Zadania::with('responsiblePerson')
                     ->with('user')
+                    ->where('status', '!=', 'zamkniete')
                     ->where(function ($query) {
                         $query->whereNull('deadline')
                             ->orWhere('deadline', '<=', Carbon::today()->addDays(7));
@@ -242,6 +243,7 @@ class DashboardController extends Controller
                     ->map(fn ($zadanie) => [
                         'id' => $zadanie->id,
                         'subject' => $zadanie->subject,
+                        'status' => $zadanie->status,
                         'deadline' => $zadanie->deadline ? $zadanie->deadline->format('Y-m-d') : null,
                         'users' => $zadanie->user ? $zadanie->user : null,
                     ]),

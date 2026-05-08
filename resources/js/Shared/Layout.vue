@@ -23,25 +23,28 @@
             <div class="mr-4 mt-1 font-bold text-indigo-600 uppercase tracking-wider">
               {{ auth.user.roles[0] || 'Użytkownik' }}
             </div>
-            <dropdown class="mt-1" placement="bottom-end">
-              <template #default>
-                <div class="group flex items-center cursor-pointer select-none p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div class="mr-2 text-gray-700 group-hover:text-indigo-600 focus:text-indigo-600 whitespace-nowrap font-medium">
-                    <span>{{ auth.user.first_name }}</span>
-                    <span class="hidden md:inline">&nbsp;{{ auth.user.last_name }}</span>
+            <div class="flex items-center space-x-2">
+              <notification-bell :count="unreadNotificationsCount" />
+              <dropdown class="mt-1" placement="bottom-end">
+                <template #default>
+                  <div class="group flex items-center cursor-pointer select-none p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="mr-2 text-gray-700 group-hover:text-indigo-600 focus:text-indigo-600 whitespace-nowrap font-medium">
+                      <span>{{ auth.user.first_name }}</span>
+                      <span class="hidden md:inline">&nbsp;{{ auth.user.last_name }}</span>
+                    </div>
+                    <icon class="w-5 h-5 fill-gray-400 group-hover:fill-indigo-600 transition-colors" name="cheveron-down" />
                   </div>
-                  <icon class="w-5 h-5 fill-gray-400 group-hover:fill-indigo-600 transition-colors" name="cheveron-down" />
-                </div>
-              </template>
-              <template #dropdown>
-                <div class="mt-2 py-2 text-sm bg-white rounded-lg shadow-xl border border-gray-100 min-w-[160px]">
-                  <Link class="block px-6 py-2 text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors" :href="`/users/${auth.user.id}/edit`">Profil</Link>
-                  <Link class="block px-6 py-2 text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors" href="/users">Użytkownicy</Link>
-                  <div class="border-t border-gray-100 my-1" />
-                  <Link class="block px-6 py-2 w-full text-left text-red-600 hover:text-white hover:bg-red-500 transition-colors" href="/logout" method="delete" as="button">Wyloguj</Link>
-                </div>
-              </template>
-            </dropdown>
+                </template>
+                <template #dropdown>
+                  <div class="mt-2 py-2 text-sm bg-white rounded-lg shadow-xl border border-gray-100 min-w-[160px]">
+                    <Link class="block px-6 py-2 text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors" :href="`/users/${auth.user.id}/edit`">Profil</Link>
+                    <Link class="block px-6 py-2 text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors" href="/users">Użytkownicy</Link>
+                    <div class="border-t border-gray-100 my-1" />
+                    <Link class="block px-6 py-2 w-full text-left text-red-600 hover:text-white hover:bg-red-500 transition-colors" href="/logout" method="delete" as="button">Wyloguj</Link>
+                  </div>
+                </template>
+              </dropdown>
+            </div>
           </div>
         </div>
         <div class="md:flex md:flex-grow md:overflow-hidden">
@@ -63,6 +66,8 @@ import Logo from '@/Shared/Logo'
 import Dropdown from '@/Shared/Dropdown'
 import MainMenu from '@/Shared/MainMenu'
 import FlashMessages from '@/Shared/FlashMessages'
+import NotificationBell from '@/Shared/NotificationBell'
+import { initPushNotifications } from '@/Shared/PushNotifications'
 
 export default {
   components: {
@@ -72,10 +77,21 @@ export default {
     Link,
     Logo,
     MainMenu,
+    NotificationBell,
   },
   props: {
     auth: Object,
-    mainMenus: Array, // Add mainMenus to props
+    mainMenus: Array,
+    unreadNotificationsCount: {
+      type: Number,
+      default: 0,
+    },
+    vapidPublicKey: String,
+  },
+  mounted() {
+    if (this.vapidPublicKey) {
+      initPushNotifications(this.vapidPublicKey)
+    }
   },
 }
 </script>

@@ -10,16 +10,24 @@ class Zadania extends Model
 {
     use SoftDeletes;
 
+    const STATUS_AKTYWNE = 'aktywne';
+    const STATUS_DO_AKCEPTACJI = 'do_akceptacji';
+    const STATUS_ZAMKNIETE = 'zamkniete';
+
     protected $fillable = [
         'responsible_person_id',
         'subject',
         'description',
         'deadline',
         'user_id',
+        'status',
+        'closed_by',
+        'closed_at',
     ];
 
     protected $casts = [
         'deadline' => 'date:Y-m-d',
+        'closed_at' => 'datetime',
     ];
 
     protected function serializeDate(\DateTimeInterface $date)
@@ -60,6 +68,11 @@ class Zadania extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function closedByUser()
+    {
+        return $this->belongsTo(User::class, 'closed_by');
+    }
+
     public function responsiblePerson()
     {
         return $this->belongsTo(User::class, 'responsible_person_id', 'id');
@@ -93,6 +106,8 @@ class Zadania extends Model
                     $query->where('first_name', 'like', '%'.$search.'%')
                         ->orWhere('last_name', 'like', '%'.$search.'%');
                 });
+        })->when($filters['status'] ?? null, function ($query, $status) {
+            $query->where('status', $status);
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();

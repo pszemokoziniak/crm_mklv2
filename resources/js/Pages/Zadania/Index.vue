@@ -4,6 +4,13 @@
     <h1 class="mb-8 text-3xl font-bold text-gray-900">Zadania</h1>
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
+        <select v-model="form.status" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mb-2">
+          <option :value="null">Wszystkie</option>
+          <option value="aktywne">Aktywne</option>
+          <option value="do_akceptacji">Do akceptacji</option>
+          <option value="zamkniete">Zamknięte</option>
+        </select>
         <label class="block text-sm font-medium text-gray-700 mb-1">Widok:</label>
         <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
           <option value="with">Wszystko</option>
@@ -22,6 +29,9 @@
             <tr class="text-left text-gray-500 bg-gray-50/50 border-b border-gray-100">
               <th class="px-6 py-1.5">
                 <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Temat</div>
+              </th>
+              <th class="px-6 py-1.5">
+                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Status</div>
               </th>
               <th class="px-6 py-1.5">
                 <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Termin wykonania</div>
@@ -43,6 +53,13 @@
                     {{ item.subject }}
                   </span>
                   <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
+                </Link>
+              </td>
+              <td class="px-6 py-4">
+                <Link class="flex items-center" :href="`/zadania/${item.id}/edit`" tabindex="-1">
+                  <span :class="getStatusClass(item.status)" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium">
+                    {{ getStatusLabel(item.status) }}
+                  </span>
                 </Link>
               </td>
               <td class="px-6 py-4">
@@ -74,7 +91,7 @@
               </td>
             </tr>
             <tr v-if="zadanias.data.length === 0">
-              <td class="px-6 py-12 text-center text-gray-400" colspan="5">
+              <td class="px-6 py-12 text-center text-gray-400" colspan="6">
                 <div class="flex flex-col items-center">
                   <icon name="zapytania" class="w-12 h-12 mb-2 opacity-20" />
                   <p class="text-xs">Brak zadań spełniających kryteria.</p>
@@ -117,6 +134,7 @@ export default {
       form: {
         search: this.filters.search,
         trashed: this.filters.trashed,
+        status: this.filters.status,
       },
     }
   },
@@ -131,6 +149,22 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    getStatusClass(status) {
+      switch (status) {
+      case 'aktywne': return 'bg-green-100 text-green-800'
+      case 'do_akceptacji': return 'bg-yellow-100 text-yellow-800'
+      case 'zamkniete': return 'bg-gray-100 text-gray-600'
+      default: return 'bg-green-100 text-green-800'
+      }
+    },
+    getStatusLabel(status) {
+      switch (status) {
+      case 'aktywne': return 'Aktywne'
+      case 'do_akceptacji': return 'Do akceptacji'
+      case 'zamkniete': return 'Zamknięte'
+      default: return 'Aktywne'
+      }
     },
     getDeadlineClass(deadline) {
       if (!deadline) return ''

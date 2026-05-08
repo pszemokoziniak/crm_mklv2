@@ -34,6 +34,8 @@ use App\Http\Controllers\WalutaController;
 use App\Http\Controllers\ZadaniaController;
 use App\Http\Controllers\ZakresController;
 use App\Http\Controllers\ZapytaniaController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PushSubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -249,6 +251,19 @@ Route::middleware(['auth'])->group(function () {
     Route::put('zadania/{zadania}', [ZadaniaController::class, 'update'])->name('zadania.update');
     Route::delete('zadania/{zadania}', [ZadaniaController::class, 'destroy'])->name('zadania.destroy');
     Route::put('zadania/{zadania}/restore', [ZadaniaController::class, 'restore'])->name('zadania.restore');
+    Route::put('zadania/{zadania}/request-closure', [ZadaniaController::class, 'requestClosure'])->name('zadania.requestClosure');
+    Route::put('zadania/{zadania}/approve-closure', [ZadaniaController::class, 'approveClosure'])->name('zadania.approveClosure');
+    Route::put('zadania/{zadania}/reject-closure', [ZadaniaController::class, 'rejectClosure'])->name('zadania.rejectClosure');
+
+    // Notifications
+    Route::get('notifications/count', [NotificationController::class, 'count'])->name('notifications.count');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::put('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::put('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+
+    // Push Subscriptions
+    Route::post('push-subscriptions', [PushSubscriptionController::class, 'store'])->name('push-subscriptions.store');
+    Route::delete('push-subscriptions', [PushSubscriptionController::class, 'destroy'])->name('push-subscriptions.destroy');
 
     // LinkedIn
     Route::get('linkedin', [LinkedinController::class, 'index'])->name('linkedin');

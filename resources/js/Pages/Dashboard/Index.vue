@@ -259,7 +259,12 @@
           <div class="space-y-3">
             <div v-for="item in zadania" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
               <Link :href="`/zadania/${item.id}/edit`" class="block p-4">
-                <div class="font-bold text-gray-900 mb-1 truncate">{{ item.subject }}</div>
+                <div class="flex items-center justify-between mb-1">
+                  <div class="font-bold text-gray-900 truncate">{{ item.subject }}</div>
+                  <span v-if="item.status === 'do_akceptacji'" class="ml-2 flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                    Do akceptacji
+                  </span>
+                </div>
 
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                   <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.deadline), 'text-gray-500': !isOverdue(item.deadline)}">
