@@ -61,11 +61,11 @@
                   :href="`/zapytania/${item.id}/edit`"
                   class="absolute inset-y-2 left-1 right-1 flex items-center px-3 rounded-md text-xs font-semibold text-white shadow-sm hover:brightness-90 hover:shadow-md transition-all overflow-hidden whitespace-nowrap z-10"
                   :style="{ backgroundColor: getEventColor(item.id) }"
-                  :title="`${item.id_zapyt} - ${item.nazwa_projektu} (${item.client.nazwa})`"
+                  :title="`${item.id_zapyt} - ${item.nazwa_projektu}${item.client ? ' (' + item.client.nazwa + ')' : ''}`"
                 >
                   <span class="truncate">
                     <span class="bg-black/10 px-1.5 py-0.5 rounded mr-2 text-[10px]">{{ item.id_zapyt }}</span>
-                    {{ item.nazwa_projektu }} | {{ item.client.nazwa }}
+                    {{ item.nazwa_projektu }}<template v-if="item.client"> | {{ item.client.nazwa }}</template>
                   </span>
                 </Link>
               </td>

@@ -216,6 +216,12 @@
                   }}</span>
                 </div>
                 {{ kontakt.description }}
+
+                <div class="mt-3 pt-2 border-t border-gray-100">
+                  <span class="text-[10px] uppercase font-bold text-gray-400">Następny kontakt: </span>
+                  <span v-if="kontakt.next_call_date" class="text-xs font-semibold text-indigo-700">{{ $filters.formatDateTime(`${kontakt.next_call_date} ${kontakt.next_call_time || ''}`) }}</span>
+                  <span v-else class="text-xs italic text-gray-400">Nie zaplanowano</span>
+                </div>
               </div>
 
               <!-- Odpowiedzi w wątku -->
@@ -243,6 +249,11 @@
                     </div>
                   </div>
                   <div class="text-sm text-gray-600 whitespace-pre-wrap">{{ reply.description }}</div>
+                  <div class="mt-2 pt-1 border-t border-gray-50">
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Następny kontakt: </span>
+                    <span v-if="reply.next_call_date" class="text-xs font-semibold text-indigo-700">{{ $filters.formatDateTime(`${reply.next_call_date} ${reply.next_call_time || ''}`) }}</span>
+                    <span v-else class="text-xs italic text-gray-400">Nie zaplanowano</span>
+                  </div>
                 </div>
               </div>
 

@@ -137,6 +137,12 @@
                   }}</span>
                 </div>
                 {{ kontakt.description }}
+
+                <div class="mt-3 pt-2 border-t border-gray-100">
+                  <span class="text-[10px] uppercase font-bold text-gray-400">Następny kontakt: </span>
+                  <span v-if="kontakt.next_call_date" class="text-xs font-semibold text-indigo-700">{{ formatDatePl(kontakt.next_call_date) }} <span v-if="kontakt.next_call_time">{{ kontakt.next_call_time.substring(0, 5) }}</span></span>
+                  <span v-else class="text-xs italic text-gray-400">Nie zaplanowano</span>
+                </div>
               </div>
 
               <!-- Odpowiedzi w wątku -->
@@ -150,6 +156,11 @@
                     </div>
                   </div>
                   <div class="text-sm text-gray-600 whitespace-pre-wrap">{{ reply.description }}</div>
+                  <div class="mt-2 pt-1 border-t border-gray-50">
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Następny kontakt: </span>
+                    <span v-if="reply.next_call_date" class="text-xs font-semibold text-indigo-700">{{ formatDatePl(reply.next_call_date) }} <span v-if="reply.next_call_time">{{ reply.next_call_time.substring(0, 5) }}</span></span>
+                    <span v-else class="text-xs italic text-gray-400">Nie zaplanowano</span>
+                  </div>
                 </div>
               </div>
 
@@ -337,6 +348,14 @@ export default {
     disableForm() {
       this.isActive = !this.isActive
       this.disable = !this.disable
+    },
+    formatDatePl(value) {
+      if (!value) return ''
+      try {
+        const date = new Date(value)
+        if (isNaN(date.getTime())) return value
+        return new Intl.DateTimeFormat('pl-PL', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date)
+      } catch (e) { return value }
     },
     formatNumber (num) {
       if (num === null || num === undefined) return ''

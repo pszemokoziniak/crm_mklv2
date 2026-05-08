@@ -34,8 +34,26 @@ class ZapytaniaController extends Controller
     use StoreActivityLog;
     public function index()
     {
+        $currentMonthStart = Carbon::now()->startOfMonth();
+        $currentMonthEnd = Carbon::now()->endOfMonth();
+        $previousMonthStart = Carbon::now()->subMonth()->startOfMonth();
+        $previousMonthEnd = Carbon::now()->subMonth()->endOfMonth();
+
+        $stats = [
+            'total' => Zapytania::count(),
+            'this_month' => Zapytania::whereBetween('created_at', [$currentMonthStart, $currentMonthEnd])->count(),
+            'prev_month' => Zapytania::whereBetween('created_at', [$previousMonthStart, $previousMonthEnd])->count(),
+            'with_oferta' => Zapytania::whereHas('oferty', function ($q) {
+                $q->whereNull('deleted_at');
+            })->count(),
+            'without_oferta' => Zapytania::whereDoesntHave('oferty', function ($q) {
+                $q->whereNull('deleted_at');
+            })->count(),
+        ];
+
         return Inertia::render('Zapytania/Index', [
             'filters' => Request::all('search', 'trashed'),
+            'stats' => $stats,
             'zapytanias' => Zapytania::with(['client', 'user', 'kraj', 'zakres', 'waluta', 'otrzymal', 'opracowuje'])
                 ->OrderByCreatedAt()
                 ->filter(Request::only('search', 'trashed'))

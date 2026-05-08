@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use App\Traits\StoreActivityLog;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class OfertaController extends Controller
 {
@@ -28,8 +29,35 @@ class OfertaController extends Controller
 
     public function index()
     {
+        $currentMonthStart = Carbon::now()->startOfMonth();
+        $currentMonthEnd = Carbon::now()->endOfMonth();
+        $previousMonthStart = Carbon::now()->subMonth()->startOfMonth();
+        $previousMonthEnd = Carbon::now()->subMonth()->endOfMonth();
+
+        $statusCounts = Oferta::select('oferta_status_id', DB::raw('count(*) as cnt'))
+            ->groupBy('oferta_status_id')
+            ->pluck('cnt', 'oferta_status_id');
+
+        $statuses = OfertaStatus::pluck('name', 'id');
+
+        $statusStats = [];
+        foreach ($statuses as $id => $name) {
+            $statusStats[] = [
+                'name' => $name,
+                'count' => $statusCounts[$id] ?? 0,
+            ];
+        }
+
+        $stats = [
+            'total' => Oferta::count(),
+            'this_month' => Oferta::whereBetween('created_at', [$currentMonthStart, $currentMonthEnd])->count(),
+            'prev_month' => Oferta::whereBetween('created_at', [$previousMonthStart, $previousMonthEnd])->count(),
+            'statuses' => $statusStats,
+        ];
+
         return Inertia::render('Oferta/Index', [
             'filters' => Request::all('search', 'trashed'),
+            'stats' => $stats,
             'ofertas' => Oferta::with(['client', 'user', 'zapytania', 'status', 'waluta'])
                 ->OrderByCreatedAt()
                 ->filter(Request::only('search', 'trashed'))

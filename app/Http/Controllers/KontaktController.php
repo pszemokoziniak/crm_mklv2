@@ -137,6 +137,14 @@ class KontaktController extends Controller
             'future_project_id' => 'nullable|exists:future_projects,id',
             'parent_id' => 'nullable|exists:kontakts,id',
             'opiekun_id' => 'nullable|exists:users,id',
+        ], [
+            'subject.required' => 'Temat rozmowy jest wymagany.',
+            'description.required' => 'Szczegóły rozmowy są wymagane.',
+            'call_time.required' => 'Godzina kontaktu jest wymagana.',
+            'client_id.required' => 'Wybierz klienta.',
+            'client_id.exists' => 'Wybrany klient nie istnieje.',
+            'call_date.date' => 'Nieprawidłowy format daty kontaktu.',
+            'next_call_date.date' => 'Nieprawidłowy format daty następnego kontaktu.',
         ]);
 
         $data = $request->all();

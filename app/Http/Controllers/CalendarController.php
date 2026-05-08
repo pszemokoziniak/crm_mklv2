@@ -75,44 +75,45 @@ class CalendarController extends Controller
         }
         return $days;
     }
-    public function getDaysFull($daysN, $start)
-    {
-        $start = Carbon::parse($start);
-        for ($i= 0; $i<= $daysN; $i++)
-        {
-            $daysFull[] = $start->addDays(1)->format('Y-m-d');
-        }
-        return $daysFull;
-    }
-
     public function getZapytania($start, $end)
     {
         $search = array_values(Request::all('search'))[0];
 
-        $zapytanias = Zapytania::with('oferty')
-            ->with('client')
-            ->where(function ($query) use ($search){
+        $zapytanias = Zapytania::with('oferty', 'client')
+            ->when($search, function ($query, $search) {
                 $query->where('nazwa_projektu', 'like', '%'.$search.'%');
             })
-            ->where(function ($query) use ($start, $end){
-            $query->where('start', '>=', $start)
-                  ->where('end', '<=', $end);
-        })->orWhere(function ($query) use ($start) {
-            $query->where('start', '<', $start)
-                  ->where('end', '>', $start);
-        })->orWhere(function ($query) use ($end) {
-            $query->where('start', '<', $end)
-                ->where('end', '>', $end);
-        })->orderBy('start')
-            ->filter(Request::only('search', 'start', 'end'))
+            ->where(function ($query) use ($start, $end) {
+                $query->where(function ($q) use ($start, $end) {
+                    $q->where('start', '>=', $start)
+                       ->where('end', '<=', $end);
+                })->orWhere(function ($q) use ($start) {
+                    $q->where('start', '<', $start)
+                       ->where('end', '>', $start);
+                })->orWhere(function ($q) use ($end) {
+                    $q->where('start', '<', $end)
+                       ->where('end', '>', $end);
+                });
+            })
+            ->whereNotNull('start')
+            ->whereNotNull('end')
+            ->orderBy('start')
             ->get();
 
-        $data = array();
-//dd($zapytanias);
-        foreach ($zapytanias as $item) {
+        $data = [];
 
+        foreach ($zapytanias as $item) {
             $colSpan = $this->getColSpan($start, $end, $item->start, $item->end);
-            array_push($data, ['id' => $item->id, 'id_zapyt' => $item->id_zapyt, 'nazwa_projektu' => $item->nazwa_projektu, 'oferta' => $item->oferty, 'client' => $item->client, 'start' => $item->start, 'end' => $item->end, 'colSpan' => $colSpan]);
+            $data[] = [
+                'id' => $item->id,
+                'id_zapyt' => $item->id_zapyt,
+                'nazwa_projektu' => $item->nazwa_projektu,
+                'oferta' => $item->oferty,
+                'client' => $item->client,
+                'start' => $item->start,
+                'end' => $item->end,
+                'colSpan' => $colSpan,
+            ];
         }
 
         return $data;
@@ -123,46 +124,33 @@ class CalendarController extends Controller
         $end = Carbon::parse($end);
         $startZap = Carbon::parse($startZap);
         $endZap = Carbon::parse($endZap);
-//        $col =array();
-//        $colCount =array();
 
+        $col = [];
 
-
-        if ($endZap >= $end && $startZap >= $start)
-        {
-//            $colCount =array();
-            $colStart = ($startZap->diffInDays($start));
-            $colCount = $end->diffInDays($startZap)+1;
-            $col = array(
-                array($colStart, 0),
-                array($colCount, 1),
-            );
-        }
-
-        if ($endZap >= $end && $startZap <= $start )
-        {
-            $colCount = ($end->diffInDays($start)+1);
-            $col = array(
-                array($colCount, 1),
-            );
-        }
-
-        if ($endZap <= $end && $startZap >= $start )
-        {
-            $colStart = ($startZap->diffInDays($start));
-            $colCount = $endZap->diffInDays($startZap)+1;
-            $col = array(
-                array($colStart, 0),
-                array($colCount, 1),
-            );
-        }
-
-        if ($endZap < $end && $startZap < $start)
-        {
-            $colCount = ($endZap->diffInDays($start)+1);
-            $col = array(
-                array($colCount, 1),
-            );
+        if ($endZap >= $end && $startZap >= $start) {
+            $colStart = $startZap->diffInDays($start);
+            $colCount = $end->diffInDays($startZap) + 1;
+            $col = [
+                [$colStart, 0],
+                [$colCount, 1],
+            ];
+        } elseif ($endZap >= $end && $startZap <= $start) {
+            $colCount = $end->diffInDays($start) + 1;
+            $col = [
+                [$colCount, 1],
+            ];
+        } elseif ($endZap <= $end && $startZap >= $start) {
+            $colStart = $startZap->diffInDays($start);
+            $colCount = $endZap->diffInDays($startZap) + 1;
+            $col = [
+                [$colStart, 0],
+                [$colCount, 1],
+            ];
+        } elseif ($endZap < $end && $startZap < $start) {
+            $colCount = $endZap->diffInDays($start) + 1;
+            $col = [
+                [$colCount, 1],
+            ];
         }
 
         return $col;
