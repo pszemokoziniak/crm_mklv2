@@ -150,7 +150,20 @@ class StatsController extends Controller
         $count = Zapytania::count();
         $sum = (float) Zapytania::sum('kwotaPLN');
 
-        return [$count, $sum];
+        $withOferta = Zapytania::whereHas('oferty')->count();
+        $withOfertaSum = (float) Zapytania::whereHas('oferty')->sum('kwotaPLN');
+
+        $withoutOferta = $count - $withOferta;
+        $withoutOfertaSum = $sum - $withOfertaSum;
+
+        return [
+            'count' => $count,
+            'sum' => $sum,
+            'breakdown' => [
+                ['name' => 'Z ofertą', 'qty' => $withOferta, 'total' => round($withOfertaSum, 2)],
+                ['name' => 'Bez oferty', 'qty' => $withoutOferta, 'total' => round($withoutOfertaSum, 2)],
+            ],
+        ];
     }
 
     public function zapytaniaOfertySumAmount($start, $end)
@@ -246,7 +259,22 @@ class StatsController extends Controller
         $count = Oferta::count();
         $sum = (float) Oferta::sum('kwotaPLN');
 
-        return [$count, number_format($sum, 2)];
+        $byStatus = Oferta::select(DB::raw('oferta_statuses.name, COUNT(*) as qty, SUM(ofertas.kwotaPLN) as total'))
+            ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
+            ->groupBy('oferta_statuses.name')
+            ->orderBy('total', 'DESC')
+            ->get()
+            ->map(fn ($item) => [
+                'name' => $item->name,
+                'qty' => (int) $item->qty,
+                'total' => round((float) $item->total, 2),
+            ]);
+
+        return [
+            'count' => $count,
+            'sum' => $sum,
+            'byStatus' => $byStatus,
+        ];
     }
 
     public function ofertaStatus()

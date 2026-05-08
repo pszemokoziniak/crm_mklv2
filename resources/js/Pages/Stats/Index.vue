@@ -2,59 +2,82 @@
   <div>
     <Head title="Statystyki" />
     <h1 class="mb-8 text-3xl font-bold">Statystyki</h1>
-      <div class="flex flex-wrap -mb-8 -mr-6 pb-4">
-        <text-input v-model="form.start" type="date" class="pb-8 pr-6 w-full lg:w-1/4" label="Od" />
-        <text-input v-model="form.end" type="date" class="pb-8 pr-6 w-full lg:w-1/4" label="Do" />
-      </div>
+    <div class="flex flex-wrap -mb-8 -mr-6 pb-4">
+      <text-input v-model="form.start" type="date" class="pb-8 pr-6 w-full lg:w-1/4" label="Od" />
+      <text-input v-model="form.end" type="date" class="pb-8 pr-6 w-full lg:w-1/4" label="Do" />
+    </div>
 
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <h2 class="flex items-center text-3xl font-extrabold dark:text-white p-1">Klienci</h2>
-      <hr>
-      <p class="text-2xl p-1">Ilość klientów - {{clientNumber}}</p>
-      <users-add-clients :clientNumber="clientNumber" :clientNumberByUser="clientNumberByUser"/>
-      <active-client :clientActive="clientActive"/>
-      <increase-client :increaseClients="increaseClients"/>
-      <client-branza :clientBranza="clientBranza"/>
-      <clients-zapytania-sum-amount :clientZapytaniaSumAmount="clientZapytaniaSumAmount"/>
-      <clients-oferty-sum-amount :clientOfertaSumAmount="clientOfertaSumAmount"/>
+      <hr />
+      <p class="text-2xl p-1">Ilość klientów - {{ clientNumber }}</p>
+      <users-add-clients :client-number="clientNumber" :client-number-by-user="clientNumberByUser" />
+      <active-client :client-active="clientActive" />
+      <increase-client :increase-clients="increaseClients" />
+      <client-branza :client-branza="clientBranza" />
+      <clients-zapytania-sum-amount :client-zapytania-sum-amount="clientZapytaniaSumAmount" />
+      <clients-oferty-sum-amount :client-oferta-sum-amount="clientOfertaSumAmount" />
       <h2 class="flex items-center text-3xl font-extrabold dark:text-white p-1">Zapytania</h2>
-      <hr>
-      <p class="p-1 text-2xl"> Ilość zapytań: {{ quantityZapytania[0] }} Wartość zapytań: {{ quantityZapytania[1] }} </p>
-      <zapytania-oferta-sum-amount :zapytaniaOfertySumAmount="zapytaniaOfertySumAmount"/>
-      <zapytania-branze :zapytaniaBranze="zapytaniaBranze" />
-      <zapytania-zakres :zapytaniaZakres="zapytaniaZakres"/>
-      <zapytania-users :zapytaniaUsers="zapytaniaUsers"/>
+      <hr />
+      <div class="p-3">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+          <div class="bg-gray-50 rounded-lg p-3 border">
+            <p class="text-xs text-gray-500 mb-1">Wszystkie zapytania</p>
+            <p class="text-xl font-bold text-gray-900">{{ quantityZapytania.count }}</p>
+            <p class="text-xs text-gray-400 mt-1">{{ formatPLN(quantityZapytania.sum) }}</p>
+          </div>
+          <div v-for="s in quantityZapytania.breakdown" :key="s.name" class="bg-gray-50 rounded-lg p-3 border">
+            <p class="text-xs text-gray-500 mb-1">{{ s.name }}</p>
+            <p class="text-xl font-bold" :class="zapytaniaColor(s.name)">{{ s.qty }}</p>
+            <p class="text-xs text-gray-400 mt-1">{{ formatPLN(s.total) }}</p>
+          </div>
+        </div>
+      </div>
+      <zapytania-oferta-sum-amount :zapytania-oferty-sum-amount="zapytaniaOfertySumAmount" />
+      <zapytania-branze :zapytania-branze="zapytaniaBranze" />
+      <zapytania-zakres :zapytania-zakres="zapytaniaZakres" />
+      <zapytania-users :zapytania-users="zapytaniaUsers" />
       <h2 class="flex items-center text-3xl font-extrabold dark:text-white p-1">Oferty</h2>
-      <hr>
-      <p class="text-2xl p-1">Ilość ofert - {{quantityOferta[0]}} Wartość zapytań: {{ quantityOferta[1] }} </p>
-      <oferta-status :ofertaStatus="ofertaStatus"/>
-      <oferta-status-win :ofertaStatusWin="ofertaStatusWin"/>
+      <hr />
+      <div class="p-3">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+          <div class="bg-gray-50 rounded-lg p-3 border">
+            <p class="text-xs text-gray-500 mb-1">Wszystkie oferty</p>
+            <p class="text-xl font-bold text-gray-900">{{ quantityOferta.count }}</p>
+            <p class="text-xs text-gray-400 mt-1">{{ formatPLN(quantityOferta.sum) }}</p>
+          </div>
+          <div v-for="s in quantityOferta.byStatus" :key="s.name" class="bg-gray-50 rounded-lg p-3 border">
+            <p class="text-xs text-gray-500 mb-1">{{ s.name }}</p>
+            <p class="text-xl font-bold" :class="statusColor(s.name)">{{ s.qty }}</p>
+            <p class="text-xs text-gray-400 mt-1">{{ formatPLN(s.total) }}</p>
+          </div>
+        </div>
+      </div>
+      <oferta-status :oferta-status="ofertaStatus" />
+      <oferta-status-win :oferta-status-win="ofertaStatusWin" />
     </div>
   </div>
 </template>
 
 <script>
-import { Head, Link } from '@inertiajs/inertia-vue3'
-import Icon from '@/Shared/Icon'
+import { Head } from '@inertiajs/inertia-vue3'
 import pickBy from 'lodash/pickBy'
 import Layout from '@/Shared/Layout'
 import throttle from 'lodash/throttle'
 import mapValues from 'lodash/mapValues'
-import Pagination from '@/Shared/Pagination'
-import SearchFilter from '@/Shared/SearchFilter'
-import UsersAddClients from "@/Pages/Stats/UsersAddClients.vue";
-import ActiveClient from "@/Pages/Stats/ActiveClient.vue";
-import IncreaseClient from "@/Pages/Stats/IncreaseClient.vue";
-import ZapytaniaOfertaSumAmount from "@/Pages/Stats/ZapytaniaOfertySumAmount.vue";
-import ClientBranza from "@/Pages/Stats/ClientBranza.vue";
-import ClientsZapytaniaSumAmount from "@/Pages/Stats/ClientsZapytaniaSumAmount.vue";
-import ClientsOfertySumAmount from "@/Pages/Stats/ClientsOfertaSumAmount.vue";
-import ZapytaniaBranze from "@/Pages/Stats/ZapytaniaBranze.vue";
-import ZapytaniaZakres from "@/Pages/Stats/ZapytaniaZakres.vue";
-import ZapytaniaUsers from "@/Pages/Stats/ZapytaniaUsers.vue";
-import OfertaStatus from "@/Pages/Stats/OfertaStatus.vue";
-import OfertaStatusWin from "@/Pages/Stats/OfertaStatusWin.vue";
-import TextInput from "@/Shared/TextInput.vue";
+import UsersAddClients from '@/Pages/Stats/UsersAddClients.vue'
+import ActiveClient from '@/Pages/Stats/ActiveClient.vue'
+import IncreaseClient from '@/Pages/Stats/IncreaseClient.vue'
+import ZapytaniaOfertaSumAmount from '@/Pages/Stats/ZapytaniaOfertySumAmount.vue'
+import ClientBranza from '@/Pages/Stats/ClientBranza.vue'
+import ClientsZapytaniaSumAmount from '@/Pages/Stats/ClientsZapytaniaSumAmount.vue'
+import ClientsOfertySumAmount from '@/Pages/Stats/ClientsOfertaSumAmount.vue'
+import ZapytaniaBranze from '@/Pages/Stats/ZapytaniaBranze.vue'
+import ZapytaniaZakres from '@/Pages/Stats/ZapytaniaZakres.vue'
+import ZapytaniaUsers from '@/Pages/Stats/ZapytaniaUsers.vue'
+import OfertaStatus from '@/Pages/Stats/OfertaStatus.vue'
+import OfertaStatusWin from '@/Pages/Stats/OfertaStatusWin.vue'
+import TextInput from '@/Shared/TextInput.vue'
 
 export default {
   components: {
@@ -62,10 +85,6 @@ export default {
     UsersAddClients,
     ActiveClient,
     Head,
-    Icon,
-    Link,
-    Pagination,
-    SearchFilter,
     IncreaseClient,
     ClientBranza,
     ClientsZapytaniaSumAmount,
@@ -90,12 +109,12 @@ export default {
     zapytaniaBranze: Array,
     zapytaniaZakres: Array,
     zapytaniaUsers: Array,
-    quantityOferta: Array,
+    quantityOferta: Object,
     ofertaStatus: Array,
     ofertaStatusWin: Array,
     start: Date,
     end: Date,
-    quantityZapytania: Array,
+    quantityZapytania: Object,
     // filters: Object,
     // zapytanias: Object,
   },
@@ -118,6 +137,22 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    formatPLN(value) {
+      if (!value) return '0 PLN'
+      return new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN', maximumFractionDigits: 0 }).format(value)
+    },
+    statusColor(name) {
+      const n = (name || '').toLowerCase()
+      if (n.includes('wygran')) return 'text-green-600'
+      if (n.includes('przegran')) return 'text-red-600'
+      if (n.includes('toczy')) return 'text-indigo-600'
+      return 'text-gray-900'
+    },
+    zapytaniaColor(name) {
+      if (name === 'Z ofertą') return 'text-green-600'
+      if (name === 'Bez oferty') return 'text-orange-500'
+      return 'text-gray-900'
     },
   },
 }
