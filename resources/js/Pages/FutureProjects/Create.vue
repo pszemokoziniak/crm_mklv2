@@ -1,11 +1,12 @@
 <template>
   <div>
     <Head title="Przyszłe projekty" />
-    <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/futureproject">Przyszłe projekty</Link>
-      <span class="text-indigo-400 font-medium">/</span> Utwórz
+    <h1 class="mb-8 text-3xl font-bold text-gray-900">
+      <Link class="text-indigo-500 hover:text-indigo-700 transition-colors" href="/futureproject">Przyszłe projekty</Link>
+      <span class="text-gray-300 font-light mx-2">/</span>
+      <span class="text-gray-600">Utwórz</span>
     </h1>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div class="max-w-3xl bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.nazwa" :error="form.errors.nazwa" class="pb-8 pr-6 w-full lg:w-1/1" label="Nazwa projektu" />
@@ -38,7 +39,7 @@
           </select-input>
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Zapisz</loading-button>
+          <loading-button :loading="form.processing" class="btn-indigo shadow-md" type="submit">Zapisz</loading-button>
         </div>
       </form>
     </div>
@@ -90,8 +91,6 @@ export default {
         opiekun_id: '',
       }),
     }
-  },
-  computed() {
   },
   methods: {
     store() {

@@ -99,6 +99,7 @@ class FutureProjectController extends Controller
                 'faza_id' => $futureProject->faza_id,
                 'user_id' => $futureProject->user_id,
                 'opiekun_id' => $futureProject->opiekun_id,
+                'kwota' => $futureProject->kwota,
                 'deleted_at' => $futureProject->deleted_at,
             ],
             'objekt' => Objekt::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
