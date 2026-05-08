@@ -1,7 +1,9 @@
 <template>
-  <h1 class="text-2xl font-bold p-1 mt-3">Najlepsi klienci / Oferty</h1>
-  <div class="w-3/4 h-100">
-    <Bar :data="data" :options="options" />
+  <div>
+    <h1 class="text-2xl font-bold p-1 mt-3">Top 15 klientów / Oferty (PLN)</h1>
+    <div class="w-full" :style="{ height: chartHeight + 'px' }">
+      <Bar :data="data" :options="options" />
+    </div>
   </div>
 </template>
 
@@ -13,16 +15,16 @@ import {
   Legend,
   BarElement,
   CategoryScale,
-  LinearScale
+  LinearScale,
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export default {
-  name: 'App',
+  name: 'ClientsOfertaSumAmount',
   components: {
-    Bar
+    Bar,
   },
   props: {
     clientOfertaSumAmount: Array,
@@ -33,16 +35,45 @@ export default {
         labels: this.clientOfertaSumAmount[0],
         datasets: [
           {
-            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#7f95cd", "#2e5ea4","#c738b9","#ccdb6b","#7a3e0a","#3d7835","#cdcce3","#941b4b","#aebcbd","#cda9e8"],
+            label: 'Wartość ofert (PLN)',
+            backgroundColor: '#4f46e5',
+            borderRadius: 4,
             data: this.clientOfertaSumAmount[1],
-          }
-        ]
+          },
+        ],
       },
       options: {
+        indexAxis: 'y',
         responsive: true,
-        maintainAspectRatio: true
-      }
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN', maximumFractionDigits: 0 }).format(ctx.raw),
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: {
+              callback: (v) => new Intl.NumberFormat('pl-PL', { notation: 'compact', compactDisplay: 'short' }).format(v),
+            },
+            grid: { color: '#f3f4f6' },
+          },
+          y: {
+            ticks: { font: { size: 11 } },
+            grid: { display: false },
+          },
+        },
+      },
     }
-  }
+  },
+  computed: {
+    chartHeight() {
+      const count = this.clientOfertaSumAmount[0] ? this.clientOfertaSumAmount[0].length : 0
+      return Math.max(300, count * 40)
+    },
+  },
 }
 </script>

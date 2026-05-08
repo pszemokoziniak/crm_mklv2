@@ -19,12 +19,10 @@ class StatsController extends Controller
         $start = $start->format('Y-m-d');
         $end = Carbon::now()->format('Y-m-d');
 
-        $start = array_values(Request::all('start'))[0]?array_values(Request::all('start'))[0]:$start;
-        $end = array_values(Request::all('end'))[0]?array_values(Request::all('end'))[0]:$end;
+        $start = array_values(Request::all('start'))[0] ? array_values(Request::all('start'))[0] : $start;
+        $end = array_values(Request::all('end'))[0] ? array_values(Request::all('end'))[0] : $end;
 
-//        dd($this->zapytaniaBranze());
-
-        return Inertia::render('Stats/Index',[
+        return Inertia::render('Stats/Index', [
             'start' => $start,
             'end' => $end,
             'filters' => Request::all('start', 'end'),
@@ -44,12 +42,13 @@ class StatsController extends Controller
             'ofertaStatus' => $this->ofertaStatus(),
             'ofertaStatusWin' => $this->ofertaStatusWin(),
         ]);
-
     }
+
     public function clientNumber()
     {
         return Client::count();
     }
+
     public function clientNumberByUser($start, $end)
     {
         return Client::select(DB::raw('users.id, users.last_name, users.first_name, COUNT(*) AS count'))
@@ -60,21 +59,23 @@ class StatsController extends Controller
             ->orderBy('count', 'DESC')
             ->get();
     }
+
     public function clientActive()
     {
         $activeClient = (int) Zapytania::select('client_id')->groupBy('client_id')->get()->count();
         $nonActiveClient = (int) $this->clientNumber() - $activeClient;
         return [$activeClient, $nonActiveClient];
     }
+
     public function increaseClients($start, $end)
     {
         $start = Carbon::parse($start);
         $end = Carbon::parse($end);
-
-        $start = array_values(Request::all('start'))[0]?Carbon::parse(array_values(Request::all('start'))[0]):Carbon::parse($start);
-        $end = array_values(Request::all('end'))[0]?Carbon::parse(array_values(Request::all('end'))[0]):Carbon::parse($end);
-
         $start->setDay(1);
+
+        $months = [];
+        $countMonth = [];
+
         foreach (CarbonPeriod::create($start, '1 month', $end) as $month) {
             $months[] = $month->format('m-Y');
         }
@@ -84,15 +85,16 @@ class StatsController extends Controller
             $endMonth = Carbon::createFromFormat('m-Y', $month)->endOfMonth();
             $count = Client::where('created_at', '>=', $startMonth)
                 ->where('created_at', '<=', $endMonth)
-                ->get()
                 ->count();
             $countMonth[] = $count;
         }
+
         return [$months, $countMonth];
     }
+
     public function clientBranza($start, $end)
     {
-        $clientBranza = Client::select(DB::raw('branzas.id, branzas.name, COUNT(*) AS count'))
+        $data = Client::select(DB::raw('branzas.id, branzas.name, COUNT(*) AS count'))
             ->join('branzas', 'branzas.id', '=', 'clients.branza_id')
             ->where('clients.created_at', '>=', $start)
             ->where('clients.created_at', '<=', $end)
@@ -100,12 +102,15 @@ class StatsController extends Controller
             ->orderBy('count', 'DESC')
             ->get();
 
-        foreach($clientBranza as $item) {
+        $name = [];
+        $count = [];
+        foreach ($data as $item) {
             $name[] = $item->name;
             $count[] = $item->count;
         }
         return [$name, $count];
     }
+
     public function clientZapytaniaSumAmount()
     {
         $data = Zapytania::select(DB::raw('clients.id, clients.nazwa, SUM(zapytanias.kwotaPLN) AS count'))
@@ -113,48 +118,59 @@ class StatsController extends Controller
             ->groupBy('clients.nazwa', 'clients.id')
             ->get();
 
+        $labels = [];
+        $amounts = [];
         foreach ($data as $item) {
             $labels[] = $item->nazwa;
             $amounts[] = $item->count;
         }
-        return [$labels,$amounts];
+        return [$labels, $amounts];
     }
+
     public function clientOfertaSumAmount()
     {
         $data = Oferta::select(DB::raw('clients.id, clients.nazwa, SUM(ofertas.kwotaPLN) AS count'))
             ->join('clients', 'clients.id', '=', 'ofertas.client_id')
             ->groupBy('clients.nazwa', 'clients.id')
+            ->orderBy('count', 'DESC')
+            ->limit(15)
             ->get();
 
+        $labels = [];
+        $amounts = [];
         foreach ($data as $item) {
             $labels[] = $item->nazwa;
-            $amounts[] = $item->count;
+            $amounts[] = round((float) $item->count, 0);
         }
-        return [$labels,$amounts];
+        return [$labels, $amounts];
     }
+
     public function quantityZapytania()
     {
-        (int) $count = Zapytania::get()->count();
-        (float) $sum = Zapytania::sum('kwotaPLN');
+        $count = Zapytania::count();
+        $sum = (float) Zapytania::sum('kwotaPLN');
 
         return [$count, $sum];
     }
+
     public function zapytaniaOfertySumAmount($start, $end)
     {
         $start = Carbon::parse($start);
         $end = Carbon::parse($end);
-
-        $start = array_values(Request::all('start'))[0]?Carbon::parse(array_values(Request::all('start'))[0]):Carbon::parse($start);
-        $end = array_values(Request::all('end'))[0]?Carbon::parse(array_values(Request::all('end'))[0]):Carbon::parse($end);
         $start->setDay(1);
+
+        $months = [];
+        $zapytaniaMonthSum = [];
+        $ofertyMonthSum = [];
+        $ofertyWygraneMonthSum = [];
+
         foreach (CarbonPeriod::create($start, '1 month', $end) as $month) {
             $zapytania = Zapytania::select('start', 'kwotaPLN')
                 ->whereMonth('start', $month->format('m'))
                 ->whereYear('start', $month->format('Y'))
-                ->get()->sum('kwotaPLN');
+                ->sum('kwotaPLN');
 
             $oferty = Zapytania::with('oferty')
-//                ->select('zapytanias.start', 'ofertas.kwotaPLN')
                 ->whereMonth('start', $month->format('m'))
                 ->whereYear('start', $month->format('Y'))
                 ->get()->sum('oferty.kwotaPLN');
@@ -162,7 +178,6 @@ class StatsController extends Controller
             $ofertyWygrane = Zapytania::with('oferty')
                 ->whereMonth('start', $month->format('m'))
                 ->whereYear('start', $month->format('Y'))
-//                ->where('oferta.oferta_status_id', '603f809e-aa41-49be-b25f-2166dd93bd5e')
                 ->whereHas('oferty', function ($query) {
                     $query->where('oferta_status_id', '603f809e-aa41-49be-b25f-2166dd93bd5e');
                 })
@@ -185,12 +200,15 @@ class StatsController extends Controller
             ->groupBy('branzas.name', 'clients.id')
             ->get();
 
+        $labels = [];
+        $amounts = [];
         foreach ($data as $item) {
             $labels[] = $item->name;
             $amounts[] = $item->count;
         }
-        return [$labels,$amounts];
+        return [$labels, $amounts];
     }
+
     public function zapytaniaZakres()
     {
         $data = Zapytania::select(DB::raw('zakres.id, zakres.name, SUM(zapytanias.kwotaPLN) AS count'))
@@ -198,63 +216,76 @@ class StatsController extends Controller
             ->groupBy('zakres.name', 'zakres.id')
             ->get();
 
+        $labels = [];
+        $amounts = [];
         foreach ($data as $item) {
             $labels[] = $item->name;
             $amounts[] = $item->count;
         }
-        return [$labels,$amounts];
+        return [$labels, $amounts];
     }
+
     public function zapytaniaUsers()
     {
-
         $data = Zapytania::select(DB::raw('users.id, users.last_name, users.first_name, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('users', 'users.id', '=', 'zapytanias.user_id')
             ->groupBy('users.last_name', 'users.first_name', 'users.id')
             ->get();
 
-       foreach ($data as $item) {
-            $labels[] = $item->last_name.' '.$item->first_name;
+        $labels = [];
+        $amounts = [];
+        foreach ($data as $item) {
+            $labels[] = $item->last_name . ' ' . $item->first_name;
             $amounts[] = $item->count;
         }
-        return [$labels,$amounts];
+        return [$labels, $amounts];
     }
+
     public function quantityOferta()
     {
-        (int) $count = Oferta::get()->count();
-        (float) $sum = Oferta::sum('kwotaPLN');
+        $count = Oferta::count();
+        $sum = (float) Oferta::sum('kwotaPLN');
 
         return [$count, number_format($sum, 2)];
     }
+
     public function ofertaStatus()
     {
-
         $data = Oferta::select(DB::raw('oferta_statuses.id, oferta_statuses.name, SUM(ofertas.kwotaPLN) AS count'))
             ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
-            ->where('oferta_statuses.name', 'Wygrana')
-            ->orWhere('oferta_statuses.name', 'Przegrana')
+            ->where(function ($query) {
+                $query->where('oferta_statuses.name', 'Wygrana')
+                      ->orWhere('oferta_statuses.name', 'Przegrana');
+            })
             ->groupBy('oferta_statuses.name', 'oferta_statuses.id')
             ->get();
-        if ($data) {
+
+        if ($data->isEmpty()) {
             return [null, null];
         }
+
+        $labels = [];
+        $amounts = [];
         foreach ($data as $item) {
             $labels[] = $item->name;
             $amounts[] = $item->count;
         }
-        return [$labels,$amounts];
+        return [$labels, $amounts];
     }
+
     public function ofertaStatusWin()
     {
-
         $data = Oferta::select(DB::raw('oferta_statuses.id, oferta_statuses.name, SUM(ofertas.kwotaPLN) AS count'))
             ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
             ->groupBy('oferta_statuses.name', 'oferta_statuses.id')
             ->get();
 
+        $labels = [];
+        $amounts = [];
         foreach ($data as $item) {
             $labels[] = $item->name;
             $amounts[] = $item->count;
         }
-        return [$labels,$amounts];
+        return [$labels, $amounts];
     }
 }
