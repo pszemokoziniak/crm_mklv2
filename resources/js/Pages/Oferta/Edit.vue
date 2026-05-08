@@ -64,8 +64,6 @@
               <option v-for="item in waluta" :key="item.id" :value="item.id">{{ item.name }}</option>
             </select-input>
 
-            <text-input v-model="form.data_kontakt" :error="form.errors.data_kontakt" :disabled="disable" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
-
             <select-input v-model="form.oferta_status_id" :error="form.errors.oferta_status_id" :disabled="disable" class="pb-8 pr-6 w-full lg:w-1/2" label="Status">
               <option :value="null" />
               <option v-for="item in statuses" :key="item.id" :value="item.id">{{ item.name }} </option>
@@ -287,7 +285,6 @@ export default {
         data_wyslania: this.oferta.data_wyslania,
         kwota: this.oferta.kwota,
         waluta_id: this.oferta.waluta_id,
-        data_kontakt: this.oferta.data_kontakt,
         oferta_status_id: this.oferta.oferta_status_id,
         opis: this.oferta.opis,
         user_id: this.oferta.user_id,

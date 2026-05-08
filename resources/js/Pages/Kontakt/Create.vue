@@ -84,13 +84,31 @@
             <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
           </select-input>
 
-          <!-- 7. Data i Czas Kontaktu -->
-          <text-input v-model="form.call_date" :error="form.errors.call_date" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data kontaktu" />
-          <text-input v-model="form.call_time" :error="form.errors.call_time" type="time" class="pb-8 pr-6 w-full lg:w-1/2" label="Godzina kontaktu" />
+          <!-- Data kontaktu - domyślnie dziś, z możliwością zmiany -->
+          <div class="pb-8 pr-6 w-full">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm font-medium text-gray-600">Kontakt odbył się: <strong>{{ form.call_date }} {{ form.call_time }}</strong></span>
+              <button type="button" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium" @click="showCallDate = !showCallDate">
+                {{ showCallDate ? 'Ukryj' : 'Zmień datę' }}
+              </button>
+            </div>
+            <div v-if="showCallDate" class="flex flex-wrap -mr-6 mt-2">
+              <text-input v-model="form.call_date" :error="form.errors.call_date" type="date" class="pr-6 w-full lg:w-1/2" label="Data kontaktu" />
+              <text-input v-model="form.call_time" :error="form.errors.call_time" type="time" class="pr-6 w-full lg:w-1/2" label="Godzina kontaktu" />
+            </div>
+          </div>
 
-          <!-- 8. Następny Kontakt -->
-          <text-input v-model="form.next_call_date" :error="form.errors.next_call_date" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data następnego kontaktu" />
-          <text-input v-model="form.next_call_time" :error="form.errors.next_call_time" type="time" class="pb-8 pr-6 w-full lg:w-1/2" label="Godzina następnego kontaktu" />
+          <!-- Następny kontakt - główne pole planowania -->
+          <div class="pr-6 w-full pb-8">
+            <div class="bg-indigo-50 border border-indigo-100 rounded-lg p-4">
+              <label class="block text-sm font-bold text-indigo-800 mb-3">Zaplanuj następny kontakt</label>
+              <div class="flex flex-wrap -mr-6">
+                <text-input v-model="form.next_call_date" :error="form.errors.next_call_date" type="date" class="pr-6 w-full lg:w-1/2" label="Data" />
+                <text-input v-model="form.next_call_time" :error="form.errors.next_call_time" type="time" class="pr-6 w-full lg:w-1/2" label="Godzina" />
+              </div>
+              <p class="text-xs text-indigo-500 mt-2">Pozostaw puste jeśli nie planujesz kolejnego kontaktu.</p>
+            </div>
+          </div>
         </div>
 
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
@@ -155,6 +173,7 @@ export default {
     const currentTime = now.toTimeString().split(' ')[0].substring(0, 5)
 
     return {
+      showCallDate: false,
       entryType: this.parent_id ? 'reply' : 'new',
       localZapytanias: this.zapytanias || [],
       localOfertas: this.ofertas || [],

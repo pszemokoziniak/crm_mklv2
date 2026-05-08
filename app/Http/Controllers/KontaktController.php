@@ -147,6 +147,12 @@ class KontaktController extends Controller
 
         $kontakt = Kontakt::create($data);
 
+        // Aktualizuj data_kontakt na ofercie jeśli ustawiono następny kontakt
+        if ($kontakt->oferta_id && $kontakt->next_call_date) {
+            \App\Models\Oferta::where('id', $kontakt->oferta_id)
+                ->update(['data_kontakt' => $kontakt->next_call_date]);
+        }
+
         $targetId = $kontakt->parent_id ?? $kontakt->id;
 
         // Powrót do standardowej metody Redirect::route()
