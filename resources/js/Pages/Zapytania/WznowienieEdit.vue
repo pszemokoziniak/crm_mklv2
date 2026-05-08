@@ -5,8 +5,7 @@
       <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania.id}/edit`">Zapytania</Link>
       <span class="text-indigo-400 font-medium">/</span>
       <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania.id}/edit`">{{ zapytania.nazwa_projektu }}</Link>
-      <span class="text-indigo-400 font-medium">/</span> Wznowienie {{ wznowienie.id }}
-      <span v-if="wznowienie.created_at" class="text-indigo-400 font-medium"> ({{ formattedCreatedAt }})</span>
+      <span class="text-indigo-400 font-medium">/</span> Wznowienie {{ wznowienie.created_at || wznowienie.id }}
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
