@@ -193,17 +193,26 @@ class DashboardController extends Controller
                     ->filter(Request::only('search'))
                     ->orderBy('data_kontakt')
                     ->get()
-                    ->map(fn ($oferta) => [
-                        'id' => $oferta->id,
-                        'nazwa_projektu' => $oferta->zapytania ? $oferta->zapytania->nazwa_projektu : 'Brak projektu',
-                        'zapytania' => $oferta->zapytania ? $oferta->zapytania : null,
-                        'client' => $oferta->client ? $oferta->client : null,
-                        'data_kontakt' => $oferta->data_kontakt ? $oferta->data_kontakt->format('Y-m-d') : null,
-                        'data_wyslania' => $oferta->data_wyslania ? $oferta->data_wyslania->format('Y-m-d') : null,
-                        'status' => $oferta->ofertastatus ? $oferta->ofertastatus->name : null,
-                        'user' => $oferta->user ? $oferta->user : null,
-                        'created_at' => $oferta->created_at->format('Y-m-d H:i:s')
-                    ]),
+                    ->map(function ($oferta) {
+                        $daysUntilContact = null;
+                        if ($oferta->data_kontakt) {
+                            $daysUntilContact = (int) Carbon::today()->diffInDays($oferta->data_kontakt, false);
+                        }
+                        return [
+                            'id' => $oferta->id,
+                            'nazwa_projektu' => $oferta->zapytania ? $oferta->zapytania->nazwa_projektu : 'Brak projektu',
+                            'zapytania' => $oferta->zapytania ? $oferta->zapytania : null,
+                            'client' => $oferta->client ? $oferta->client : null,
+                            'data_kontakt' => $oferta->data_kontakt ? $oferta->data_kontakt->format('Y-m-d') : null,
+                            'data_wyslania' => $oferta->data_wyslania ? $oferta->data_wyslania->format('Y-m-d') : null,
+                            'status' => $oferta->ofertastatus ? $oferta->ofertastatus->name : null,
+                            'user' => $oferta->user ? $oferta->user : null,
+                            'kontakt_blisko' => $daysUntilContact !== null && $daysUntilContact <= 10 && $daysUntilContact >= 0,
+                            'kontakt_przeterminowany' => $daysUntilContact !== null && $daysUntilContact < 0,
+                            'dni_do_kontaktu' => $daysUntilContact,
+                            'created_at' => $oferta->created_at->format('Y-m-d H:i:s'),
+                        ];
+                    }),
                 'futureProjects' => FutureProject::with(['user', 'client', 'faza', 'kontakty' => function($query) {
                     $query->orderBy('created_at', 'desc');
                 }])
