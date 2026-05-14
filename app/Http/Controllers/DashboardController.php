@@ -130,7 +130,7 @@ class DashboardController extends Controller
             'created_at' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d H:i:s') : null, // Use data_zlozenia for created_at if no timestamps
             'type' => 'wznowienie', // Add a type to distinguish
             'original_zapytanie_id' => $wznowienie->id_zapytania, // Keep reference to original
-            'link' => "/zapytania/{$wznowienie->id_zapytania}/wznowienia/{$wznowienie->id}/edit", // Correct link for wznowienie
+            'link' => "/zapytania/{$wznowienie->id_zapytania}/edit", // Corrected link for wznowienie
         ]);
 
         // Combine and sort all zapytania entries
