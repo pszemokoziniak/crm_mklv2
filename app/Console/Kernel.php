@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('ofertas:contact-reminders')->dailyAt('08:00');
         $schedule->command('zadania:deadline-reminders')->dailyAt('08:00');
+        $schedule->command('reminders:dispatch')->dailyAt('08:00');
     }
 
     /**

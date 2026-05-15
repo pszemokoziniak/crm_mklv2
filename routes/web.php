@@ -25,6 +25,7 @@ use App\Http\Controllers\ObjektController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\OfertaStatusController;
 use App\Http\Controllers\OrganizationsController;
+use App\Http\Controllers\ReminderRuleController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\StronyWwwController;
@@ -301,6 +302,15 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
     Route::get('email/{email}/edit', [EmailController::class, 'edit'])->name('email.edit');
     Route::post('email/{email}', [EmailController::class, 'update'])->name('email.update');
     Route::delete('email/{email}', [EmailController::class, 'destroy'])->name('email.destroy');
+
+    // Reminder rules (przypomnienia mailowe)
+    Route::get('reminder-rules', [ReminderRuleController::class, 'index'])->name('reminder-rules.index');
+    Route::get('reminder-rules/create', [ReminderRuleController::class, 'create'])->name('reminder-rules.create');
+    Route::post('reminder-rules', [ReminderRuleController::class, 'store'])->name('reminder-rules.store');
+    Route::get('reminder-rules/{reminderRule}/edit', [ReminderRuleController::class, 'edit'])->name('reminder-rules.edit');
+    Route::put('reminder-rules/{reminderRule}', [ReminderRuleController::class, 'update'])->name('reminder-rules.update');
+    Route::delete('reminder-rules/{reminderRule}', [ReminderRuleController::class, 'destroy'])->name('reminder-rules.destroy');
+    Route::put('reminder-rules/{reminderRule}/toggle', [ReminderRuleController::class, 'toggle'])->name('reminder-rules.toggle');
 
     // Waluta
     Route::get('waluta', [WalutaController::class, 'index'])->name('waluta');
