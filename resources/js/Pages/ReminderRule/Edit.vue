@@ -49,14 +49,16 @@
 
           <text-input v-model="form.subject" :error="form.errors.subject" class="pb-8 pr-6 w-full" label="Temat maila" />
 
-          <text-area-input v-model="form.body" :error="form.errors.body" rows="10" class="pb-8 pr-6 w-full" label="Treść maila" />
+          <div class="pb-8 pr-6 w-full">
+            <wysiwyg-editor ref="bodyEditor" v-model="form.body" :error="form.errors.body" label="Treść maila" />
+          </div>
 
           <div v-if="currentPlaceholders.length" class="pb-8 pr-6 w-full">
             <label class="form-label">Dostępne placeholdery:</label>
             <div class="flex flex-wrap gap-2 mt-2">
               <code v-for="p in currentPlaceholders" :key="p" class="bg-gray-100 px-2 py-1 rounded text-sm cursor-pointer" @click="insertPlaceholder(p)">{{ p }}</code>
             </div>
-            <p class="text-xs text-gray-500 mt-1">Kliknij placeholder, aby wstawić go do treści.</p>
+            <p class="text-xs text-gray-500 mt-1">Kliknij placeholder, aby wstawić go w miejscu kursora w edytorze.</p>
           </div>
         </div>
         <div class="flex items-center justify-between px-8 py-4 bg-gray-50 border-t border-gray-100">
@@ -73,12 +75,12 @@ import { Head, Link } from '@inertiajs/inertia-vue3'
 import { Inertia } from '@inertiajs/inertia'
 import Layout from '@/Shared/Layout'
 import TextInput from '@/Shared/TextInput'
-import TextAreaInput from '@/Shared/TextareaInput.vue'
 import SelectInput from '@/Shared/SelectInput'
 import LoadingButton from '@/Shared/LoadingButton'
+import WysiwygEditor from '@/Shared/WysiwygEditor.vue'
 
 export default {
-  components: { Head, Link, TextInput, TextAreaInput, SelectInput, LoadingButton },
+  components: { Head, Link, TextInput, SelectInput, LoadingButton, WysiwygEditor },
   layout: Layout,
   props: {
     rule: Object,
@@ -120,7 +122,11 @@ export default {
       this.selectedUsers.forEach(id => this.form.recipients.push(`user:${id}`))
     },
     insertPlaceholder(p) {
-      this.form.body = (this.form.body || '') + p
+      if (this.$refs.bodyEditor && this.$refs.bodyEditor.insertAtCursor) {
+        this.$refs.bodyEditor.insertAtCursor(p)
+      } else {
+        this.form.body = (this.form.body || '') + p
+      }
     },
     update() {
       this.form.put(`/reminder-rules/${this.rule.id}`)

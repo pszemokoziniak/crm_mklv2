@@ -33,18 +33,14 @@ class ReminderRuleNotification extends Notification
         $renderer = new ReminderTemplateRenderer();
         $subject = $renderer->render($this->rule->subject, $this->subjectModel, $this->daysUntil);
         $body = $renderer->render($this->rule->body, $this->subjectModel, $this->daysUntil);
-
-        $mail = (new MailMessage)->subject($subject);
-
-        foreach (preg_split("/\r\n|\n|\r/", $body) as $line) {
-            $mail->line($line);
-        }
-
         $placeholders = $renderer->placeholders($this->subjectModel, $this->daysUntil);
-        if (!empty($placeholders['{{url}}'])) {
-            $mail->action('Przejdź do rekordu', $placeholders['{{url}}']);
-        }
 
-        return $mail->salutation('Pozdrawiamy, Zespół MKL CRM');
+        return (new MailMessage)
+            ->subject($subject)
+            ->view('emails.reminder', [
+                'subject' => $subject,
+                'body' => $body,
+                'url' => $placeholders['{{url}}'] ?? '',
+            ]);
     }
 }

@@ -35,6 +35,8 @@ class ReminderRuleController extends Controller
             'events' => ReminderRule::EVENTS,
             'users' => User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get(),
             'placeholders' => $this->placeholderMap(),
+            'defaultSubject' => 'Przypomnienie: {{projekt_nazwa}} — termin za {{days_until}} dni',
+            'defaultBody' => $this->defaultBodyTemplate(),
         ]);
     }
 
@@ -95,5 +97,21 @@ class ReminderRuleController extends Controller
             $map[$event] = ReminderTemplateRenderer::availablePlaceholders($event);
         }
         return $map;
+    }
+
+    private function defaultBodyTemplate(): string
+    {
+        return <<<HTML
+<h2>Cześć {{opiekun}}!</h2>
+<p>Przypominamy, że za <strong>{{days_until}}</strong> dni przypada ważny termin w projekcie <strong>{{projekt_nazwa}}</strong> (klient: <em>{{client_nazwa}}</em>).</p>
+<p><strong>Data terminu:</strong> {{data}}</p>
+<p>Co warto zrobić:</p>
+<ul>
+  <li>Sprawdzić aktualny status w CRM</li>
+  <li>Skontaktować się z klientem, jeśli potrzeba</li>
+  <li>Zaktualizować notatki po kontakcie</li>
+</ul>
+<p>Pełne szczegóły znajdziesz w rekordzie pod przyciskiem poniżej.</p>
+HTML;
     }
 }
