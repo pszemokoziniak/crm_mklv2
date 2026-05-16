@@ -114,6 +114,12 @@ class Zapytania extends Model
                         ->orWhereHas('user', function ($query) use ($search) {
                             $query->where('first_name', 'like', '%'.$search.'%')
                                 ->orWhere('last_name', 'like', '%'.$search.'%');
+                        })
+                        ->orWhereHas('kraj', function ($query) use ($search) {
+                            $query->where('name', 'like', '%'.$search.'%');
+                        })
+                        ->orWhereHas('zakres', function ($query) use ($search) {
+                            $query->where('name', 'like', '%'.$search.'%');
                         });
                 });
             }

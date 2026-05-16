@@ -143,7 +143,7 @@
                   </Link>
                 </div>
                 <div class="text-xs font-mono text-gray-500 mb-1">{{ item.id_zapyt }}</div>
-                <div class="font-bold text-gray-900 mb-1 truncate">{{ item.nazwa_projektu }}</div>
+                <div class="font-bold text-gray-900 mb-1 truncate pb-0.5">{{ item.nazwa_projektu }}</div>
                 <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
 
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
@@ -172,7 +172,7 @@
             <div v-for="item in ofertas" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
               <Link :href="`/oferta/${item.id}/edit`" class="block p-4">
                 <div class="flex items-center justify-between mb-1">
-                  <div class="font-bold text-gray-900 truncate">{{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak projektu' }}</div>
+                  <div class="font-bold text-gray-900 truncate pb-0.5">{{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak projektu' }}</div>
                   <div v-if="item.kontakt_blisko || item.kontakt_przeterminowany" class="ml-2 flex-shrink-0" :title="item.kontakt_przeterminowany ? 'Kontakt przeterminowany!' : 'Kontakt w ciągu 10 dni'">
                     <svg class="w-5 h-5" :class="item.kontakt_przeterminowany ? 'text-red-500 animate-pulse' : 'text-orange-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
