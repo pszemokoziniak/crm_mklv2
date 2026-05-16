@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Request;
 use App\Traits\StoreActivityLog;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -44,7 +45,7 @@ class ZadaniaController extends Controller
     public function create()
     {
         return Inertia::render('Zadania/Create', [
-            'users' => User::all(['id', 'first_name', 'last_name']),
+            'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
         ]);
     }
 
@@ -101,7 +102,7 @@ class ZadaniaController extends Controller
                 'assignments' => $zadania->assignments()->with(['assignedUser', 'assigner'])->get(),
                 'milestones' => $zadania->milestones()->with('stages')->get(),
             ],
-            'users' => User::all(['id', 'first_name', 'last_name']),
+            'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
         ]);
     }
 
