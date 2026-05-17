@@ -23,6 +23,7 @@ CLAUDE.md
 .cache/
 .config/
 .local/
+.npm/
 .lesshst
 /bootstrap/cache/
 composer.phar
