@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\FutureProject;
 use App\Models\Oferta;
 use App\Models\ReminderRule;
+use App\Models\Zadania;
 use App\Models\Zapytania;
 use App\Models\ZapytaniaWznowienie;
 use Carbon\Carbon;
@@ -64,6 +65,9 @@ class ReminderTemplateRenderer
         if ($subject instanceof FutureProject) {
             return (string) ($subject->nazwa ?? 'Future #'.$subject->id);
         }
+        if ($subject instanceof Zadania) {
+            return (string) ($subject->subject ?? 'Zadanie #'.$subject->id);
+        }
         return '';
     }
 
@@ -81,6 +85,9 @@ class ReminderTemplateRenderer
         }
         if ($subject instanceof FutureProject) {
             return $subject->data_start ? Carbon::parse($subject->data_start) : null;
+        }
+        if ($subject instanceof Zadania) {
+            return $subject->deadline ? Carbon::parse($subject->deadline) : null;
         }
         return null;
     }
@@ -100,6 +107,9 @@ class ReminderTemplateRenderer
         }
         if ($subject instanceof FutureProject) {
             return url("/futureproject/{$subject->id}/edit");
+        }
+        if ($subject instanceof Zadania) {
+            return url("/zadania/{$subject->id}/edit");
         }
         return '';
     }

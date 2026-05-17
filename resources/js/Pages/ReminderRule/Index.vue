@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Head title="Przypomnienia mailowe" />
-    <h1 class="mb-8 text-3xl font-bold">Przypomnienia mailowe</h1>
+    <Head title="Powiadomienia i przypomnienia" />
+    <h1 class="mb-8 text-3xl font-bold">Powiadomienia i przypomnienia</h1>
     <div class="flex items-center justify-between mb-6">
       <Link class="btn-indigo" href="/reminder-rules/create">
         <span>Dodaj regułę</span>
@@ -14,6 +14,7 @@
           <th class="pb-4 pt-6 px-6">Zdarzenie</th>
           <th class="pb-4 pt-6 px-6">Dni przed</th>
           <th class="pb-4 pt-6 px-6">Odbiorcy</th>
+          <th class="pb-4 pt-6 px-6">Kanały</th>
           <th class="pb-4 pt-6 px-6">Status</th>
           <th class="pb-4 pt-6 px-6" />
         </tr>
@@ -39,6 +40,11 @@
             </Link>
           </td>
           <td class="border-t">
+            <Link class="flex items-center px-6 py-4" :href="`/reminder-rules/${rule.id}/edit`">
+              <span v-for="ch in rule.channels" :key="ch" class="inline-block mr-1 px-2 py-1 rounded text-xs" :class="channelClass(ch)">{{ channelShortLabel(ch) }}</span>
+            </Link>
+          </td>
+          <td class="border-t">
             <button
               class="px-3 py-1 rounded text-sm"
               :class="rule.active ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'"
@@ -54,7 +60,7 @@
           </td>
         </tr>
         <tr v-if="rules.length === 0">
-          <td class="px-6 py-4 border-t" colspan="6">Brak reguł — dodaj pierwszą, aby zacząć wysyłać przypomnienia.</td>
+          <td class="px-6 py-4 border-t" colspan="7">Brak reguł — dodaj pierwszą, aby zacząć wysyłać powiadomienia.</td>
         </tr>
       </table>
     </div>
@@ -73,6 +79,7 @@ export default {
   props: {
     rules: Array,
     events: Object,
+    channels: Object,
   },
   methods: {
     formatRecipients(list) {
@@ -80,9 +87,23 @@ export default {
       return list.map(r => {
         if (r === 'opiekun') return 'Opiekun klienta'
         if (r === 'opracowuje') return 'Opracowujący'
+        if (r === 'osoba_odpowiedzialna') return 'Osoba odpowiedzialna'
         if (r.startsWith('user:')) return `User #${r.slice(5)}`
+        if (r.startsWith('role:')) return `Rola: ${r.slice(5)}`
         return r
       }).join(', ')
+    },
+    channelShortLabel(ch) {
+      if (ch === 'mail') return 'Email'
+      if (ch === 'webpush') return 'Push'
+      if (ch === 'database') return 'Dzwonek'
+      return ch
+    },
+    channelClass(ch) {
+      if (ch === 'mail') return 'bg-blue-100 text-blue-800'
+      if (ch === 'webpush') return 'bg-purple-100 text-purple-800'
+      if (ch === 'database') return 'bg-yellow-100 text-yellow-800'
+      return 'bg-gray-100 text-gray-800'
     },
     toggle(rule) {
       Inertia.put(`/reminder-rules/${rule.id}/toggle`)

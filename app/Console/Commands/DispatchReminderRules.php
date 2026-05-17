@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\FutureProject;
 use App\Models\Oferta;
 use App\Models\ReminderRule;
+use App\Models\Zadania;
 use App\Models\Zapytania;
 use App\Models\ZapytaniaWznowienie;
 use App\Notifications\ReminderRuleNotification;
@@ -85,6 +86,13 @@ class DispatchReminderRules extends Command
                 return FutureProject::with(['user', 'client'])
                     ->whereNotNull('data_start')
                     ->whereDate('data_start', $target)
+                    ->get();
+
+            case ReminderRule::EVENT_ZADANIA_DEADLINE:
+                return Zadania::with(['user', 'responsiblePerson'])
+                    ->where('status', Zadania::STATUS_AKTYWNE)
+                    ->whereNotNull('deadline')
+                    ->whereDate('deadline', $target)
                     ->get();
         }
 

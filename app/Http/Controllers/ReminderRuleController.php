@@ -22,10 +22,12 @@ class ReminderRuleController extends Controller
                     'event_label' => ReminderRule::EVENTS[$r->event] ?? $r->event,
                     'days_before' => $r->days_before,
                     'recipients' => $r->recipients,
+                    'channels' => $r->channels,
                     'active' => $r->active,
                 ];
             }),
             'events' => ReminderRule::EVENTS,
+            'channels' => ReminderRule::CHANNELS,
         ]);
     }
 
@@ -33,6 +35,7 @@ class ReminderRuleController extends Controller
     {
         return Inertia::render('ReminderRule/Create', [
             'events' => ReminderRule::EVENTS,
+            'channels' => ReminderRule::CHANNELS,
             'users' => User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get(),
             'placeholders' => $this->placeholderMap(),
             'defaultSubject' => 'Przypomnienie: {{projekt_nazwa}} — termin za {{days_until}} dni',
@@ -58,11 +61,13 @@ class ReminderRuleController extends Controller
                 'event' => $reminderRule->event,
                 'days_before' => $reminderRule->days_before,
                 'recipients' => $reminderRule->recipients,
+                'channels' => $reminderRule->channels,
                 'subject' => $reminderRule->subject,
                 'body' => $reminderRule->body,
                 'active' => $reminderRule->active,
             ],
             'events' => ReminderRule::EVENTS,
+            'channels' => ReminderRule::CHANNELS,
             'users' => User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get(),
             'placeholders' => $this->placeholderMap(),
         ]);
