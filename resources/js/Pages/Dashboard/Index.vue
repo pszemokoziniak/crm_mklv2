@@ -97,14 +97,14 @@
             <div class="flex-shrink-0 bg-yellow-100 rounded-lg p-3">
               <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
-            <div class="ml-4 flex-1">
+            <div class="ml-4 flex-1 min-w-0">
               <p class="text-sm font-medium text-gray-500">Wartość ofert</p>
-              <div class="flex items-baseline">
-                <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(stats.wartoscOfert.current) }}</p>
-                <span v-if="stats.wartoscOfert.previous > 0" class="ml-2 text-xs font-semibold" :class="percentChange(stats.wartoscOfert.current, stats.wartoscOfert.previous) >= 0 ? 'text-green-600' : 'text-red-600'">
+              <div class="flex flex-wrap items-baseline gap-x-2">
+                <p class="text-2xl font-bold text-gray-900 whitespace-nowrap" :title="formatCurrency(stats.wartoscOfert.current)">{{ formatCurrencyShort(stats.wartoscOfert.current) }}</p>
+                <span v-if="stats.wartoscOfert.previous > 0" class="text-xs font-semibold whitespace-nowrap" :class="percentChange(stats.wartoscOfert.current, stats.wartoscOfert.previous) >= 0 ? 'text-green-600' : 'text-red-600'">
                   {{ percentChange(stats.wartoscOfert.current, stats.wartoscOfert.previous) >= 0 ? '↑' : '↓' }} {{ Math.abs(percentChange(stats.wartoscOfert.current, stats.wartoscOfert.previous)) }}%
                 </span>
-                <span v-else class="ml-2 text-xs text-gray-400">—</span>
+                <span v-else class="text-xs text-gray-400">—</span>
               </div>
             </div>
           </div>
@@ -383,6 +383,14 @@ export default {
     formatCurrency(value) {
       if (value === null || value === undefined) return '0 PLN'
       return new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(value) + ' PLN'
+    },
+    formatCurrencyShort(value) {
+      if (value === null || value === undefined) return '0 PLN'
+      const abs = Math.abs(value)
+      const fmt = (v, digits) => new Intl.NumberFormat('pl-PL', { maximumFractionDigits: digits, minimumFractionDigits: 0 }).format(v)
+      if (abs >= 1_000_000) return fmt(value / 1_000_000, 1) + ' mln PLN'
+      if (abs >= 10_000) return fmt(value / 1_000, 0) + ' tys. PLN'
+      return fmt(value, 0) + ' PLN'
     },
     isOverdue(dateString) {
       if (!dateString) return false
