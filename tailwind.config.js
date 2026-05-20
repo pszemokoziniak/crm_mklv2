@@ -47,13 +47,18 @@ module.exports = {
       keyframes: {
         'bell-ring': {
           '0%, 100%': { transform: 'rotate(0deg) scale(1)', opacity: '1' },
-          '10%, 30%': { transform: 'rotate(-18deg) scale(1.15)', opacity: '1' },
-          '20%, 40%': { transform: 'rotate(18deg) scale(1.15)', opacity: '1' },
-          '50%': { transform: 'rotate(0deg) scale(1)', opacity: '0.5' },
+          '8%':       { transform: 'rotate(-28deg) scale(1.3)', opacity: '1' },
+          '16%':      { transform: 'rotate(26deg) scale(1.3)',  opacity: '1' },
+          '24%':      { transform: 'rotate(-22deg) scale(1.25)', opacity: '1' },
+          '32%':      { transform: 'rotate(20deg) scale(1.25)',  opacity: '1' },
+          '40%':      { transform: 'rotate(-14deg) scale(1.15)', opacity: '0.85' },
+          '48%':      { transform: 'rotate(12deg) scale(1.15)',  opacity: '1' },
+          '56%':      { transform: 'rotate(0deg) scale(1)',      opacity: '0.5' },
+          '70%':      { transform: 'rotate(0deg) scale(1)',      opacity: '1' },
         },
       },
       animation: {
-        'bell-ring': 'bell-ring 1.2s ease-in-out infinite',
+        'bell-ring': 'bell-ring 0.7s ease-in-out infinite',
       },
     },
   },
