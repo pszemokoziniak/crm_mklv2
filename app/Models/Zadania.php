@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Notifications\ReminderRuleNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class Zadania extends Model
 {
@@ -44,6 +47,24 @@ class Zadania extends Model
                 'assigned_at' => now(),
                 'note' => 'Initial assignment',
             ]);
+
+            try {
+                $rules = ReminderRule::where('active', true)
+                    ->where('event', ReminderRule::EVENT_ZADANIA_UTWORZONE)
+                    ->get();
+
+                foreach ($rules as $rule) {
+                    $recipients = $rule->resolveRecipients($zadania);
+                    if ($recipients->isEmpty()) {
+                        continue;
+                    }
+                    Notification::send($recipients, new ReminderRuleNotification($rule, $zadania, 0));
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Reminder dispatch on Zadania create failed: '.$e->getMessage(), [
+                    'zadania_id' => $zadania->id,
+                ]);
+            }
         });
 
         static::updating(function ($zadania) {

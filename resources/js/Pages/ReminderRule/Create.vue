@@ -21,7 +21,7 @@
             <option v-for="(label, key) in events" :key="key" :value="key">{{ label }}</option>
           </select-input>
 
-          <div>
+          <div v-if="!isImmediate">
             <label class="form-label">Dni przed terminem</label>
             <div class="flex items-center gap-3">
               <button type="button" class="w-9 h-9 rounded-md bg-gray-100 hover:bg-gray-200 text-lg font-bold text-gray-600" @click="adjustDays(-1)">−</button>
@@ -30,6 +30,10 @@
               <span class="text-sm text-gray-500">{{ daysHint }}</span>
             </div>
             <div v-if="form.errors.days_before" class="form-error">{{ form.errors.days_before }}</div>
+          </div>
+          <div v-else>
+            <label class="form-label">Moment wysyłki</label>
+            <p class="text-sm text-gray-700 mt-2">Powiadomienie zostanie wysłane <strong>natychmiast</strong> po wystąpieniu zdarzenia.</p>
           </div>
 
           <div>
@@ -164,6 +168,7 @@ export default {
   props: {
     events: Object,
     channels: Object,
+    immediateEvents: { type: Array, default: () => [] },
     users: Array,
     placeholders: Object,
     defaultSubject: { type: String, default: '' },
@@ -205,10 +210,13 @@ export default {
         { key: 'opiekun', label: 'Opiekun klienta' },
         { key: 'opracowuje', label: 'Osoba opracowująca' },
       ]
-      if (this.form.event === 'zadania_deadline') {
+      if (this.form.event === 'zadania_deadline' || this.form.event === 'zadania_utworzone') {
         base.push({ key: 'osoba_odpowiedzialna', label: 'Osoba odpowiedzialna (zadanie)' })
       }
       return base
+    },
+    isImmediate() {
+      return this.immediateEvents.includes(this.form.event)
     },
     daysHint() {
       const d = parseInt(this.form.days_before, 10)
@@ -229,6 +237,13 @@ export default {
     availableUsers() {
       const ids = new Set(this.selectedUserIds)
       return this.users.filter(u => !ids.has(u.id))
+    },
+  },
+  watch: {
+    isImmediate(now) {
+      if (now) {
+        this.form.days_before = 0
+      }
     },
   },
   methods: {

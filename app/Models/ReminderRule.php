@@ -16,6 +16,7 @@ class ReminderRule extends Model
     public const EVENT_WZNOWIENIE_TERMIN = 'wznowienie_termin';
     public const EVENT_FUTURE_PROJECT_START = 'future_project_start';
     public const EVENT_ZADANIA_DEADLINE = 'zadania_deadline';
+    public const EVENT_ZADANIA_UTWORZONE = 'zadania_utworzone';
 
     public const EVENTS = [
         self::EVENT_OFERTA_KONTAKT => 'Termin kontaktu z oferty',
@@ -23,7 +24,17 @@ class ReminderRule extends Model
         self::EVENT_WZNOWIENIE_TERMIN => 'Termin wznowienia zapytania',
         self::EVENT_FUTURE_PROJECT_START => 'Start fazy Future Project',
         self::EVENT_ZADANIA_DEADLINE => 'Termin zadania',
+        self::EVENT_ZADANIA_UTWORZONE => 'Utworzenie nowego zadania',
     ];
+
+    public const IMMEDIATE_EVENTS = [
+        self::EVENT_ZADANIA_UTWORZONE,
+    ];
+
+    public static function isImmediateEvent(string $event): bool
+    {
+        return in_array($event, self::IMMEDIATE_EVENTS, true);
+    }
 
     public const CHANNEL_MAIL = 'mail';
     public const CHANNEL_DATABASE = 'database';

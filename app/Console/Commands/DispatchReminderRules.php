@@ -21,7 +21,9 @@ class DispatchReminderRules extends Command
     public function handle()
     {
         $dryRun = (bool) $this->option('dry-run');
-        $rules = ReminderRule::where('active', true)->get();
+        $rules = ReminderRule::where('active', true)
+            ->whereNotIn('event', ReminderRule::IMMEDIATE_EVENTS)
+            ->get();
 
         if ($rules->isEmpty()) {
             $this->info('Brak aktywnych reguł.');

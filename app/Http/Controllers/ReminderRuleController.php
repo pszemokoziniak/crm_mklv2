@@ -36,6 +36,7 @@ class ReminderRuleController extends Controller
         return Inertia::render('ReminderRule/Create', [
             'events' => ReminderRule::EVENTS,
             'channels' => ReminderRule::CHANNELS,
+            'immediateEvents' => ReminderRule::IMMEDIATE_EVENTS,
             'users' => User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get(),
             'placeholders' => $this->placeholderMap(),
             'defaultSubject' => 'Przypomnienie: {{projekt_nazwa}} — termin za {{days_until}} dni',
@@ -68,6 +69,7 @@ class ReminderRuleController extends Controller
             ],
             'events' => ReminderRule::EVENTS,
             'channels' => ReminderRule::CHANNELS,
+            'immediateEvents' => ReminderRule::IMMEDIATE_EVENTS,
             'users' => User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get(),
             'placeholders' => $this->placeholderMap(),
         ]);
