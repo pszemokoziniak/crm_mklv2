@@ -218,7 +218,7 @@
           </div>
           <div class="space-y-3">
             <div v-for="item in kontakts" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
-              <Link :href="`/kontakt/${item.id}/edit`" class="block p-4">
+              <Link :href="`/kontakt/${item.thread_root_id || item.id}/edit`" class="block p-4">
                 <div class="font-bold text-gray-900 mb-1 truncate">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
                 <div v-if="item.kontaktperson" class="text-sm text-gray-700 font-medium mb-1">
                   {{ item.kontaktperson.first_name }} {{ item.kontaktperson.last_name }}

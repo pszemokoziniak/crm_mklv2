@@ -157,6 +157,13 @@ class DashboardController extends Controller
                         'link' => $this->getLink($activity),
                     ]),
                 'kontakts' => Kontakt::with(['client', 'kontaktperson', 'user', 'opiekun'])
+                    ->whereIn('id', function ($q) {
+                        // Per wątek (COALESCE(parent_id, id)) bierzemy tylko najświeższy wpis
+                        // (MAX(id) odpowiada najpóźniej utworzonemu rekordowi).
+                        $q->selectRaw('MAX(id)')
+                            ->from('kontakts')
+                            ->groupByRaw('COALESCE(parent_id, id)');
+                    })
                     ->where(function($query) {
                         // Pokazujemy kontakty zaplanowane na najbliższe 7 dni lub zaległe
                         $query->where('next_call_date', '<=', Carbon::today()->addDays(7))
@@ -171,6 +178,7 @@ class DashboardController extends Controller
                     ->get()
                     ->map(fn ($kontakt) => [
                         'id' => $kontakt->id,
+                        'thread_root_id' => $kontakt->parent_id ?? $kontakt->id,
                         'client' => $kontakt->client ? $kontakt->client : null,
                         'kontaktperson' => $kontakt->kontaktperson ? $kontakt->kontaktperson : null,
                         'subject' => $kontakt->subject,

@@ -200,34 +200,52 @@ class KontaktController extends Controller
             return Redirect::route('futureproject.edit', $kontakt->future_project_id)->with('success', 'Kontakt dodany.');
         }
 
+        // Reply do istniejącego wątku — wracamy do widoku wątku zamiast do listy.
+        if ($kontakt->parent_id) {
+            return Redirect::to('/kontakt/' . $targetId . '/edit')->with('success', 'Kontakt dodany.');
+        }
+
         return Redirect::route('kontakt')->with('success', 'Kontakt dodany.');
     }
 
     public function edit(Kontakt $kontakt)
     {
+        // Jeśli wejście przez wpis-dziecko, przeładuj na root, żeby zawsze pracować w widoku wątku
+        $requestedId = $kontakt->id;
+        if ($kontakt->parent_id && $kontakt->parent) {
+            $kontakt = $kontakt->parent;
+        }
+
+        $formatEntry = fn(Kontakt $k) => [
+            'id' => $k->id,
+            'subject' => $k->subject,
+            'contact_type' => $k->contact_type,
+            'description' => $k->description,
+            'call_date' => $k->call_date ? $k->call_date->format('Y-m-d') : null,
+            'call_time' => $k->call_time,
+            'next_call_date' => $k->next_call_date ? $k->next_call_date->format('Y-m-d') : null,
+            'next_call_time' => $k->next_call_time,
+            'zapytania_id' => $k->zapytania_id,
+            'oferta_id' => $k->oferta_id,
+            'future_project_id' => $k->future_project_id,
+            'kontakt_person_id' => $k->kontakt_person_id,
+            'parent_id' => $k->parent_id,
+            'client_id' => $k->client_id,
+            'opiekun_id' => $k->opiekun_id,
+            'user_id' => $k->user_id,
+            'user' => $k->user ? ['id' => $k->user->id, 'first_name' => $k->user->first_name, 'last_name' => $k->user->last_name] : null,
+            'opiekun' => $k->opiekun ? ['id' => $k->opiekun->id, 'first_name' => $k->opiekun->first_name, 'last_name' => $k->opiekun->last_name] : null,
+            'kontaktperson' => $k->kontaktperson ? ['id' => $k->kontaktperson->id, 'first_name' => $k->kontaktperson->first_name, 'last_name' => $k->kontaktperson->last_name] : null,
+        ];
+
         return Inertia::render('Kontakt/Edit', [
-            'kontakt' => [
-                'id' => $kontakt->id,
-                'subject' => $kontakt->subject,
-                'contact_type' => $kontakt->contact_type,
-                'description' => $kontakt->description,
-                'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null, // Explicitly format
-                'call_time' => $kontakt->call_time,
-                'next_call_date' => $kontakt->next_call_date ? $kontakt->next_call_date->format('Y-m-d') : null, // Explicitly format
-                'next_call_time' => $kontakt->next_call_time,
-                'zapytania_id' => $kontakt->zapytania_id,
-                'oferta_id' => $kontakt->oferta_id,
-                'future_project_id' => $kontakt->future_project_id,
-                'kontakt_person_id' => $kontakt->kontakt_person_id,
-                'parent_id' => $kontakt->parent_id,
-                'client_id' => $kontakt->client_id,
-                'opiekun_id' => $kontakt->opiekun_id,
-            ],
+            'kontakt' => $formatEntry($kontakt),
+            'requestedId' => $requestedId,
             'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map(fn($u) => [
                 'id' => $u->id,
                 'name' => $u->first_name . ' ' . $u->last_name,
             ]),
-            'replies' => $kontakt->children()->with(['user', 'opiekun', 'kontaktperson'])->get(),
+            'replies' => $kontakt->children()->with(['user', 'opiekun', 'kontaktperson'])->get()->map($formatEntry),
             'zapytanias' => Zapytania::where('client_id', $kontakt->client_id)->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get(),
             'ofertas' => Oferta::with(['waluta', 'zapytania'])->where('client_id', $kontakt->client_id)->orderBy('id')->get()->map(fn($o) => [
                 'id' => $o->id,
