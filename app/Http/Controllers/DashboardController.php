@@ -264,13 +264,22 @@ class DashboardController extends Controller
                     ->filter(Request::only('search'))
                     ->orderBy('deadline')
                     ->get()
-                    ->map(fn ($zadanie) => [
-                        'id' => $zadanie->id,
-                        'subject' => $zadanie->subject,
-                        'status' => $zadanie->status,
-                        'deadline' => $zadanie->deadline ? $zadanie->deadline->format('Y-m-d') : null,
-                        'users' => $zadanie->user ? $zadanie->user : null,
-                    ]),
+                    ->map(function ($zadanie) {
+                        $daysUntilDeadline = null;
+                        if ($zadanie->deadline) {
+                            $daysUntilDeadline = (int) Carbon::today()->diffInDays($zadanie->deadline, false);
+                        }
+                        return [
+                            'id' => $zadanie->id,
+                            'subject' => $zadanie->subject,
+                            'description' => $zadanie->description,
+                            'status' => $zadanie->status,
+                            'deadline' => $zadanie->deadline ? $zadanie->deadline->format('Y-m-d') : null,
+                            'users' => $zadanie->user ? $zadanie->user : null,
+                            'deadline_blisko' => $daysUntilDeadline !== null && $daysUntilDeadline <= 2 && $daysUntilDeadline >= 0,
+                            'deadline_przeterminowany' => $daysUntilDeadline !== null && $daysUntilDeadline < 0,
+                        ];
+                    }),
             ]);
     }
 
