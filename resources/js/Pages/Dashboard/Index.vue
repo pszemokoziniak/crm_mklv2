@@ -180,8 +180,11 @@
                   </div>
                 </div>
                 <div class="text-sm text-gray-600 mb-1">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+                <div v-if="item.kwota" class="text-sm font-bold text-green-700 mb-2">
+                  {{ formatKwota(item.kwota) }}<span v-if="item.waluta_name" class="ml-1 text-xs font-semibold text-green-600">{{ item.waluta_name }}</span>
+                </div>
                 <div v-if="item.status" class="mb-3">
-                  <span class="inline-flex">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium" :class="statusClasses(item.status)">
                     {{ item.status }}
                   </span>
                 </div>
@@ -191,12 +194,15 @@
                     <span class="text-[9px] uppercase text-indigo-500 font-bold leading-none mb-1">Data kontaktu</span>
                     <div class="text-xs font-bold flex items-center" :class="{'text-red-500': isOverdue(item.data_kontakt), 'text-indigo-700': !isOverdue(item.data_kontakt)}">
                       <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                      {{ item.data_kontakt }}
+                      <span>{{ item.data_kontakt }}</span>
+                      <span v-if="item.dni_do_kontaktu !== null && item.dni_do_kontaktu !== undefined" class="ml-2 text-[10px] font-normal opacity-75">
+                        {{ formatDniDoKontaktu(item.dni_do_kontaktu) }}
+                      </span>
                     </div>
                   </div>
                   <div class="flex flex-col">
-                    <span class="uppercase text-gray-400 font-bold leading-none mb-1" style="font-size: 9px;">Wysłano</span>
-                    <div class="text-xs flex items-center">
+                    <span class="text-[9px] uppercase text-green-500 font-bold leading-none mb-1">Wysłano</span>
+                    <div class="text-xs flex items-center text-gray-600">
                       <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                       {{ item.data_wyslania || 'Brak daty' }}
                     </div>
@@ -400,6 +406,18 @@ export default {
     formatCurrency(value) {
       if (value === null || value === undefined) return '0 PLN'
       return new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(value) + ' PLN'
+    },
+    formatKwota(value) {
+      if (value === null || value === undefined) return ''
+      return new Intl.NumberFormat('pl-PL').format(value)
+    },
+    formatDniDoKontaktu(dni) {
+      if (dni === null || dni === undefined) return ''
+      if (dni === 0) return '(dziś)'
+      if (dni === 1) return '(jutro)'
+      if (dni === -1) return '(wczoraj)'
+      if (dni > 0) return `(za ${dni} dni)`
+      return `(${Math.abs(dni)} dni temu)`
     },
     formatCurrencyShort(value) {
       if (value === null || value === undefined) return '0'

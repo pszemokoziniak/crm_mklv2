@@ -196,7 +196,7 @@ class DashboardController extends Controller
                         ];
                     }),
                 'zapytanias' => $finalZapytanias, // Use the combined and sorted collection
-                'ofertas' => Oferta::with(['user', 'client', 'zapytania', 'ofertastatus'])
+                'ofertas' => Oferta::with(['user', 'client', 'zapytania', 'ofertastatus', 'waluta'])
                     ->whereHas('zapytania', function ($query) {
                         $query->whereNull('deleted_at');
                     })
@@ -223,6 +223,8 @@ class DashboardController extends Controller
                             'data_wyslania' => $oferta->data_wyslania ? $oferta->data_wyslania->format('Y-m-d') : null,
                             'status' => $oferta->ofertastatus ? $oferta->ofertastatus->name : null,
                             'user' => $oferta->user ? $oferta->user : null,
+                            'kwota' => $oferta->kwota,
+                            'waluta_name' => $oferta->waluta ? $oferta->waluta->name : null,
                             'kontakt_blisko' => $daysUntilContact !== null && $daysUntilContact <= 10 && $daysUntilContact >= 0,
                             'kontakt_przeterminowany' => $daysUntilContact !== null && $daysUntilContact < 0,
                             'dni_do_kontaktu' => $daysUntilContact,
