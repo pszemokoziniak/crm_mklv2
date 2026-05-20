@@ -44,6 +44,17 @@ module.exports = {
         outline: '0 0 0 2px ' + theme('colors.indigo.500'),
       }),
       fill: theme => theme('colors'),
+      keyframes: {
+        'bell-ring': {
+          '0%, 100%': { transform: 'rotate(0deg) scale(1)', opacity: '1' },
+          '10%, 30%': { transform: 'rotate(-18deg) scale(1.15)', opacity: '1' },
+          '20%, 40%': { transform: 'rotate(18deg) scale(1.15)', opacity: '1' },
+          '50%': { transform: 'rotate(0deg) scale(1)', opacity: '0.5' },
+        },
+      },
+      animation: {
+        'bell-ring': 'bell-ring 1.2s ease-in-out infinite',
+      },
     },
   },
   variants: {

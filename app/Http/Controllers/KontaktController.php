@@ -101,9 +101,9 @@ class KontaktController extends Controller
                 'name' => $u->first_name . ' ' . $u->last_name,
             ]),
             'zapytanias' => $client ? Zapytania::where('client_id', $client->id)->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get() : [],
-            'ofertas' => $client ? Oferta::where('client_id', $client->id)->orderBy('id')->get()->map(fn($o) => [
+            'ofertas' => $client ? Oferta::with(['waluta', 'zapytania'])->where('client_id', $client->id)->orderBy('id')->get()->map(fn($o) => [
                 'id' => $o->id,
-                'label' => 'Oferta #' . $o->id . ' (' . $o->kwota . ' ' . ($o->waluta ? $o->waluta->name : '') . ')',
+                'label' => ($o->zapytania && $o->zapytania->nazwa_projektu ? $o->zapytania->nazwa_projektu . ' — ' : '') . 'Oferta #' . $o->id . ($o->kwota ? ' (' . $o->kwota . ' ' . ($o->waluta ? $o->waluta->name : '') . ')' : ''),
             ]) : [],
             'futureProjects' => $client ? FutureProject::where('client_id', $client->id)->orderBy(DB::raw('TRIM(nazwa)'))->get() : [],
             'client_id' => $client ? $client->id : null,
@@ -229,9 +229,9 @@ class KontaktController extends Controller
             ]),
             'replies' => $kontakt->children()->with(['user', 'opiekun', 'kontaktperson'])->get(),
             'zapytanias' => Zapytania::where('client_id', $kontakt->client_id)->orderBy(DB::raw('TRIM(nazwa_projektu)'))->get(),
-            'ofertas' => Oferta::where('client_id', $kontakt->client_id)->orderBy('id')->get()->map(fn($o) => [
+            'ofertas' => Oferta::with(['waluta', 'zapytania'])->where('client_id', $kontakt->client_id)->orderBy('id')->get()->map(fn($o) => [
                 'id' => $o->id,
-                'label' => 'Oferta #' . $o->id . ' (' . $o->kwota . ' ' . ($o->waluta ? $o->waluta->name : '') . ')',
+                'label' => ($o->zapytania && $o->zapytania->nazwa_projektu ? $o->zapytania->nazwa_projektu . ' — ' : '') . 'Oferta #' . $o->id . ($o->kwota ? ' (' . $o->kwota . ' ' . ($o->waluta ? $o->waluta->name : '') . ')' : ''),
             ]),
             'futureProjects' => FutureProject::where('client_id', $kontakt->client_id)->orderBy(DB::raw('TRIM(nazwa)'))->get(),
             'kontaktPersons' => KontaktPerson::where('client_id', $kontakt->client_id)->orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get(),

@@ -57,24 +57,33 @@
           <textarea-input v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full" label="Szczegóły rozmowy / Notatki" />
 
           <!-- 6. Osoba kontaktowa, Zapytanie, Oferta, Projekt Przyszłości -->
-          <select-input v-model="form.kontakt_person_id" :error="form.errors.kontakt_person_id" class="pb-8 pr-6 w-full lg:w-1/4" label="Osoba kontaktowa">
+          <div v-if="!form.client_id" class="pb-8 pr-6 w-full">
+            <div class="flex items-start bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-md p-3">
+              <svg class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+              <span class="text-sm font-medium">Najpierw wybierz <strong>Klienta</strong> u góry — dopiero wtedy będzie można uzupełnić osobę kontaktową, zapytanie, ofertę i projekt przyszłości.</span>
+            </div>
+          </div>
+
+          <select-input v-model="form.kontakt_person_id" :error="form.errors.kontakt_person_id" class="pb-8 pr-6 w-full lg:w-1/4" :class="{ 'opacity-50': !form.client_id }" label="Osoba kontaktowa" :disabled="!form.client_id">
             <option :value="null">Brak</option>
             <option v-for="person in localKontaktPersons" :key="person.id" :value="person.id">
               {{ person.first_name }} {{ person.last_name }}
             </option>
           </select-input>
 
-          <select-input v-model="form.zapytania_id" :error="form.errors.zapytania_id" class="pb-8 pr-6 w-full lg:w-1/4" label="Zapytanie">
+          <select-input v-model="form.zapytania_id" :error="form.errors.zapytania_id" class="pb-8 pr-6 w-full lg:w-1/4" :class="{ 'opacity-50': !form.client_id }" label="Zapytanie" :disabled="!form.client_id">
             <option :value="null">Brak</option>
             <option v-for="item in localZapytanias" :key="item.id" :value="item.id">{{ item.nazwa_projektu }}</option>
           </select-input>
 
-          <select-input v-model="form.oferta_id" :error="form.errors.oferta_id" class="pb-8 pr-6 w-full lg:w-1/4" label="Oferta">
+          <select-input v-model="form.oferta_id" :error="form.errors.oferta_id" class="pb-8 pr-6 w-full lg:w-1/4" :class="{ 'opacity-50': !form.client_id }" label="Oferta" :disabled="!form.client_id">
             <option :value="null">Brak</option>
             <option v-for="item in localOfertas" :key="item.id" :value="item.id">{{ item.label }}</option>
           </select-input>
 
-          <select-input v-model="form.future_project_id" :error="form.errors.future_project_id" class="pb-8 pr-6 w-full lg:w-1/4" label="Projekt przyszłości">
+          <select-input v-model="form.future_project_id" :error="form.errors.future_project_id" class="pb-8 pr-6 w-full lg:w-1/4" :class="{ 'opacity-50': !form.client_id }" label="Projekt przyszłości" :disabled="!form.client_id">
             <option :value="null">Brak</option>
             <option v-for="item in localFutureProjects" :key="item.id" :value="item.id">{{ item.nazwa }}</option>
           </select-input>
