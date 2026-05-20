@@ -176,17 +176,25 @@ class DashboardController extends Controller
                     ->orderBy('next_call_date', 'asc')
                     ->orderBy('next_call_time', 'asc')
                     ->get()
-                    ->map(fn ($kontakt) => [
-                        'id' => $kontakt->id,
-                        'thread_root_id' => $kontakt->parent_id ?? $kontakt->id,
-                        'client' => $kontakt->client ? $kontakt->client : null,
-                        'kontaktperson' => $kontakt->kontaktperson ? $kontakt->kontaktperson : null,
-                        'subject' => $kontakt->subject,
-                        'next_call_date' => $kontakt->next_call_date ? $kontakt->next_call_date->format('Y-m-d') : null,
-                        'next_call_time' => $kontakt->next_call_time,
-                        'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null,
-                        'user' => $kontakt->user ? $kontakt->user : null,
-                    ]),
+                    ->map(function ($kontakt) {
+                        $daysUntilContact = null;
+                        if ($kontakt->next_call_date) {
+                            $daysUntilContact = (int) Carbon::today()->diffInDays($kontakt->next_call_date, false);
+                        }
+                        return [
+                            'id' => $kontakt->id,
+                            'thread_root_id' => $kontakt->parent_id ?? $kontakt->id,
+                            'client' => $kontakt->client ? $kontakt->client : null,
+                            'kontaktperson' => $kontakt->kontaktperson ? $kontakt->kontaktperson : null,
+                            'subject' => $kontakt->subject,
+                            'next_call_date' => $kontakt->next_call_date ? $kontakt->next_call_date->format('Y-m-d') : null,
+                            'next_call_time' => $kontakt->next_call_time,
+                            'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null,
+                            'user' => $kontakt->user ? $kontakt->user : null,
+                            'kontakt_blisko' => $daysUntilContact !== null && $daysUntilContact <= 3 && $daysUntilContact >= 0,
+                            'kontakt_przeterminowany' => $daysUntilContact !== null && $daysUntilContact < 0,
+                        ];
+                    }),
                 'zapytanias' => $finalZapytanias, // Use the combined and sorted collection
                 'ofertas' => Oferta::with(['user', 'client', 'zapytania', 'ofertastatus'])
                     ->whereHas('zapytania', function ($query) {

@@ -219,7 +219,14 @@
           <div class="space-y-3">
             <div v-for="item in kontakts" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
               <Link :href="`/kontakt/${item.thread_root_id || item.id}/edit`" class="block p-4">
-                <div class="font-bold text-gray-900 mb-1 truncate">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+                <div class="flex items-center justify-between mb-1">
+                  <div class="font-bold text-gray-900 truncate pb-0.5">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
+                  <div v-if="item.kontakt_blisko || item.kontakt_przeterminowany" class="ml-2 flex-shrink-0" :title="item.kontakt_przeterminowany ? 'Kontakt przeterminowany!' : 'Kontakt w ciągu 3 dni'">
+                    <svg class="w-5 h-5" :class="item.kontakt_przeterminowany ? 'text-yellow-500 animate-bell-ring' : 'text-yellow-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                  </div>
+                </div>
                 <div v-if="item.kontaktperson" class="text-sm text-gray-700 font-medium mb-1">
                   {{ item.kontaktperson.first_name }} {{ item.kontaktperson.last_name }}
                 </div>
@@ -227,16 +234,15 @@
 
                 <div class="flex flex-col space-y-3 mt-auto pt-3 border-t border-gray-50">
                   <!-- Następny kontakt -->
-                  <div v-if="item.next_call_date">
-                    <span class="uppercase text-gray-400 font-bold leading-none mb-1" style="font-size: 9px;">Termin
-                      kontaktu</span>
-                    <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.next_call_date), 'text-indigo-700': !isOverdue(item.next_call_date)}">
+                  <div v-if="item.next_call_date" class="flex flex-col">
+                    <span class="text-[9px] uppercase text-indigo-500 font-bold leading-none mb-1">Termin kontaktu</span>
+                    <div class="text-xs font-bold flex items-center" :class="{'text-red-500': isOverdue(item.next_call_date), 'text-indigo-700': !isOverdue(item.next_call_date)}">
                       <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                       <span class="whitespace-nowrap">{{ item.next_call_date }}</span>
-                    </div>
-                    <div v-if="item.next_call_time" class="flex items-center">
-                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      <span class="bg-indigo-200 text-indigo-800 px-1 py-0.5 rounded text-[9px]">{{ item.next_call_time }}</span>
+                      <template v-if="item.next_call_time">
+                        <svg class="w-3 h-3 ml-2 mr-0.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span class="text-[10px] font-normal opacity-75">{{ item.next_call_time }}</span>
+                      </template>
                     </div>
                   </div>
 
@@ -385,12 +391,12 @@ export default {
       return new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(value) + ' PLN'
     },
     formatCurrencyShort(value) {
-      if (value === null || value === undefined) return '0 PLN'
+      if (value === null || value === undefined) return '0'
       const abs = Math.abs(value)
       const fmt = (v, digits) => new Intl.NumberFormat('pl-PL', { maximumFractionDigits: digits, minimumFractionDigits: 0 }).format(v)
-      if (abs >= 1_000_000) return fmt(value / 1_000_000, 1) + ' mln PLN'
-      if (abs >= 10_000) return fmt(value / 1_000, 0) + ' tys. PLN'
-      return fmt(value, 0) + ' PLN'
+      if (abs >= 1_000_000) return fmt(value / 1_000_000, 1) + ' mln'
+      if (abs >= 10_000) return fmt(value / 1_000, 0) + ' tys.'
+      return fmt(value, 0)
     },
     isOverdue(dateString) {
       if (!dateString) return false
