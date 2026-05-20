@@ -58,6 +58,7 @@ class OfertaController extends Controller
         return Inertia::render('Oferta/Index', [
             'filters' => Request::all('search', 'trashed'),
             'stats' => $stats,
+            'statusOptions' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'ofertas' => Oferta::with(['client', 'user', 'zapytania', 'status', 'waluta'])
                 ->OrderByCreatedAt()
                 ->filter(Request::only('search', 'trashed'))
@@ -257,6 +258,19 @@ class OfertaController extends Controller
         }
 
         return $redirect;
+    }
+
+    public function updateStatus(Oferta $oferta)
+    {
+        $data = Request::validate([
+            'oferta_status_id' => 'required|exists:oferta_statuses,id',
+        ]);
+
+        $oferta->update($data);
+
+        $this->storeActivityLog('Zmiana statusu oferty', $oferta->id, $oferta->client_id, 'oferta', 'zmiany', Auth::id());
+
+        return Redirect::back()->with('success', 'Status oferty zmieniony.');
     }
 
     public function destroy(Oferta $oferta)

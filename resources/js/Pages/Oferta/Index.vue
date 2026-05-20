@@ -64,7 +64,15 @@
           <span v-if="item.typ" class="text-gray-400">{{ item.typ }}</span>
         </div>
         <div class="flex items-center justify-between">
-          <span v-if="item.status" class="px-2 py-0.5 text-[10px] font-bold text-white bg-indigo-500 rounded uppercase">{{ item.status.name }}</span>
+          <select
+            v-if="item.status"
+            :value="item.status.id"
+            @click.stop.prevent
+            @change.stop="changeStatus(item, $event.target.value)"
+            class="px-2 py-0.5 text-[10px] font-bold text-white bg-indigo-500 rounded uppercase border-0 cursor-pointer focus:ring-2 focus:ring-indigo-300 appearance-none"
+          >
+            <option v-for="opt in statusOptions" :key="opt.id" :value="opt.id" class="text-gray-900 bg-white normal-case font-normal">{{ opt.name }}</option>
+          </select>
           <span v-if="item.kwota" class="text-xs font-semibold text-gray-700">{{ formatCurrency(item.kwota) }} {{ item.waluta ? item.waluta.name : '' }}</span>
         </div>
         <div v-if="item.user" class="mt-2 flex items-center justify-between text-[11px] text-gray-400">
@@ -139,11 +147,15 @@
               </Link>
             </td>
             <td class="px-3 py-2.5 overflow-hidden">
-              <Link class="block" :href="`/oferta/${item.id}/edit`" tabindex="-1">
-                <span v-if="item.status" class="inline-block px-1.5 py-0.5 text-[8px] text-white font-bold tracking-tight leading-tight bg-indigo-500 rounded shadow-sm uppercase truncate max-w-full">
-                  {{ item.status.name }}
-                </span>
-              </Link>
+              <select
+                v-if="item.status"
+                :value="item.status.id"
+                @change="changeStatus(item, $event.target.value)"
+                class="px-1.5 py-0.5 text-[8px] text-white font-bold tracking-tight leading-tight bg-indigo-500 rounded shadow-sm uppercase border-0 max-w-full cursor-pointer focus:ring-2 focus:ring-indigo-300 appearance-none"
+                :title="item.status.name"
+              >
+                <option v-for="opt in statusOptions" :key="opt.id" :value="opt.id" class="text-gray-900 bg-white normal-case font-normal text-xs">{{ opt.name }}</option>
+              </select>
             </td>
             <td class="px-3 py-2.5 hidden lg:table-cell overflow-hidden">
               <Link class="block text-xs text-gray-700 font-medium truncate" :href="`/oferta/${item.id}/edit`" tabindex="-1">
@@ -203,6 +215,7 @@ export default {
     filters: Object,
     ofertas: Object,
     stats: Object,
+    statusOptions: Array,
   },
   data() {
     return {
@@ -237,6 +250,14 @@ export default {
     formatCurrency(value) {
       if (!value) return '0'
       return new Intl.NumberFormat('pl-PL').format(value)
+    },
+    changeStatus(item, newStatusId) {
+      const id = parseInt(newStatusId, 10)
+      if (!item.status || item.status.id === id) return
+      this.$inertia.put(`/oferta/${item.id}/status`, { oferta_status_id: id }, {
+        preserveScroll: true,
+        preserveState: true,
+      })
     },
   },
 }

@@ -234,6 +234,7 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
     Route::post('oferta', [OfertaController::class, 'store'])->name('oferta.store');
     Route::get('oferta/{oferta}/edit', [OfertaController::class, 'edit'])->name('oferta.edit');
     Route::put('oferta/{oferta}', [OfertaController::class, 'update'])->name('oferta.update');
+    Route::put('oferta/{oferta}/status', [OfertaController::class, 'updateStatus'])->name('oferta.updateStatus');
     Route::delete('oferta/{oferta}', [OfertaController::class, 'destroy'])->name('oferta.destroy');
     Route::put('oferta/{oferta}/restore', [OfertaController::class, 'restore'])->name('oferta.restore');
 
