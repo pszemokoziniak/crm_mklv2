@@ -273,16 +273,27 @@
             <div v-for="item in zadania" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
               <Link :href="`/zadania/${item.id}/edit`" class="block p-4">
                 <div class="flex items-center justify-between mb-1">
-                  <div class="font-bold text-gray-900 truncate">{{ item.subject }}</div>
-                  <span v-if="item.status === 'do_akceptacji'" class="ml-2 flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <div class="font-bold text-gray-900 truncate pb-0.5">{{ item.subject }}</div>
+                  <div v-if="item.deadline_blisko || item.deadline_przeterminowany" class="ml-2 flex-shrink-0" :title="item.deadline_przeterminowany ? 'Termin przeterminowany!' : 'Termin w ciągu 2 dni'">
+                    <svg class="w-5 h-5" :class="item.deadline_przeterminowany ? 'text-red-500 animate-bell-ring' : 'text-orange-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                  </div>
+                </div>
+                <div v-if="item.description" class="text-sm text-gray-600 mb-1 line-clamp-2 italic">"{{ item.description }}"</div>
+                <div v-if="item.status === 'do_akceptacji'" class="mb-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
                     Do akceptacji
                   </span>
                 </div>
 
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
-                  <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.deadline), 'text-gray-500': !isOverdue(item.deadline)}">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {{ item.deadline || 'Brak terminu' }}
+                  <div class="flex flex-col">
+                    <span class="text-[9px] uppercase text-orange-500 font-bold leading-none mb-1">Termin</span>
+                    <div class="text-xs font-bold flex items-center" :class="{'text-red-500': isOverdue(item.deadline), 'text-orange-700': item.deadline && !isOverdue(item.deadline), 'text-gray-400 italic font-normal': !item.deadline}">
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      {{ item.deadline || 'Brak terminu' }}
+                    </div>
                   </div>
                   <div v-if="item.users" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
                     {{ item.users.first_name }} {{ item.users.last_name }}
