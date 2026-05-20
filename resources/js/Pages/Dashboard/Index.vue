@@ -183,10 +183,19 @@
                 <div v-if="item.kwota" class="text-sm font-bold text-green-700 mb-2">
                   {{ formatKwota(item.kwota) }}<span v-if="item.waluta_name" class="ml-1 text-xs font-semibold text-green-600">{{ item.waluta_name }}</span>
                 </div>
-                <div v-if="item.status" class="mb-3">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium" :class="statusClasses(item.status)">
-                    {{ item.status }}
-                  </span>
+                <div v-if="item.status" class="mb-3 relative inline-block">
+                  <select
+                    :value="item.status.id"
+                    @click.stop.prevent
+                    @change.stop="changeStatus(item, $event.target.value)"
+                    class="px-2 py-0.5 pr-6 rounded text-xs font-medium border-0 cursor-pointer appearance-none focus:ring-2 focus:ring-indigo-300"
+                    :class="statusClasses(item.status.name)"
+                  >
+                    <option v-for="opt in statusOptions" :key="opt.id" :value="opt.id" class="text-gray-900 bg-white normal-case font-normal">{{ opt.name }}</option>
+                  </select>
+                  <svg class="w-3 h-3 absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none opacity-70" fill="none" stroke="currentColor" viewBox="0 0 20 20">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4" />
+                  </svg>
                 </div>
 
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
@@ -348,6 +357,7 @@ export default {
     historia: Object,
     filters: Object,
     users: Array,
+    statusOptions: Array,
   },
   data() {
     return {
@@ -393,11 +403,20 @@ export default {
       this.form.tab = this.activeTab // Keep the current active tab
     },
     statusClasses(status) {
+      if (!status) return 'bg-gray-100 text-gray-800'
       const s = status.toLowerCase()
       if (s.includes('wygrana') || s.includes('przyjęta') || s.includes('realizacja')) return 'bg-green-100 text-green-800'
       if (s.includes('przegrana') || s.includes('odrzucona') || s.includes('rezygnacja')) return 'bg-red-100 text-red-800'
       if (s.includes('toczy') || s.includes('wysłana') || s.includes('oczekuje')) return 'bg-blue-100 text-blue-800'
       return 'bg-gray-100 text-gray-800'
+    },
+    changeStatus(item, newStatusId) {
+      const id = parseInt(newStatusId, 10)
+      if (!item.status || item.status.id === id) return
+      this.$inertia.put(`/oferta/${item.id}/status`, { oferta_status_id: id }, {
+        preserveScroll: true,
+        preserveState: true,
+      })
     },
     percentChange(current, previous) {
       if (previous === 0) return 0

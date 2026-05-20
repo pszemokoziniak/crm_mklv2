@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\FutureProject;
 use App\Models\Kontakt;
 use App\Models\Oferta;
+use App\Models\OfertaStatus;
 use App\Models\Zadania;
 use App\Models\Zapytania;
 use App\Models\ZapytaniaWznowienie; // Added ZapytaniaWznowienie model
@@ -142,6 +143,7 @@ class DashboardController extends Controller
                 'stats' => $stats,
                 'filters' => Request::all('search', 'user_id', 'tab'),
                 'users' => $isKierownictwo ? User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get() : [],
+                'statusOptions' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
                 'historia' => Activity::with(['causer', 'subject'])
                     ->latest()
                     ->paginate(50)
@@ -221,7 +223,7 @@ class DashboardController extends Controller
                             'client' => $oferta->client ? $oferta->client : null,
                             'data_kontakt' => $oferta->data_kontakt ? $oferta->data_kontakt->format('Y-m-d') : null,
                             'data_wyslania' => $oferta->data_wyslania ? $oferta->data_wyslania->format('Y-m-d') : null,
-                            'status' => $oferta->ofertastatus ? $oferta->ofertastatus->name : null,
+                            'status' => $oferta->ofertastatus ? ['id' => $oferta->ofertastatus->id, 'name' => $oferta->ofertastatus->name] : null,
                             'user' => $oferta->user ? $oferta->user : null,
                             'kwota' => $oferta->kwota,
                             'waluta_name' => $oferta->waluta ? $oferta->waluta->name : null,
