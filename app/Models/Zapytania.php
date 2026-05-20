@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Notifications\ReminderRuleNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
@@ -32,6 +35,32 @@ class Zapytania extends Model
             ->logAll()
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($zapytania) {
+            try {
+                $rules = ReminderRule::where('active', true)
+                    ->where('event', ReminderRule::EVENT_ZAPYTANIE_UTWORZONE)
+                    ->get();
+
+                foreach ($rules as $rule) {
+                    if (!$rule->passesFilter($zapytania)) {
+                        continue;
+                    }
+                    $recipients = $rule->resolveRecipients($zapytania);
+                    if ($recipients->isEmpty()) {
+                        continue;
+                    }
+                    Notification::send($recipients, new ReminderRuleNotification($rule, $zapytania, 0));
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Reminder dispatch on Zapytania create failed: '.$e->getMessage(), [
+                    'zapytania_id' => $zapytania->id,
+                ]);
+            }
+        });
     }
 
     public function resolveRouteBinding($value, $field = null)

@@ -21,6 +21,10 @@
             <option v-for="(label, key) in events" :key="key" :value="key">{{ label }}</option>
           </select-input>
 
+          <select-input v-if="currentEventFilters" v-model="form.event_filter" :error="form.errors.event_filter" label="Zakres">
+            <option v-for="(label, key) in currentEventFilters" :key="key" :value="key">{{ label }}</option>
+          </select-input>
+
           <div v-if="!isImmediate">
             <label class="form-label">Dni przed terminem</label>
             <div class="flex items-center gap-3">
@@ -169,6 +173,7 @@ export default {
     events: Object,
     channels: Object,
     immediateEvents: { type: Array, default: () => [] },
+    eventFilters: { type: Object, default: () => ({}) },
     users: Array,
     placeholders: Object,
     defaultSubject: { type: String, default: '' },
@@ -180,6 +185,7 @@ export default {
       form: this.$inertia.form({
         name: '',
         event: '',
+        event_filter: '',
         days_before: 3,
         recipients: [],
         channels: ['mail'],
@@ -218,6 +224,9 @@ export default {
     isImmediate() {
       return this.immediateEvents.includes(this.form.event)
     },
+    currentEventFilters() {
+      return this.form.event && this.eventFilters[this.form.event] ? this.eventFilters[this.form.event] : null
+    },
     daysHint() {
       const d = parseInt(this.form.days_before, 10)
       if (isNaN(d)) return ''
@@ -243,6 +252,11 @@ export default {
     isImmediate(now) {
       if (now) {
         this.form.days_before = 0
+      }
+    },
+    'form.event'() {
+      if (!this.currentEventFilters) {
+        this.form.event_filter = ''
       }
     },
   },

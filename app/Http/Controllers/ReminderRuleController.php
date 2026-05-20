@@ -37,6 +37,7 @@ class ReminderRuleController extends Controller
             'events' => ReminderRule::EVENTS,
             'channels' => ReminderRule::CHANNELS,
             'immediateEvents' => ReminderRule::IMMEDIATE_EVENTS,
+            'eventFilters' => ReminderRule::EVENT_FILTERS,
             'users' => User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get(),
             'placeholders' => $this->placeholderMap(),
             'defaultSubject' => 'Przypomnienie: {{projekt_nazwa}} — termin za {{days_until}} dni',
@@ -60,6 +61,7 @@ class ReminderRuleController extends Controller
                 'id' => $reminderRule->id,
                 'name' => $reminderRule->name,
                 'event' => $reminderRule->event,
+                'event_filter' => $reminderRule->event_filter,
                 'days_before' => $reminderRule->days_before,
                 'recipients' => $reminderRule->recipients,
                 'channels' => $reminderRule->channels,
@@ -70,6 +72,7 @@ class ReminderRuleController extends Controller
             'events' => ReminderRule::EVENTS,
             'channels' => ReminderRule::CHANNELS,
             'immediateEvents' => ReminderRule::IMMEDIATE_EVENTS,
+            'eventFilters' => ReminderRule::EVENT_FILTERS,
             'users' => User::select('id', 'first_name', 'last_name')->orderBy('last_name')->get(),
             'placeholders' => $this->placeholderMap(),
         ]);

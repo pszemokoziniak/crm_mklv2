@@ -149,11 +149,6 @@
               </button>
             </form>
 
-            <button class="flex items-center justify-center px-4 py-5 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="mail">
-              <icon name="mail" class="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
-              <span class="text-sm font-bold">Email</span>
-            </button>
-
             <button v-if="zapytania.wznowienie === 1 && zapytania.can.edit" class="flex items-center justify-center px-4 py-5 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="wznowienie">
               <icon name="historia" class="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
               <span class="text-sm font-bold text-center">Wznowienie</span>
@@ -578,9 +573,6 @@ export default {
     },
     submit: function(){
       this.$refs.form.submit()
-    },
-    mail() {
-      this.form.get(`/zapytania/${this.zapytania.id}/mail`)
     },
     wznowienie() {
       this.form.post(`/zapytania/${this.zapytania.id}/wznowienie`)

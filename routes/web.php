@@ -11,7 +11,6 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EditController;
-use App\Http\Controllers\EmailController;
 use App\Http\Controllers\FazaController;
 use App\Http\Controllers\FutureProjectController;
 use App\Http\Controllers\ImagesController;
@@ -214,7 +213,6 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
     Route::get('zapytania/{zapytania}/wznowienia/{wznowienie}/edit', [ZapytaniaController::class, 'editWznowienie'])->name('zapytania.wznowienia.edit')->scopeBindings();
     Route::put('zapytania/{zapytania}/wznowienia/{wznowienie}', [ZapytaniaController::class, 'updateWznowienie'])->name('zapytania.wznowienia.update');
     Route::delete('zapytania/{zapytania}/wznowienia/{wznowienie}', [ZapytaniaController::class, 'destroyWznowienie'])->name('zapytania.wznowienia.destroy');
-    Route::get('zapytania/{zapytania}/mail', [ZapytaniaController::class, 'mail'])->name('mail.zapytania');
     Route::get('zapytania/{zapytania}/deletewznowienie', [ZapytaniaController::class, 'deleteWznowienie'])->name('zapytania.delete.wznowienie');
 
     // Future Projects
@@ -295,14 +293,6 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
     Route::post('zakres/{zakres}', [ZakresController::class, 'update'])->name('zakres.update');
     Route::delete('zakres/{zakres}', [ZakresController::class, 'destroy'])->name('zakres.destroy');
     Route::put('zakres/{zakres}/restore', [ZakresController::class, 'restore'])->name('zakres.restore');
-
-    // Email
-    Route::get('email', [EmailController::class, 'index'])->name('email');
-    Route::get('email/create', [EmailController::class, 'create'])->name('email.create');
-    Route::post('email', [EmailController::class, 'store'])->name('email.store');
-    Route::get('email/{email}/edit', [EmailController::class, 'edit'])->name('email.edit');
-    Route::post('email/{email}', [EmailController::class, 'update'])->name('email.update');
-    Route::delete('email/{email}', [EmailController::class, 'destroy'])->name('email.destroy');
 
     // Reminder rules (przypomnienia mailowe)
     Route::get('reminder-rules', [ReminderRuleController::class, 'index'])->name('reminder-rules.index');

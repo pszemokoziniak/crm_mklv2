@@ -41,7 +41,6 @@ export default {
         { label: 'Obiekt', href: '/objekt/', icon: 'office' },
         { label: 'Waluta', href: '/waluta/', icon: 'oferty' },
         { label: 'Uprawnienia', href: '/uprawnienia/', icon: 'users' },
-        { label: 'Email', href: '/email/', icon: 'mail' },
         { label: 'Przypomnienia mailowe', href: '/reminder-rules', icon: 'mail' },
         { label: 'Menu', href: '/menu', icon: 'menu' }, // Added Menu item
       ],

@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WznowienieStoreRequest;
 use App\Http\Requests\WznowienieUpdateRequest; // Import the new request
 use App\Http\Requests\ZapytaniaStoreRequest;
-use App\Mail\ZapytaniaMail;
 use App\Models\ArchiwumZapytania;
 use App\Models\Branza;
 use App\Models\Client;
-use App\Models\Email;
 use App\Models\Kraj;
 use App\Models\Kursy;
 use App\Models\Oferta;
@@ -21,10 +19,8 @@ use App\Models\Kontakt;
 use App\Models\ZapytaniaWznowienie;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use App\Traits\StoreActivityLog;
 use Illuminate\Support\Facades\DB;
@@ -161,17 +157,7 @@ class ZapytaniaController extends Controller
 
         $this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
-        $emails = $this->getEmails($data->preliminarz);
-
-        try {
-            if ($emails->isNotEmpty()) {
-                Mail::send(new ZapytaniaMail($this->zapytaniaById($data->id), $emails));
-            }
-        } catch (\Exception $e) {
-            Log::error('Błąd wysyłki maila (store): ' . $e->getMessage());
-        }
-
-        return Redirect::route('zapytania')->with('success', 'Zapisano. Mail wysłany');
+        return Redirect::route('zapytania')->with('success', 'Zapisano.');
     }
 
     public function edit($id) // Changed type hint from Zapytania $zapytania to $id
@@ -400,17 +386,6 @@ class ZapytaniaController extends Controller
 
         return $data;
     }
-    public function mail(Zapytania $zapytania)
-    {
-        $emails = $this->getEmails($zapytania->preliminarz);
-        try {
-            if ($emails->isNotEmpty()) {
-                Mail::send(new ZapytaniaMail($this->zapytaniaById($zapytania->id), $emails));
-            }
-        } catch (\Exception $e) {
-            Log::error('Błąd wysyłki maila (manual): ' . $e->getMessage());
-        }
-    }
     public function wznowienie(Zapytania $zapytania)
     {
         return Inertia::render('Zapytania/Archiwum', [
@@ -438,36 +413,12 @@ class ZapytaniaController extends Controller
         $zapytania->wznowienie = 2;
         $zapytania->save();
 
-        $emails = $this->getEmails($wznowienie->preliminarz);
-        try {
-            if ($emails->isNotEmpty()) {
-                Mail::send(new ZapytaniaMail($this->zapytaniaById($zapytania->id), $emails));
-            }
-        } catch (\Exception $e) {
-            Log::error('Błąd wysyłki maila (wznowienie): ' . $e->getMessage());
-        }
-
         return Redirect::route('zapytania.edit', $zapytania->id)->with('success', 'Wznowienie dodane.');
     }
     public function deleteWznowienie(Zapytania $zapytania)
     {
         $zapytania->wznowienie = 1;
         $zapytania->save();
-    }
-    public function getEmails($preliminarz = 'Nie')
-    {
-        $emails = Email::join('users', 'users.id', 'emails.user_id')
-            ->select('email')
-            ->where('emails.type_id', 1)
-            ->get()->pluck('email');
-
-        if ($preliminarz === 'Tak') {
-            $preliminarzEmails = User::where('preliminarz_email', true)
-                ->pluck('email');
-            $emails = $emails->concat($preliminarzEmails)->unique();
-        }
-
-        return $emails;
     }
 
 }

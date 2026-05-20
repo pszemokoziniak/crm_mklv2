@@ -17,6 +17,7 @@ class ReminderRule extends Model
     public const EVENT_FUTURE_PROJECT_START = 'future_project_start';
     public const EVENT_ZADANIA_DEADLINE = 'zadania_deadline';
     public const EVENT_ZADANIA_UTWORZONE = 'zadania_utworzone';
+    public const EVENT_ZAPYTANIE_UTWORZONE = 'zapytanie_utworzone';
 
     public const EVENTS = [
         self::EVENT_OFERTA_KONTAKT => 'Termin kontaktu z oferty',
@@ -25,15 +26,39 @@ class ReminderRule extends Model
         self::EVENT_FUTURE_PROJECT_START => 'Start fazy Future Project',
         self::EVENT_ZADANIA_DEADLINE => 'Termin zadania',
         self::EVENT_ZADANIA_UTWORZONE => 'Utworzenie nowego zadania',
+        self::EVENT_ZAPYTANIE_UTWORZONE => 'Utworzenie nowego zapytania',
     ];
 
     public const IMMEDIATE_EVENTS = [
         self::EVENT_ZADANIA_UTWORZONE,
+        self::EVENT_ZAPYTANIE_UTWORZONE,
+    ];
+
+    public const FILTER_PRELIMINARZ_ONLY = 'preliminarz_only';
+
+    public const EVENT_FILTERS = [
+        self::EVENT_ZAPYTANIE_UTWORZONE => [
+            '' => 'Wszystkie nowe zapytania',
+            self::FILTER_PRELIMINARZ_ONLY => 'Tylko z PRELIMINARZ = Tak',
+        ],
     ];
 
     public static function isImmediateEvent(string $event): bool
     {
         return in_array($event, self::IMMEDIATE_EVENTS, true);
+    }
+
+    public function passesFilter($subject): bool
+    {
+        if (!$this->event_filter) {
+            return true;
+        }
+
+        if ($this->event_filter === self::FILTER_PRELIMINARZ_ONLY && $subject instanceof Zapytania) {
+            return ($subject->preliminarz ?? null) === 'Tak';
+        }
+
+        return true;
     }
 
     public const CHANNEL_MAIL = 'mail';
@@ -49,6 +74,7 @@ class ReminderRule extends Model
     protected $fillable = [
         'name',
         'event',
+        'event_filter',
         'days_before',
         'recipients',
         'channels',
