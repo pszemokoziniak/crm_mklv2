@@ -111,7 +111,27 @@ class FutureProjectController extends Controller
                 ->where('future_project_id', $futureProject->id)
                 ->whereNull('parent_id')
                 ->orderBy('created_at', 'desc')
-                ->get(),
+                ->get()
+                ->map(fn ($kontakt) => [
+                    'id' => $kontakt->id,
+                    'subject' => $kontakt->subject,
+                    'description' => $kontakt->description,
+                    'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null,
+                    'call_time' => $kontakt->call_time,
+                    'user' => $kontakt->user,
+                    'opiekun' => $kontakt->opiekun,
+                    'kontaktperson' => $kontakt->kontaktperson,
+                    'children' => $kontakt->children->map(fn ($reply) => [
+                        'id' => $reply->id,
+                        'subject' => $reply->subject,
+                        'description' => $reply->description,
+                        'call_date' => $reply->call_date ? $reply->call_date->format('Y-m-d') : null,
+                        'call_time' => $reply->call_time,
+                        'user' => $reply->user,
+                        'opiekun' => $reply->opiekun,
+                        'kontaktperson' => $reply->kontaktperson,
+                    ]),
+                ]),
             'activities' => $futureProject->activities()->with('causer')->latest()->get()->map(fn ($activity) => [
                 'id' => $activity->id,
                 'description' => $activity->description,

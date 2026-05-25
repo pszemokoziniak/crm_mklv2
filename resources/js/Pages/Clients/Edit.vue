@@ -79,7 +79,7 @@
 
         <!-- Secondary Actions Bar -->
         <div v-if="!client.deleted_at && !isActive" class="bg-white border-t border-gray-100">
-          <div class="grid grid-cols-3 divide-x divide-gray-100">
+          <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
             <button class="flex items-center justify-center px-4 py-4 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="disableForm">
               <icon name="edit" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
               <span class="text-sm font-bold">Edytuj dane</span>
@@ -91,6 +91,10 @@
             <Link class="flex items-center justify-center px-4 py-4 hover:bg-indigo-50 text-indigo-600 transition-all group" :href="`/kontakt/${client_id}/index`">
               <icon name="contact" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
               <span class="text-sm font-bold">Wszystkie kontakty</span>
+            </Link>
+            <Link class="flex items-center justify-center px-4 py-4 hover:bg-indigo-50 text-indigo-600 transition-all group" :href="`/zadania/create?client_id=${client_id}`">
+              <icon name="plus" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span class="text-sm font-bold">Nowe zadanie</span>
             </Link>
           </div>
         </div>
@@ -245,6 +249,49 @@
       </div>
     </div>
 
+    <!-- Zadania Section -->
+    <div class="mt-12">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">Zadania</h2>
+        <Link :href="`/zadania/create?client_id=${client_id}`" class="btn-indigo flex items-center px-5 py-2 rounded-lg shadow-sm transition-all hover:shadow-md active:scale-95 text-sm">
+          <icon name="plus" class="w-4 h-4 mr-2" />
+          <span>Nowe zadanie</span>
+        </Link>
+      </div>
+      <div class="space-y-3">
+        <div v-for="zadanie in zadania" :key="zadanie.id" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <Link :href="`/zadania/${zadanie.id}/edit`" class="block hover:bg-indigo-50/30 transition-colors">
+            <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+              <div class="md:col-span-5 flex flex-col">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Temat</span>
+                <span class="text-base font-bold text-gray-900 truncate" :title="zadanie.subject">{{ zadanie.subject }}</span>
+              </div>
+              <div class="md:col-span-3 flex flex-col">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Termin</span>
+                <span class="text-sm font-medium text-gray-600">{{ zadanie.deadline || '—' }}</span>
+              </div>
+              <div class="md:col-span-3 flex flex-col">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Odpowiedzialny</span>
+                <span class="text-sm font-medium text-gray-600">{{ zadanie.responsible_person || '—' }}</span>
+              </div>
+              <div class="md:col-span-1 flex justify-end">
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"
+                  :class="zadanieStatusClasses(zadanie.status)"
+                >
+                  {{ zadanieStatusLabel(zadanie.status) }}
+                </span>
+              </div>
+            </div>
+          </Link>
+        </div>
+        <div v-if="zadania.length === 0" class="bg-white rounded-xl border-2 border-dashed border-gray-200 p-12 text-center">
+          <icon name="contact" class="w-12 h-12 mx-auto mb-4 text-gray-300" />
+          <p class="text-gray-500 font-medium">Brak zadań dla tego klienta.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Historia zmian (Activity Log) - PRZENIESIONA NA DÓŁ -->
     <div class="mt-12 mb-12">
       <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -342,6 +389,7 @@ export default {
     zapytania: Array,
     kontakty: Array,
     activities: Array,
+    zadania: { type: Array, default: () => [] },
   },
   remember: 'form',
   data() {
@@ -403,6 +451,18 @@ export default {
         return url
       }
       return `https://${url}`
+    },
+    zadanieStatusLabel(status) {
+      if (status === 'aktywne') return 'Aktywne'
+      if (status === 'do_akceptacji') return 'Do akceptacji'
+      if (status === 'zamkniete') return 'Zamknięte'
+      return status || '—'
+    },
+    zadanieStatusClasses(status) {
+      if (status === 'aktywne') return 'bg-blue-50 text-blue-700 border-blue-100'
+      if (status === 'do_akceptacji') return 'bg-yellow-50 text-yellow-700 border-yellow-100'
+      if (status === 'zamkniete') return 'bg-gray-50 text-gray-600 border-gray-100'
+      return 'bg-gray-50 text-gray-600 border-gray-100'
     },
   },
 }

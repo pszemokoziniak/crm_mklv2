@@ -29,6 +29,7 @@ class ZadaniaStoreRequest extends FormRequest
             'subject' => ['required'],
             'description' => ['required'],
             'user_id' => ['required'],
+            'client_id' => ['nullable', 'exists:clients,id'],
         ];
     }
 

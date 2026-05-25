@@ -62,6 +62,10 @@ class Client extends Model
     {
         return $this->hasMany(Kontakt::class);
     }
+    public function zadania(): HasMany
+    {
+        return $this->hasMany(Zadania::class);
+    }
     public function scopeOrderByCreatedAt($query)
     {
         $query->orderBy('created_at', 'DESC');

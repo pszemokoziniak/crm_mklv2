@@ -53,6 +53,10 @@
                     <option v-for="item in users" :key="item.id" :value="item.id">{{ item.last_name }} {{ item.first_name }}</option>
                   </select-input>
                   <text-input v-model="form.deadline" :error="form.errors.deadline" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data wykonania" />
+                  <select-input v-model="form.client_id" :error="form.errors.client_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Klient (opcjonalnie)">
+                    <option :value="null">— Brak —</option>
+                    <option v-for="item in clients" :key="item.id" :value="item.id">{{ item.nazwa }}</option>
+                  </select-input>
                   <text-input v-model="form.subject" :error="form.errors.subject" class="pb-8 pr-6 w-full" label="Temat" />
                   <text-area v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full" label="Opis" />
                 </div>
@@ -189,6 +193,7 @@ export default {
   props: {
     zadanie: Object,
     users: Array,
+    clients: Array,
   },
   data() {
     return {
@@ -200,6 +205,7 @@ export default {
         // WYMUSZENIE FORMATU: Jeśli data zawiera czas, zostanie on odcięty
         deadline: this.zadanie.deadline ? this.zadanie.deadline.split('T')[0] : '',
         user_id: this.zadanie.user_id,
+        client_id: this.zadanie.client_id,
         // Mapowanie kamieni milowych, aby ich daty też działały
         milestones: (this.zadanie.milestones || []).map(m => ({
           ...m,

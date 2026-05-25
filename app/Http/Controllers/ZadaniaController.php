@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ZadaniaStoreRequest;
+use App\Models\Client;
 use App\Models\User;
 use App\Models\Zadania;
 use App\Models\ZadaniaStage;
@@ -44,8 +45,22 @@ class ZadaniaController extends Controller
 
     public function create()
     {
+        $clientId = Request::input('client_id');
+        $prefillClient = null;
+        $prefillResponsibleId = null;
+
+        if ($clientId) {
+            $prefillClient = Client::find($clientId);
+            if ($prefillClient) {
+                $prefillResponsibleId = $prefillClient->user_id;
+            }
+        }
+
         return Inertia::render('Zadania/Create', [
             'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get()->map->only('id', 'nazwa'),
+            'prefill_client_id' => $prefillClient ? $prefillClient->id : null,
+            'prefill_responsible_person_id' => $prefillResponsibleId,
         ]);
     }
 
@@ -98,11 +113,13 @@ class ZadaniaController extends Controller
                 'closed_at' => $zadania->closed_at ? $zadania->closed_at->format('Y-m-d H:i') : null,
                 'deadline' => $zadania->deadline ? $zadania->deadline->format('Y-m-d') : null,
                 'user_id' => $zadania->user_id,
+                'client_id' => $zadania->client_id,
                 'deleted_at' => $zadania->deleted_at,
                 'assignments' => $zadania->assignments()->with(['assignedUser', 'assigner'])->get(),
                 'milestones' => $zadania->milestones()->with('stages')->get(),
             ],
             'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get()->map->only('id', 'nazwa'),
         ]);
     }
 

@@ -208,7 +208,25 @@ class ZapytaniaController extends Controller
                 ->where('zapytania_id', $zapytania->id)
                 ->whereNull('parent_id') // Tylko główne wątki
                 ->orderBy('created_at', 'desc')
-                ->get(),
+                ->get()
+                ->map(fn ($kontakt) => [
+                    'id' => $kontakt->id,
+                    'subject' => $kontakt->subject,
+                    'description' => $kontakt->description,
+                    'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null,
+                    'call_time' => $kontakt->call_time,
+                    'user' => $kontakt->user,
+                    'kontaktperson' => $kontakt->kontaktperson,
+                    'children' => $kontakt->children->map(fn ($reply) => [
+                        'id' => $reply->id,
+                        'subject' => $reply->subject,
+                        'description' => $reply->description,
+                        'call_date' => $reply->call_date ? $reply->call_date->format('Y-m-d') : null,
+                        'call_time' => $reply->call_time,
+                        'user' => $reply->user,
+                        'kontaktperson' => $reply->kontaktperson,
+                    ]),
+                ]),
             'activities' => $zapytania->activities()->with('causer')->latest()->get()->map(fn ($activity) => [
                 'id' => $activity->id,
                 'description' => $activity->description,

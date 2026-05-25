@@ -23,6 +23,7 @@ class Zadania extends Model
         'description',
         'deadline',
         'user_id',
+        'client_id',
         'status',
         'closed_by',
         'closed_at',
@@ -87,6 +88,11 @@ class Zadania extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
     }
 
     public function closedByUser()

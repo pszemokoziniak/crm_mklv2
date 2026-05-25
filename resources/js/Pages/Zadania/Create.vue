@@ -14,6 +14,10 @@
               <option v-for="item in users" :key="item.id" :value="item.id">{{ item.last_name }} {{ item.first_name }}</option>
             </select-input>
             <text-input v-model="form.deadline" :error="form.errors.deadline" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data wykonania" />
+            <select-input v-model="form.client_id" :error="form.errors.client_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Klient (opcjonalnie)">
+              <option :value="null">— Brak —</option>
+              <option v-for="item in clients" :key="item.id" :value="item.id">{{ item.nazwa }}</option>
+            </select-input>
             <text-input v-model="form.subject" :error="form.errors.subject" class="pb-8 pr-6 w-full" label="Temat" />
             <text-area v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full" label="Opis" />
           </div>
@@ -97,15 +101,21 @@ export default {
   layout: Layout,
   props: {
     users: Array,
+    clients: Array,
+    // eslint-disable-next-line vue/prop-name-casing
+    prefill_client_id: { type: Number, default: null },
+    // eslint-disable-next-line vue/prop-name-casing
+    prefill_responsible_person_id: { type: Number, default: null },
   },
   data() {
     return {
       form: this.$inertia.form({
-        responsible_person_id: null,
+        responsible_person_id: this.prefill_responsible_person_id || null,
         subject: '',
         description: '',
         deadline: '',
         user_id: this.$page.props.auth.user.id,
+        client_id: this.prefill_client_id || null,
         milestones: [],
       }),
     }
