@@ -102,37 +102,58 @@ class DashboardController extends Controller
             ->select('zapytania_wznowienias.*')
             ->get();
 
+        $zlozeniaFlags = function ($date) {
+            if (!$date) {
+                return ['blisko' => false, 'przeterminowany' => false];
+            }
+            $days = (int) Carbon::today()->diffInDays($date, false);
+            return [
+                'blisko' => $days <= 2 && $days >= 0,
+                'przeterminowany' => $days < 0,
+            ];
+        };
+
         // Map Zapytania to a consistent structure
-        $combinedZapytania = $zapytanias->map(fn ($zapytania) => [
-            'id' => $zapytania->id,
-            'id_zapyt' => $zapytania->id_zapyt,
-            'nazwa_projektu' => $zapytania->nazwa_projektu,
-            'client' => $zapytania->client ? $zapytania->client : null,
-            'data_zlozenia' => $zapytania->data_zlozenia ? $zapytania->data_zlozenia->format('Y-m-d') : null,
-            'opracowuje' => $zapytania->opracowuje ? $zapytania->opracowuje : null,
-            'wznowienie' => $zapytania->wznowienie,
-            'user' => $zapytania->user ? $zapytania->user : null,
-            'created_at' => $zapytania->created_at->format('Y-m-d H:i:s'),
-            'type' => 'zapytanie', // Add a type to distinguish
-            'link' => "/zapytania/{$zapytania->id}/edit", // Direct link for base zapytanie
-        ]);
+        $combinedZapytania = $zapytanias->map(function ($zapytania) use ($zlozeniaFlags) {
+            $flags = $zlozeniaFlags($zapytania->data_zlozenia);
+            return [
+                'id' => $zapytania->id,
+                'id_zapyt' => $zapytania->id_zapyt,
+                'nazwa_projektu' => $zapytania->nazwa_projektu,
+                'client' => $zapytania->client ? $zapytania->client : null,
+                'data_zlozenia' => $zapytania->data_zlozenia ? $zapytania->data_zlozenia->format('Y-m-d') : null,
+                'opracowuje' => $zapytania->opracowuje ? $zapytania->opracowuje : null,
+                'wznowienie' => $zapytania->wznowienie,
+                'user' => $zapytania->user ? $zapytania->user : null,
+                'created_at' => $zapytania->created_at->format('Y-m-d H:i:s'),
+                'type' => 'zapytanie', // Add a type to distinguish
+                'link' => "/zapytania/{$zapytania->id}/edit", // Direct link for base zapytanie
+                'zlozenia_blisko' => $flags['blisko'],
+                'zlozenia_przeterminowany' => $flags['przeterminowany'],
+            ];
+        });
 
         // Map ZapytaniaWznowienie to the same consistent structure
-        $combinedZapytaniaWznowienie = $zapytaniaWznowienie->map(fn ($wznowienie) => [
-            'id' => $wznowienie->id,
-            'wznowienie_id' => $wznowienie->id,
-            'id_zapyt' => $wznowienie->zapytanie ? $wznowienie->zapytanie->id_zapyt : null, // Reference base zapytanie's id_zapyt
-            'nazwa_projektu' => $wznowienie->zapytanie ? $wznowienie->zapytanie->nazwa_projektu . ' (Wznowienie)' : 'Wznowienie', // Indicate it's a renewal
-            'client' => $wznowienie->zapytanie && $wznowienie->zapytanie->client ? $wznowienie->zapytanie->client : null,
-            'data_zlozenia' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d') : null,
-            'opracowuje' => $wznowienie->opracowuje ? $wznowienie->opracowuje : null,
-            'wznowienie' => 2, // Mark as wznowienie=2 so frontend badge and button appear
-            'user' => $wznowienie->user ? $wznowienie->user : null,
-            'created_at' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d H:i:s') : null, // Use data_zlozenia for created_at if no timestamps
-            'type' => 'wznowienie', // Add a type to distinguish
-            'original_zapytanie_id' => $wznowienie->id_zapytania, // Keep reference to original
-            'link' => "/zapytania/{$wznowienie->id_zapytania}/edit", // Corrected link for wznowienie
-        ]);
+        $combinedZapytaniaWznowienie = $zapytaniaWznowienie->map(function ($wznowienie) use ($zlozeniaFlags) {
+            $flags = $zlozeniaFlags($wznowienie->data_zlozenia);
+            return [
+                'id' => $wznowienie->id,
+                'wznowienie_id' => $wznowienie->id,
+                'id_zapyt' => $wznowienie->zapytanie ? $wznowienie->zapytanie->id_zapyt : null, // Reference base zapytanie's id_zapyt
+                'nazwa_projektu' => $wznowienie->zapytanie ? $wznowienie->zapytanie->nazwa_projektu . ' (Wznowienie)' : 'Wznowienie', // Indicate it's a renewal
+                'client' => $wznowienie->zapytanie && $wznowienie->zapytanie->client ? $wznowienie->zapytanie->client : null,
+                'data_zlozenia' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d') : null,
+                'opracowuje' => $wznowienie->opracowuje ? $wznowienie->opracowuje : null,
+                'wznowienie' => 2, // Mark as wznowienie=2 so frontend badge and button appear
+                'user' => $wznowienie->user ? $wznowienie->user : null,
+                'created_at' => $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d H:i:s') : null, // Use data_zlozenia for created_at if no timestamps
+                'type' => 'wznowienie', // Add a type to distinguish
+                'original_zapytanie_id' => $wznowienie->id_zapytania, // Keep reference to original
+                'link' => "/zapytania/{$wznowienie->id_zapytania}/edit", // Corrected link for wznowienie
+                'zlozenia_blisko' => $flags['blisko'],
+                'zlozenia_przeterminowany' => $flags['przeterminowany'],
+            ];
+        });
 
         // Combine and sort all zapytania entries
         $finalZapytanias = $combinedZapytania->concat($combinedZapytaniaWznowienie)->sortBy('data_zlozenia')->values();

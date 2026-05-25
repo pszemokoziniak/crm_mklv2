@@ -118,7 +118,7 @@
             <select v-model="form.user_id" class="relative w-full px-4 py-3 rounded focus:shadow-outline border-none text-sm">
               <option :value="null">Wszyscy użytkownicy</option>
               <option v-for="user in users" :key="user.id" :value="user.id">
-                {{ user.first_name }} {{ user.last_name }}
+                {{ user.last_name }} {{ user.first_name }}
               </option>
             </select>
           </div>
@@ -142,12 +142,19 @@
                     Stwórz ofertę
                   </Link>
                 </div>
-                <div class="text-xs font-mono text-gray-500 mb-1">{{ item.id_zapyt }}</div>
+                <div class="flex items-start justify-between">
+                  <div class="text-xs font-mono text-gray-500 mb-1">{{ item.id_zapyt }}</div>
+                  <div v-if="item.zlozenia_blisko || item.zlozenia_przeterminowany" class="ml-2 flex-shrink-0" :title="item.zlozenia_przeterminowany ? 'Termin złożenia przeterminowany!' : 'Termin złożenia w ciągu 2 dni'">
+                    <svg class="w-5 h-5" :class="item.zlozenia_przeterminowany ? 'text-red-500 animate-bell-ring' : 'text-orange-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                  </div>
+                </div>
                 <div class="font-bold text-gray-900 mb-1 truncate pb-0.5">{{ item.nazwa_projektu }}</div>
                 <div class="text-sm text-gray-600 mb-3">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
 
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
-                  <span class="uppercase text-gray-400 font-bold leading-none mb-1" style="font-size: 9px;">Data złożenia</span>
+                  <span class="text-[9px] uppercase text-indigo-500 font-bold leading-none mb-1">Data złożenia</span>
                   <div class="text-xs flex items-center" :class="{'text-red-500': isOverdue(item.data_zlozenia), 'text-gray-500': !isOverdue(item.data_zlozenia)}">
                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     {{ item.data_zlozenia || 'Brak daty złożenia' }}
@@ -174,7 +181,7 @@
                 <div class="flex items-center justify-between mb-1">
                   <div class="font-bold text-gray-900 truncate pb-0.5">{{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak projektu' }}</div>
                   <div v-if="item.kontakt_blisko || item.kontakt_przeterminowany" class="ml-2 flex-shrink-0" :title="item.kontakt_przeterminowany ? 'Kontakt przeterminowany!' : 'Kontakt w ciągu 10 dni'">
-                    <svg class="w-5 h-5" :class="item.kontakt_przeterminowany ? 'text-yellow-500 animate-bell-ring' : 'text-yellow-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" :class="item.kontakt_przeterminowany ? 'text-red-500 animate-bell-ring' : 'text-orange-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
                   </div>
@@ -186,10 +193,10 @@
                 <div v-if="item.status" class="mb-3 relative inline-block">
                   <select
                     :value="item.status.id"
-                    @click.stop.prevent
-                    @change.stop="changeStatus(item, $event.target.value)"
                     class="px-2 py-0.5 pr-6 rounded text-xs font-medium border-0 cursor-pointer appearance-none focus:ring-2 focus:ring-indigo-300"
                     :class="statusClasses(item.status.name)"
+                    @click.stop.prevent
+                    @change.stop="changeStatus(item, $event.target.value)"
                   >
                     <option v-for="opt in statusOptions" :key="opt.id" :value="opt.id" class="text-gray-900 bg-white normal-case font-normal">{{ opt.name }}</option>
                   </select>
@@ -210,7 +217,7 @@
                     </div>
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-[9px] uppercase text-green-500 font-bold leading-none mb-1">Wysłano</span>
+                    <span class="uppercase text-gray-400 font-bold leading-none mb-1" style="font-size: 9px;">Wysłano</span>
                     <div class="text-xs flex items-center text-gray-600">
                       <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                       {{ item.data_wyslania || 'Brak daty' }}
@@ -237,7 +244,7 @@
                 <div class="flex items-center justify-between mb-1">
                   <div class="font-bold text-gray-900 truncate pb-0.5">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
                   <div v-if="item.kontakt_blisko || item.kontakt_przeterminowany" class="ml-2 flex-shrink-0" :title="item.kontakt_przeterminowany ? 'Kontakt przeterminowany!' : 'Kontakt w ciągu 3 dni'">
-                    <svg class="w-5 h-5" :class="item.kontakt_przeterminowany ? 'text-yellow-500 animate-bell-ring' : 'text-yellow-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" :class="item.kontakt_przeterminowany ? 'text-red-500 animate-bell-ring' : 'text-orange-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
                   </div>
@@ -304,8 +311,8 @@
 
                 <div class="flex flex-col space-y-2 mt-auto pt-3 border-t border-gray-50">
                   <div class="flex flex-col">
-                    <span class="text-[9px] uppercase text-orange-500 font-bold leading-none mb-1">Termin</span>
-                    <div class="text-xs font-bold flex items-center" :class="{'text-red-500': isOverdue(item.deadline), 'text-orange-700': item.deadline && !isOverdue(item.deadline), 'text-gray-400 italic font-normal': !item.deadline}">
+                    <span class="text-[9px] uppercase text-indigo-500 font-bold leading-none mb-1">Termin wykonania</span>
+                    <div class="text-xs font-bold flex items-center" :class="{'text-red-500': isOverdue(item.deadline), 'text-indigo-700': item.deadline && !isOverdue(item.deadline), 'text-gray-400 italic font-normal': !item.deadline}">
                       <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                       {{ item.deadline || 'Brak terminu' }}
                     </div>
@@ -442,8 +449,8 @@ export default {
       if (value === null || value === undefined) return '0'
       const abs = Math.abs(value)
       const fmt = (v, digits) => new Intl.NumberFormat('pl-PL', { maximumFractionDigits: digits, minimumFractionDigits: 0 }).format(v)
-      if (abs >= 1_000_000) return fmt(value / 1_000_000, 1) + ' mln'
-      if (abs >= 10_000) return fmt(value / 1_000, 0) + ' tys.'
+      if (abs >= 1000000) return fmt(value / 1000000, 1) + ' mln'
+      if (abs >= 10000) return fmt(value / 1000, 0) + ' tys.'
       return fmt(value, 0)
     },
     isOverdue(dateString) {
