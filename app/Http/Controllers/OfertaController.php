@@ -236,6 +236,8 @@ class OfertaController extends Controller
                     'description' => $kontakt->description,
                     'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null,
                     'call_time' => $kontakt->call_time,
+                    'next_call_date' => $kontakt->next_call_date ? $kontakt->next_call_date->format('Y-m-d') : null,
+                    'next_call_time' => $kontakt->next_call_time,
                     'user' => $kontakt->user,
                     'kontaktperson' => $kontakt->kontaktperson,
                     'children' => $kontakt->children->map(fn ($reply) => [
@@ -244,6 +246,8 @@ class OfertaController extends Controller
                         'description' => $reply->description,
                         'call_date' => $reply->call_date ? $reply->call_date->format('Y-m-d') : null,
                         'call_time' => $reply->call_time,
+                        'next_call_date' => $reply->next_call_date ? $reply->next_call_date->format('Y-m-d') : null,
+                        'next_call_time' => $reply->next_call_time,
                         'user' => $reply->user,
                         'kontaktperson' => $reply->kontaktperson,
                     ]),
