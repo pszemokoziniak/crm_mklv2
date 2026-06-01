@@ -71,8 +71,12 @@ class Oferta extends Model
 
             foreach ($keywords as $keyword) {
                 $keyword = trim($keyword);
-                $query->where(function ($query) use ($keyword) {
+                $idKeyword = ltrim($keyword, '#');
+                $query->where(function ($query) use ($keyword, $idKeyword) {
                     $query->where('typ', 'like', '%'.$keyword.'%')
+                        ->when(ctype_digit($idKeyword), function ($query) use ($idKeyword) {
+                            $query->orWhere('ofertas.id', (int) $idKeyword);
+                        })
                         ->orWhereHas('client', function ($query) use ($keyword) {
                             $query->where('nazwa', 'like', '%'.$keyword.'%');
                         })

@@ -9,7 +9,7 @@
           <h1 class="text-3xl font-bold text-gray-900">
             <Link class="text-indigo-500 hover:text-indigo-700 transition-colors" href="/oferta">Oferty</Link>
             <span class="text-gray-300 font-light mx-2">/</span>
-            <span class="text-gray-600">Edycja</span>
+            <span class="text-gray-600">Oferta #{{ oferta.id }}</span>
           </h1>
         </div>
       </div>
