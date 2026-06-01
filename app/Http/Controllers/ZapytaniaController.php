@@ -198,7 +198,7 @@ class ZapytaniaController extends Controller
             'branzas' => Branza::get(),
             'krajs' => Kraj::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name', 'waluta'),
             'waluta' => Waluta::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
-            'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
             'zakres' => Zakres::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
             'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get()->map->only('id', 'nazwa'),
             'oferty' => Oferta::with('user')->where('zapytania_id', $zapytania->id)->get(),
@@ -270,7 +270,7 @@ class ZapytaniaController extends Controller
                 'id_zapyt' => $zapytania->id_zapyt,
                 'nazwa_projektu' => $zapytania->nazwa_projektu,
             ],
-            'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
             'zakres' => Zakres::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
             'waluta' => Waluta::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
         ]);
@@ -300,7 +300,7 @@ class ZapytaniaController extends Controller
                 'waluta_id' => $wznowienie->waluta_id,
                 'created_at' => $wznowienie->time ? $wznowienie->time->format('Y-m-d') : null,
             ],
-            'users' => User::orderBy(DB::raw('TRIM(first_name)'))->orderBy(DB::raw('TRIM(last_name)'))->get()->map->only('id', 'first_name', 'last_name'),
+            'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
             'zakres' => Zakres::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
             'waluta' => Waluta::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
         ]);
