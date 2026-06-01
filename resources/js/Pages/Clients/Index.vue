@@ -20,6 +20,12 @@
             <option value="nieaktywni">Nieaktywni</option>
             <option value="zapytania">Zapytania</option>
           </select>
+          <ul class="mt-2 space-y-1 text-xs text-gray-500 leading-snug">
+            <li><span class="font-semibold text-gray-700">Wszystko</span> – wszyscy klienci</li>
+            <li><span class="font-semibold text-gray-700">Aktywni</span> – zapytanie lub kontakt z Klientem w ostatnich 6 miesiącach</li>
+            <li><span class="font-semibold text-gray-700">Nieaktywni</span> – brak zapytania oraz kontaktu z Klientem w ostatnich 6 miesiącach</li>
+            <li><span class="font-semibold text-gray-700">Zapytania</span> – otrzymane zapytanie od Klienta w obecnym roku kalendarzowym</li>
+          </ul>
         </div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Archiwum:</label>
         <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
