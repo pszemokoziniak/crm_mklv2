@@ -129,6 +129,16 @@ class ReminderRule extends Model
                     });
                 }
                 continue;
+            } elseif (str_starts_with($token, 'flag:')) {
+                $flag = substr($token, 5);
+                if ($flag !== '' && in_array($flag, ['preliminarz_email'], true)) {
+                    User::where($flag, true)->get()->each(function ($u) use ($users, $requiresEmail) {
+                        if (!$requiresEmail || $u->email) {
+                            $users->put($u->id, $u);
+                        }
+                    });
+                }
+                continue;
             }
 
             if ($user && (!$requiresEmail || $user->email)) {
