@@ -289,6 +289,7 @@
               <tr class="text-left font-bold text-gray-400 text-xs uppercase tracking-widest bg-gray-50/50">
                 <th class="px-8 py-4">Wartość</th>
                 <th class="px-8 py-4">Data kontaktu</th>
+                <th class="px-8 py-4">Status</th>
                 <th class="px-8 py-4">Opiekun</th>
                 <th class="px-8 py-4" />
               </tr>
@@ -307,6 +308,18 @@
                   </Link>
                 </td>
                 <td class="px-8 py-5">
+                  <Link :href="`/oferta/${item.id}/edit`">
+                    <span
+                      v-if="item.ofertastatus"
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                      :class="ofertaStatusClasses(item.ofertastatus.name)"
+                    >
+                      {{ item.ofertastatus.name }}
+                    </span>
+                    <span v-else class="text-xs text-gray-400 italic">—</span>
+                  </Link>
+                </td>
+                <td class="px-8 py-5">
                   <Link class="flex flex-col" :href="`/oferta/${item.id}/edit`">
                     <span class="text-sm font-medium text-gray-700">{{ item.user.last_name }} {{ item.user.first_name }}</span>
                     <span class="text-xs text-gray-400">{{ $filters.formatDateTime(item.created_at) }}</span>
@@ -319,7 +332,7 @@
                 </td>
               </tr>
               <tr v-if="oferty.length === 0">
-                <td class="px-8 py-12 text-center text-gray-400 border-t" colspan="4">
+                <td class="px-8 py-12 text-center text-gray-400 border-t" colspan="5">
                   <div class="flex flex-col items-center">
                     <icon name="zapytania" class="w-12 h-12 mb-2 opacity-20" />
                     <p>Brak ofert dla tego zapytania.</p>
@@ -591,6 +604,14 @@ export default {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }).format(num)
+    },
+    ofertaStatusClasses(status) {
+      if (!status) return 'bg-gray-50 text-gray-600 border-gray-100'
+      const s = status.toLowerCase()
+      if (s.includes('wygrana') || s.includes('przyjęta') || s.includes('realizacja')) return 'bg-green-50 text-green-700 border-green-100'
+      if (s.includes('przegrana') || s.includes('odrzucona') || s.includes('rezygnacja')) return 'bg-red-50 text-red-700 border-red-100'
+      if (s.includes('toczy') || s.includes('wysłana') || s.includes('oczekuje')) return 'bg-blue-50 text-blue-700 border-blue-100'
+      return 'bg-gray-50 text-gray-600 border-gray-100'
     },
   },
 }

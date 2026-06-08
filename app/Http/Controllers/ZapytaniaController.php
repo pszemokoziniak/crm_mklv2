@@ -201,7 +201,7 @@ class ZapytaniaController extends Controller
             'users' => User::orderBy(DB::raw('TRIM(last_name)'))->orderBy(DB::raw('TRIM(first_name)'))->get()->map->only('id', 'first_name', 'last_name'),
             'zakres' => Zakres::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
             'clients' => Client::orderBy(DB::raw('TRIM(nazwa)'))->get()->map->only('id', 'nazwa'),
-            'oferty' => Oferta::with('user')->where('zapytania_id', $zapytania->id)->get(),
+            'oferty' => Oferta::with(['user', 'ofertastatus'])->where('zapytania_id', $zapytania->id)->get(),
             'clientById' => Client::where('id', $zapytania->client_id)->withTrashed()->firstOrFail(),
             'archiwumOpis' => ArchiwumZapytania::with('user')->where('zapytania_id', $zapytania->id)->get(),
             'kontakty' => Kontakt::with(['user', 'kontaktperson', 'children.user', 'children.kontaktperson'])
