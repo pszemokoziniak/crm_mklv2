@@ -91,8 +91,8 @@
       <table class="w-full table-fixed">
         <colgroup>
           <col style="width:30%" /><!-- Zapytanie -->
-          <col style="width:12%" class="hidden lg:table-column" /><!-- Typ -->
           <col style="width:25%" /><!-- Klient -->
+          <col style="width:12%" class="hidden lg:table-column" /><!-- Typ -->
           <col style="width:13%" /><!-- Status -->
           <col style="width:14%" class="hidden lg:table-column" /><!-- Kwota -->
           <col style="width:15%" class="hidden lg:table-column" /><!-- Dodał -->
@@ -103,17 +103,21 @@
             <th class="px-3 py-1.5">
               <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Zapytanie</span>
             </th>
-            <th class="px-3 py-1.5 hidden lg:table-cell">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Typ</span>
-            </th>
             <th class="px-3 py-1.5">
               <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Klient</span>
+            </th>
+            <th class="px-3 py-1.5 hidden lg:table-cell">
+              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Typ</span>
             </th>
             <th class="px-3 py-1.5">
               <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Status</span>
             </th>
             <th class="px-3 py-1.5 hidden lg:table-cell">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Kwota</span>
+              <button type="button" class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap hover:text-indigo-600 transition-colors" :class="{ 'text-indigo-600': form.field === 'kwota' }" @click="toggleSort('kwota')">
+                <span>Kwota</span>
+                <span v-if="form.field === 'kwota'" class="text-[10px]">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-[10px] text-gray-300">↕</span>
+              </button>
             </th>
             <th class="px-3 py-1.5 hidden lg:table-cell">
               <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Dodał</span>
@@ -136,14 +140,14 @@
                 </div>
               </Link>
             </td>
-            <td class="px-3 py-2.5 hidden lg:table-cell overflow-hidden">
-              <Link class="text-xs text-gray-600 truncate block" :href="`/oferta/${item.id}/edit`" tabindex="-1">
-                {{ item.typ || '-' }}
-              </Link>
-            </td>
             <td class="px-3 py-2.5 overflow-hidden">
               <Link class="block text-gray-600 truncate" :href="`/oferta/${item.id}/edit`" tabindex="-1">
                 <span v-if="item.client" class="text-xs font-medium" :title="item.client.nazwa">{{ item.client.nazwa }}</span>
+              </Link>
+            </td>
+            <td class="px-3 py-2.5 hidden lg:table-cell overflow-hidden">
+              <Link class="text-xs text-gray-600 truncate block" :href="`/oferta/${item.id}/edit`" tabindex="-1">
+                {{ item.typ || '-' }}
               </Link>
             </td>
             <td class="px-3 py-2.5 overflow-hidden">
@@ -222,6 +226,8 @@ export default {
       form: {
         search: this.filters.search,
         trashed: this.filters.trashed,
+        field: this.filters.field || null,
+        direction: this.filters.direction || null,
       },
     }
   },
@@ -246,6 +252,17 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    toggleSort(field) {
+      if (this.form.field !== field) {
+        this.form.field = field
+        this.form.direction = 'desc'
+      } else if (this.form.direction === 'desc') {
+        this.form.direction = 'asc'
+      } else {
+        this.form.field = null
+        this.form.direction = null
+      }
     },
     formatCurrency(value) {
       if (!value) return '0'

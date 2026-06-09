@@ -55,13 +55,23 @@ class OfertaController extends Controller
             'statuses' => $statusStats,
         ];
 
+        $sortField = Request::input('field');
+        $sortDirection = Request::input('direction') === 'asc' ? 'asc' : 'desc';
+
+        $ofertasQuery = Oferta::with(['client', 'user', 'zapytania', 'status', 'waluta'])
+            ->filter(Request::only('search', 'trashed'));
+
+        if ($sortField === 'kwota') {
+            $ofertasQuery->orderByRaw('kwota IS NULL, kwota ' . $sortDirection);
+        } else {
+            $ofertasQuery->OrderByCreatedAt();
+        }
+
         return Inertia::render('Oferta/Index', [
-            'filters' => Request::all('search', 'trashed'),
+            'filters' => Request::all('search', 'trashed', 'field', 'direction'),
             'stats' => $stats,
             'statusOptions' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
-            'ofertas' => Oferta::with(['client', 'user', 'zapytania', 'status', 'waluta'])
-                ->OrderByCreatedAt()
-                ->filter(Request::only('search', 'trashed'))
+            'ofertas' => $ofertasQuery
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($oferta) => [
