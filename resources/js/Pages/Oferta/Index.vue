@@ -131,9 +131,8 @@
                   </span>
                   <icon v-if="item.deleted_at" name="trash" class="fill-rose-400 flex-shrink-0 ml-2 w-3 h-3" />
                 </div>
-                <div class="text-[10px] mt-0.5 text-gray-400 font-medium truncate">
-                  <span class="text-indigo-500 font-semibold">Oferta #{{ item.id }}</span>
-                  <span v-if="item.zapytania && item.zapytania.id_zapyt"> · {{ item.zapytania.id_zapyt }}</span>
+                <div v-if="item.zapytania && item.zapytania.id_zapyt" class="text-[10px] mt-0.5 text-gray-400 font-medium truncate">
+                  {{ item.zapytania.id_zapyt }}
                 </div>
               </Link>
             </td>
