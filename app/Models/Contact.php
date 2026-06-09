@@ -34,14 +34,17 @@ class Contact extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('first_name', 'like', '%'.$search.'%')
-                    ->orWhere('last_name', 'like', '%'.$search.'%')
-                    ->orWhere('email', 'like', '%'.$search.'%')
-                    ->orWhereHas('organization', function ($query) use ($search) {
-                        $query->where('name', 'like', '%'.$search.'%');
-                    });
-            });
+            $keywords = array_filter(array_map('trim', explode('+', $search)), fn ($k) => $k !== '');
+            foreach ($keywords as $keyword) {
+                $query->where(function ($query) use ($keyword) {
+                    $query->where('first_name', 'like', '%'.$keyword.'%')
+                        ->orWhere('last_name', 'like', '%'.$keyword.'%')
+                        ->orWhere('email', 'like', '%'.$keyword.'%')
+                        ->orWhereHas('organization', function ($query) use ($keyword) {
+                            $query->where('name', 'like', '%'.$keyword.'%');
+                        });
+                });
+            }
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();

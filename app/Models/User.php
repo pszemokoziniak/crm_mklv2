@@ -124,11 +124,14 @@ class User extends Authenticatable
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('first_name', 'like', '%'.$search.'%')
-                    ->orWhere('last_name', 'like', '%'.$search.'%')
-                    ->orWhere('email', 'like', '%'.$search.'%');
-            });
+            $keywords = array_filter(array_map('trim', explode('+', $search)), fn ($k) => $k !== '');
+            foreach ($keywords as $keyword) {
+                $query->where(function ($query) use ($keyword) {
+                    $query->where('first_name', 'like', '%'.$keyword.'%')
+                        ->orWhere('last_name', 'like', '%'.$keyword.'%')
+                        ->orWhere('email', 'like', '%'.$keyword.'%');
+                });
+            }
         })->when($filters['role'] ?? null, function ($query, $role) {
             $query->whereRole($role);
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {

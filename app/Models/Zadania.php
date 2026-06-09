@@ -123,16 +123,21 @@ class Zadania extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('subject', 'like', '%'.$search.'%')
-                ->orWhere('description', 'like', '%'.$search.'%')
-                ->orWhereHas('responsiblePerson', function ($query) use ($search) {
-                    $query->where('first_name', 'like', '%'.$search.'%')
-                        ->orWhere('last_name', 'like', '%'.$search.'%');
-                })
-                ->orWhereHas('user', function ($query) use ($search) {
-                    $query->where('first_name', 'like', '%'.$search.'%')
-                        ->orWhere('last_name', 'like', '%'.$search.'%');
+            $keywords = array_filter(array_map('trim', explode('+', $search)), fn ($k) => $k !== '');
+            foreach ($keywords as $keyword) {
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('subject', 'like', '%'.$keyword.'%')
+                        ->orWhere('description', 'like', '%'.$keyword.'%')
+                        ->orWhereHas('responsiblePerson', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', '%'.$keyword.'%')
+                                ->orWhere('last_name', 'like', '%'.$keyword.'%');
+                        })
+                        ->orWhereHas('user', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', '%'.$keyword.'%')
+                                ->orWhere('last_name', 'like', '%'.$keyword.'%');
+                        });
                 });
+            }
         })->when($filters['status'] ?? null, function ($query, $status) {
             $query->where('status', $status);
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {

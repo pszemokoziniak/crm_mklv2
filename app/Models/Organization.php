@@ -24,7 +24,10 @@ class Organization extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('name', 'like', '%'.$search.'%');
+            $keywords = array_filter(array_map('trim', explode('+', $search)), fn ($k) => $k !== '');
+            foreach ($keywords as $keyword) {
+                $query->where('name', 'like', '%'.$keyword.'%');
+            }
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();

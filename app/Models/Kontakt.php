@@ -79,25 +79,28 @@ class Kontakt extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where(function($q) use ($search) {
-                $q->where('subject', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%')
-                    ->orWhereHas('kontaktperson', function ($query) use ($search) {
-                        $query->where('first_name', 'like', '%'.$search.'%')
-                            ->orWhere('last_name', 'like', '%'.$search.'%');
-                    })
-                    ->orWhereHas('client', function ($query) use ($search) {
-                        $query->where('nazwa', 'like', '%'.$search.'%');
-                    })
-                    ->orWhereHas('user', function ($query) use ($search) {
-                        $query->where('first_name', 'like', '%'.$search.'%')
-                            ->orWhere('last_name', 'like', '%'.$search.'%');
-                    })
-                    ->orWhereHas('opiekun', function ($query) use ($search) {
-                        $query->where('first_name', 'like', '%'.$search.'%')
-                            ->orWhere('last_name', 'like', '%'.$search.'%');
-                    });
-            });
+            $keywords = array_filter(array_map('trim', explode('+', $search)), fn ($k) => $k !== '');
+            foreach ($keywords as $keyword) {
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('subject', 'like', '%'.$keyword.'%')
+                        ->orWhere('description', 'like', '%'.$keyword.'%')
+                        ->orWhereHas('kontaktperson', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', '%'.$keyword.'%')
+                                ->orWhere('last_name', 'like', '%'.$keyword.'%');
+                        })
+                        ->orWhereHas('client', function ($query) use ($keyword) {
+                            $query->where('nazwa', 'like', '%'.$keyword.'%');
+                        })
+                        ->orWhereHas('user', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', '%'.$keyword.'%')
+                                ->orWhere('last_name', 'like', '%'.$keyword.'%');
+                        })
+                        ->orWhereHas('opiekun', function ($query) use ($keyword) {
+                            $query->where('first_name', 'like', '%'.$keyword.'%')
+                                ->orWhere('last_name', 'like', '%'.$keyword.'%');
+                        });
+                });
+            }
         });
     }
 }

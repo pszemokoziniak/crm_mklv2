@@ -28,7 +28,10 @@ class ActivityLog extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('action', 'like', '%'.$search.'%');
+            $keywords = array_filter(array_map('trim', explode('+', $search)), fn ($k) => $k !== '');
+            foreach ($keywords as $keyword) {
+                $query->where('action', 'like', '%'.$keyword.'%');
+            }
         });
     }
 }

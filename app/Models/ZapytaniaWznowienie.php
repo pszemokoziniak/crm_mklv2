@@ -89,27 +89,29 @@ class ZapytaniaWznowienie extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            // Only apply search conditions if $search is not an empty string
             if (!empty($search)) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('text', 'like', '%' . $search . '%')
-                        ->orWhere('id_zapytania', 'like', '%' . $search . '%')
-                        ->orWhereHas('zapytanie', function ($query) use ($search) {
-                            $query->where('nazwa_projektu', 'like', '%' . $search . '%')
-                                ->orWhere('id_zapyt', 'like', '%' . $search . '%')
-                                ->orWhereHas('client', function ($query) use ($search) {
-                                    $query->where('nazwa', 'like', '%' . $search . '%');
-                                });
-                        })
-                        ->orWhereHas('user', function ($query) use ($search) {
-                            $query->where('first_name', 'like', '%' . $search . '%')
-                                ->orWhere('last_name', 'like', '%' . $search . '%');
-                        })
-                        ->orWhereHas('opracowuje', function ($query) use ($search) {
-                            $query->where('first_name', 'like', '%' . $search . '%')
-                                ->orWhere('last_name', 'like', '%' . $search . '%');
-                        });
-                });
+                $keywords = array_filter(array_map('trim', explode('+', $search)), fn ($k) => $k !== '');
+                foreach ($keywords as $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->where('text', 'like', '%' . $keyword . '%')
+                            ->orWhere('id_zapytania', 'like', '%' . $keyword . '%')
+                            ->orWhereHas('zapytanie', function ($query) use ($keyword) {
+                                $query->where('nazwa_projektu', 'like', '%' . $keyword . '%')
+                                    ->orWhere('id_zapyt', 'like', '%' . $keyword . '%')
+                                    ->orWhereHas('client', function ($query) use ($keyword) {
+                                        $query->where('nazwa', 'like', '%' . $keyword . '%');
+                                    });
+                            })
+                            ->orWhereHas('user', function ($query) use ($keyword) {
+                                $query->where('first_name', 'like', '%' . $keyword . '%')
+                                    ->orWhere('last_name', 'like', '%' . $keyword . '%');
+                            })
+                            ->orWhereHas('opracowuje', function ($query) use ($keyword) {
+                                $query->where('first_name', 'like', '%' . $keyword . '%')
+                                    ->orWhere('last_name', 'like', '%' . $keyword . '%');
+                            });
+                    });
+                }
             }
         });
     }

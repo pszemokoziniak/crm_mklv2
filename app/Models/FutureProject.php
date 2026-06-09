@@ -72,22 +72,25 @@ class FutureProject extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('nazwa', 'like', '%'.$search.'%')
-                    ->orWhere('miasto', 'like', '%'.$search.'%')
-                    ->orWhereHas('kraj', function ($query) use ($search) {
-                        $query->where('name', 'like', '%'.$search.'%');
-                    })
-                    ->orWhereHas('client', function ($query) use ($search) {
-                        $query->where('nazwa', 'like', '%'.$search.'%');
-                    })
-                    ->orWhereHas('objekt', function ($query) use ($search) {
-                        $query->where('name', 'like', '%'.$search.'%');
-                    })
-                    ->orWhereHas('faza', function ($query) use ($search) {
-                        $query->where('name', 'like', '%'.$search.'%');
-                    });
-            });
+            $keywords = array_filter(array_map('trim', explode('+', $search)), fn ($k) => $k !== '');
+            foreach ($keywords as $keyword) {
+                $query->where(function ($query) use ($keyword) {
+                    $query->where('nazwa', 'like', '%'.$keyword.'%')
+                        ->orWhere('miasto', 'like', '%'.$keyword.'%')
+                        ->orWhereHas('kraj', function ($query) use ($keyword) {
+                            $query->where('name', 'like', '%'.$keyword.'%');
+                        })
+                        ->orWhereHas('client', function ($query) use ($keyword) {
+                            $query->where('nazwa', 'like', '%'.$keyword.'%');
+                        })
+                        ->orWhereHas('objekt', function ($query) use ($keyword) {
+                            $query->where('name', 'like', '%'.$keyword.'%');
+                        })
+                        ->orWhereHas('faza', function ($query) use ($keyword) {
+                            $query->where('name', 'like', '%'.$keyword.'%');
+                        });
+                });
+            }
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
