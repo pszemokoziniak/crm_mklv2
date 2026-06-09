@@ -134,23 +134,26 @@ class Zapytania extends Model
         $query->when($filters['search'] ?? null, function ($query, $search) {
             // Only apply search conditions if $search is not an empty string
             if (!empty($search)) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('nazwa_projektu', 'like', '%'.$search.'%')
-                        ->orWhere('id_zapyt', 'like', '%'.$search.'%')
-                        ->orWhereHas('client', function ($query) use ($search) {
-                            $query->where('nazwa', 'like', '%'.$search.'%');
-                        })
-                        ->orWhereHas('user', function ($query) use ($search) {
-                            $query->where('first_name', 'like', '%'.$search.'%')
-                                ->orWhere('last_name', 'like', '%'.$search.'%');
-                        })
-                        ->orWhereHas('kraj', function ($query) use ($search) {
-                            $query->where('name', 'like', '%'.$search.'%');
-                        })
-                        ->orWhereHas('zakres', function ($query) use ($search) {
-                            $query->where('name', 'like', '%'.$search.'%');
-                        });
-                });
+                $keywords = array_filter(array_map('trim', explode('+', $search)), fn ($k) => $k !== '');
+                foreach ($keywords as $keyword) {
+                    $query->where(function ($query) use ($keyword) {
+                        $query->where('nazwa_projektu', 'like', '%'.$keyword.'%')
+                            ->orWhere('id_zapyt', 'like', '%'.$keyword.'%')
+                            ->orWhereHas('client', function ($query) use ($keyword) {
+                                $query->where('nazwa', 'like', '%'.$keyword.'%');
+                            })
+                            ->orWhereHas('user', function ($query) use ($keyword) {
+                                $query->where('first_name', 'like', '%'.$keyword.'%')
+                                    ->orWhere('last_name', 'like', '%'.$keyword.'%');
+                            })
+                            ->orWhereHas('kraj', function ($query) use ($keyword) {
+                                $query->where('name', 'like', '%'.$keyword.'%');
+                            })
+                            ->orWhereHas('zakres', function ($query) use ($keyword) {
+                                $query->where('name', 'like', '%'.$keyword.'%');
+                            });
+                    });
+                }
             }
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
