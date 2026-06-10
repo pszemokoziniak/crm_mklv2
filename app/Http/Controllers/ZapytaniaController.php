@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WznowienieStoreRequest;
 use App\Http\Requests\WznowienieUpdateRequest; // Import the new request
 use App\Http\Requests\ZapytaniaStoreRequest;
+use App\Mail\ZapytaniaMail;
 use App\Models\ArchiwumZapytania;
 use App\Models\Branza;
 use App\Models\Client;
@@ -19,6 +20,8 @@ use App\Models\Kontakt;
 use App\Models\ZapytaniaWznowienie;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -156,6 +159,8 @@ class ZapytaniaController extends Controller
         });
 
         $this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
+
+        $this->sendPreliminarzMail($data->id);
 
         return Redirect::route('zapytania')->with('success', 'Zapisano.');
     }
@@ -435,8 +440,45 @@ class ZapytaniaController extends Controller
         $zapytania->wznowienie = 2;
         $zapytania->save();
 
+        // Mail PRELIMINARZ dla wznowienia - bazujemy na fladze preliminarz z wznowienia
+        if (($wznowienie->preliminarz ?? null) === 'Tak') {
+            $this->sendPreliminarzMail($zapytania->id);
+        }
+
         return Redirect::route('zapytania.edit', $zapytania->id)->with('success', 'Wznowienie dodane.');
     }
+
+    /**
+     * Wysyla bogaty mail z informacjami o zapytaniu do osob z flaga preliminarz_email=1.
+     * Robi to tylko gdy zapytanie ma preliminarz=Tak.
+     */
+    protected function sendPreliminarzMail(int $zapytaniaId): void
+    {
+        try {
+            $data = Zapytania::with(['client', 'user', 'kraj', 'zakres', 'opracowuje', 'waluta'])
+                ->find($zapytaniaId);
+
+            if (!$data || ($data->preliminarz ?? null) !== 'Tak') {
+                return;
+            }
+
+            $emails = User::where('preliminarz_email', true)
+                ->whereNotNull('email')
+                ->where('email', '!=', '')
+                ->pluck('email');
+
+            if ($emails->isEmpty()) {
+                return;
+            }
+
+            Mail::send(new ZapytaniaMail($data, $emails->all()));
+        } catch (\Throwable $e) {
+            Log::error('Blad wysylki maila preliminarz: ' . $e->getMessage(), [
+                'zapytania_id' => $zapytaniaId,
+            ]);
+        }
+    }
+
     public function deleteWznowienie(Zapytania $zapytania)
     {
         $zapytania->wznowienie = 1;
