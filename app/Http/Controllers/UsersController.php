@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Notifications\WelcomeUserNotification;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -69,11 +72,16 @@ class UsersController extends Controller
             'preliminarz_email' => ['boolean'],
         ]);
 
+        $providedPassword = Request::get('password');
+        $shouldSendWelcomeMail = empty($providedPassword);
+        // Jesli admin nie wpisal hasla generujemy losowe (nie do uzytku - user dostanie link do ustawienia swojego)
+        $passwordToSave = $shouldSendWelcomeMail ? Str::random(40) : $providedPassword;
+
         $user = Auth::user()->account->users()->create([
             'first_name' => Request::get('first_name'),
             'last_name' => Request::get('last_name'),
             'email' => Request::get('email'),
-            'password' => Request::get('password'),
+            'password' => $passwordToSave,
             'owner' => false, // Domyślnie false, bo używamy ról Spatie
             'photo_path' => Request::file('photo') ? Request::file('photo')->store('users') : null,
             'active' => Request::get('active'),
@@ -83,7 +91,39 @@ class UsersController extends Controller
         // Explicitly cast to string to prevent JSON object saving
         $user->assignRole((string) Request::get('role'));
 
-        return Redirect::route('users')->with('success', 'User created.');
+        $successMessage = 'Użytkownik utworzony.';
+
+        if ($shouldSendWelcomeMail) {
+            try {
+                $token = Password::broker()->createToken($user);
+                $user->notify(new WelcomeUserNotification($token));
+                $successMessage = 'Użytkownik utworzony. Mail powitalny z linkiem do ustawienia hasła został wysłany.';
+            } catch (\Throwable $e) {
+                Log::error('Blad wysylki maila powitalnego: ' . $e->getMessage(), ['user_id' => $user->id]);
+                $successMessage = 'Użytkownik utworzony, ale nie udało się wysłać maila powitalnego (sprawdź logi).';
+            }
+        }
+
+        return Redirect::route('users')->with('success', $successMessage);
+    }
+
+    /**
+     * Wysyla uzytkownikowi ponownie mail z linkiem do ustawienia/zmiany hasla.
+     */
+    public function sendPasswordSetupLink(User $user)
+    {
+        if (empty($user->email)) {
+            return Redirect::back()->with('error', 'Użytkownik nie ma adresu e-mail.');
+        }
+
+        try {
+            $token = Password::broker()->createToken($user);
+            $user->notify(new WelcomeUserNotification($token));
+            return Redirect::back()->with('success', 'Mail z linkiem do ustawienia hasła został wysłany.');
+        } catch (\Throwable $e) {
+            Log::error('Blad wysylki maila z linkiem do hasla: ' . $e->getMessage(), ['user_id' => $user->id]);
+            return Redirect::back()->with('error', 'Nie udało się wysłać maila (sprawdź logi).');
+        }
     }
 
     public function edit(User $user)

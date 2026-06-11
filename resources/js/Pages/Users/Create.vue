@@ -11,7 +11,12 @@
           <text-input v-model="form.first_name" :error="form.errors.first_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Imię" />
           <text-input v-model="form.last_name" :error="form.errors.last_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwisko" />
           <text-input v-model="form.email" :error="form.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
-          <text-input v-model="form.password" :error="form.errors.password" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Hasło" />
+          <div class="pb-8 pr-6 w-full lg:w-1/2">
+            <text-input v-model="form.password" :error="form.errors.password" type="password" autocomplete="new-password" label="Hasło (opcjonalne)" />
+            <p class="mt-1 text-xs text-gray-500">
+              Pozostaw puste, aby wysłać użytkownikowi mail z linkiem do ustawienia własnego hasła.
+            </p>
+          </div>
 
           <select-input v-model="form.role" :error="form.errors.role" class="pb-8 pr-6 w-full lg:w-1/2" label="Rola">
             <option :value="null" />

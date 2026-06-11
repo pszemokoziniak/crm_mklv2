@@ -110,6 +110,7 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
         Route::put('users/{user}', [UsersController::class, 'update'])->name('users.update');
         Route::delete('users/{user}', [UsersController::class, 'destroy'])->name('users.destroy');
         Route::put('users/{user}/restore', [UsersController::class, 'restore'])->name('users.restore');
+        Route::post('users/{user}/send-password-setup-link', [UsersController::class, 'sendPasswordSetupLink'])->name('users.send-password-setup-link');
 
         // Edit / Ustawienia
         Route::get('edit', [EditController::class, 'index'])->name('edit');

@@ -80,10 +80,14 @@
 
         <!-- Secondary Actions Bar -->
         <div v-if="!user.deleted_at && !isActive && canEdit" class="bg-white border-t border-gray-100">
-          <div class="grid grid-cols-1 divide-x divide-gray-100">
+          <div class="grid divide-x divide-gray-100" :class="canSendPasswordLink ? 'grid-cols-2' : 'grid-cols-1'">
             <button class="flex items-center justify-center px-4 py-4 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="disableForm">
               <icon name="edit" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
               <span class="text-sm font-bold">Edytuj dane</span>
+            </button>
+            <button v-if="canSendPasswordLink" class="flex items-center justify-center px-4 py-4 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="sendPasswordLink">
+              <icon name="printer" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span class="text-sm font-bold">Wyślij link do ustawienia hasła</span>
             </button>
           </div>
         </div>
@@ -217,6 +221,10 @@ export default {
       // Super-admin zawsze może zmieniać rolę. Administrator może zmieniać rolę, ale nie swoją własną.
       return this.isSuperAdmin || (this.isAdmin && !this.isOwnProfile)
     },
+    canSendPasswordLink() {
+      // Tylko admini moga wyslac link do innego usera (nie samemu sobie - jest "Nie pamietam hasla" na stronie logowania)
+      return (this.isSuperAdmin || this.isAdmin) && !this.isOwnProfile && !!this.user.email
+    },
     filteredActivities() {
       if (!this.activities) {
         return []
@@ -252,6 +260,13 @@ export default {
     unblockActive() {
       if (confirm('Odblokować konto?')) {
         this.$inertia.post(`/users/${this.user.id}/unblock`)
+      }
+    },
+    sendPasswordLink() {
+      if (confirm(`Wysłać do ${this.user.first_name} ${this.user.last_name} (${this.user.email}) mail z linkiem do ustawienia hasła?`)) {
+        this.$inertia.post(`/users/${this.user.id}/send-password-setup-link`, {}, {
+          preserveScroll: true,
+        })
       }
     },
     disableForm() {
