@@ -46,6 +46,10 @@ class ClientController extends Controller
                         $query->join('branzas', 'clients.branza_id', '=', 'branzas.id')
                             ->orderBy('branzas.name', $direction)
                             ->select('clients.*');
+                    } elseif ($field === 'kraj') {
+                        $query->leftJoin('krajs', 'clients.kraj_id', '=', 'krajs.id')
+                            ->orderBy('krajs.name', $direction)
+                            ->select('clients.*');
                     } elseif ($field === 'user') {
                         $query->join('users', 'clients.user_id', '=', 'users.id')
                             ->orderBy('users.last_name', $direction)

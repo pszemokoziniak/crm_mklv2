@@ -53,6 +53,12 @@
                   <icon v-if="form.field === 'branza'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
                 </div>
               </th>
+              <th class="px-6 py-1.5 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('kraj')">
+                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">
+                  Kraj
+                  <icon v-if="form.field === 'kraj'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+                </div>
+              </th>
               <th class="px-6 py-1.5 whitespace-nowrap">
                 <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Z / O / K</div>
               </th>
@@ -80,6 +86,11 @@
                 </Link>
               </td>
               <td class="px-6 py-4">
+                <Link class="flex items-center text-gray-600" :href="`/clients/${item.id}/edit`" tabindex="-1">
+                  <span class="text-sm whitespace-nowrap">{{ item.kraj }}</span>
+                </Link>
+              </td>
+              <td class="px-6 py-4">
                 <Link class="flex items-center gap-2" :href="`/clients/${item.id}/edit`" tabindex="-1">
                   <div class="flex items-center justify-center w-7 h-7 rounded bg-indigo-50 text-indigo-600 text-xs font-bold" title="Zapytania">
                     {{ item.zapytania_count }}
@@ -104,7 +115,7 @@
               </td>
             </tr>
             <tr v-if="clients.data.length === 0">
-              <td class="px-6 py-12 text-center text-gray-400" colspan="6">
+              <td class="px-6 py-12 text-center text-gray-400" colspan="7">
                 <div class="flex flex-col items-center">
                   <icon name="users" class="w-12 h-12 mb-2 opacity-20" />
                   <p>Brak klientów spełniających kryteria.</p>
