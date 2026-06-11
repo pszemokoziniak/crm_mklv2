@@ -160,7 +160,9 @@ class ZapytaniaController extends Controller
 
         $this->storeActivityLog('Nowe zapytanie', $data->id, $request->client_id, 'zapytania', 'zmiany', Auth::id());
 
-        $this->sendPreliminarzMail($data->id);
+        if (($data->preliminarz ?? null) === 'Tak') {
+            $this->sendPreliminarzMail($data->id);
+        }
 
         return Redirect::route('zapytania')->with('success', 'Zapisano.');
     }
@@ -450,7 +452,7 @@ class ZapytaniaController extends Controller
 
     /**
      * Wysyla bogaty mail z informacjami o zapytaniu do osob z flaga preliminarz_email=1.
-     * Robi to tylko gdy zapytanie ma preliminarz=Tak.
+     * Caller jest odpowiedzialny za decyzje czy ma sie wyslac (zwykle: preliminarz=Tak).
      */
     protected function sendPreliminarzMail(int $zapytaniaId): void
     {
@@ -458,7 +460,8 @@ class ZapytaniaController extends Controller
             $data = Zapytania::with(['client', 'user', 'kraj', 'zakres', 'opracowuje', 'waluta'])
                 ->find($zapytaniaId);
 
-            if (!$data || ($data->preliminarz ?? null) !== 'Tak') {
+            if (!$data) {
+                Log::warning('sendPreliminarzMail: nie znaleziono zapytania', ['zapytania_id' => $zapytaniaId]);
                 return;
             }
 
@@ -468,10 +471,15 @@ class ZapytaniaController extends Controller
                 ->pluck('email');
 
             if ($emails->isEmpty()) {
+                Log::info('sendPreliminarzMail: brak userow z flaga preliminarz_email=true', ['zapytania_id' => $zapytaniaId]);
                 return;
             }
 
             Mail::send(new ZapytaniaMail($data, $emails->all()));
+            Log::info('sendPreliminarzMail: mail wyslany', [
+                'zapytania_id' => $zapytaniaId,
+                'recipients' => $emails->all(),
+            ]);
         } catch (\Throwable $e) {
             Log::error('Blad wysylki maila preliminarz: ' . $e->getMessage(), [
                 'zapytania_id' => $zapytaniaId,
