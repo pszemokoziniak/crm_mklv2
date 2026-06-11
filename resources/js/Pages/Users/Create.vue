@@ -18,11 +18,6 @@
             <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
           </select-input>
 
-          <select-input v-model="form.owner" :error="form.errors.owner" class="pb-8 pr-6 w-full lg:w-1/2" label="Właściciel (stare)">
-            <option :value="true">Tak</option>
-            <option :value="false">Nie</option>
-          </select-input>
-
           <file-input v-model="form.photo" :error="form.errors.photo" class="pb-8 pr-6 w-full lg:w-1/2" type="file" accept="image/*" label="Zdjęcie" />
 
           <checkbox-input v-model="form.preliminarz_email" :error="form.errors.preliminarz_email" class="pb-8 pr-6 w-full lg:w-1/2" label="Powiadomienia Preliminarz" description="Czy użytkownik otrzymuje powiadomienia e-mail dla nowych zapytań z opcją PRELIMINARZ - TAK" />
@@ -66,7 +61,6 @@ export default {
         last_name: '',
         email: '',
         password: '',
-        owner: false,
         role: null,
         photo: null,
         active: 1,
