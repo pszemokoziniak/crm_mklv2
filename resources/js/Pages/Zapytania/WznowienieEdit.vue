@@ -13,7 +13,7 @@
           <text-area v-model="form.text" :error="form.errors.text" class="pb-8 pr-6 w-full" label="Opis wznowienia" />
           <select-input v-model="form.id_user" :error="form.errors.id_user" class="pb-8 pr-6 w-full lg:w-1/2" label="Użytkownik">
             <option :value="null" />
-            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.first_name }} {{ user.last_name }}</option>
+            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.last_name }} {{ user.first_name }}</option>
           </select-input>
 
           <text-input v-model="form.data_otrzymania" :error="form.errors.data_otrzymania" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Data otrzymania" />
@@ -30,7 +30,7 @@
 
           <select-input v-model="form.user_opracowuje_id" :error="form.errors.user_opracowuje_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Opracowuje">
             <option :value="null" />
-            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.first_name }} {{ user.last_name }}</option>
+            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.last_name }} {{ user.first_name }}</option>
           </select-input>
 
           <text-input v-model="form.start" :error="form.errors.start" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Planowany start" />
