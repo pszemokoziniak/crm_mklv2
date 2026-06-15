@@ -27,11 +27,11 @@
             <li><span class="font-semibold text-gray-700">Zapytania</span> – otrzymane zapytanie od Klienta w obecnym roku kalendarzowym</li>
           </ul>
         </div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Archiwum:</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Wyświetlaj:</label>
         <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-          <option :value="null">Wszystko (bez usuniętych)</option>
-          <option value="with">Wszystko (z usuniętymi)</option>
-          <option value="only">Tylko usunięte</option>
+          <option :value="null">Aktualne</option>
+          <option value="only">Archiwum</option>
+          <option value="with">Wszystko</option>
         </select>
       </search-filter>
     </div>
