@@ -139,6 +139,10 @@ class Oferta extends Model
                         });
                 });
             }
+        })->when($filters['status'] ?? null, function ($query, $status) {
+            $query->whereHas('status', function ($q) use ($status) {
+                $q->whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($status))]);
+            });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();

@@ -59,7 +59,7 @@ class OfertaController extends Controller
         $sortDirection = Request::input('direction') === 'asc' ? 'asc' : 'desc';
 
         $ofertasQuery = Oferta::with(['client', 'user', 'zapytania', 'status', 'waluta'])
-            ->filter(Request::only('search', 'trashed'));
+            ->filter(Request::only('search', 'status', 'trashed'));
 
         if ($sortField === 'kwota') {
             $ofertasQuery->orderByRaw('kwota IS NULL, kwota ' . $sortDirection);
@@ -68,7 +68,7 @@ class OfertaController extends Controller
         }
 
         return Inertia::render('Oferta/Index', [
-            'filters' => Request::all('search', 'trashed', 'field', 'direction'),
+            'filters' => Request::all('search', 'status', 'trashed', 'field', 'direction'),
             'stats' => $stats,
             'statusOptions' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'ofertas' => $ofertasQuery

@@ -30,11 +30,20 @@
     <!-- Filtry -->
     <div class="flex items-center justify-between mb-4">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block mb-1 text-gray-700 text-sm font-medium">Status:</label>
+        <div class="mb-4">
+          <label class="block mb-1 text-gray-700 text-sm font-medium">Status:</label>
+          <select v-model="form.status" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-sm focus:ring-indigo-500">
+            <option :value="null">Wszystkie</option>
+            <option value="wygrana">Wygrana</option>
+            <option value="toczy">Toczy</option>
+            <option value="zawieszona przez inwestora">Zawieszona przez Inwestora</option>
+          </select>
+        </div>
+        <label class="block mb-1 text-gray-700 text-sm font-medium">Wyświetlaj:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-sm focus:ring-indigo-500">
           <option :value="null">Aktualne</option>
-          <option value="with">Wszystkie</option>
-          <option value="only">Tylko usunięte</option>
+          <option value="only">Archiwum</option>
+          <option value="with">Wszystko</option>
         </select>
       </search-filter>
     </div>
@@ -216,6 +225,7 @@ export default {
     return {
       form: {
         search: this.filters.search,
+        status: this.filters.status || null,
         trashed: this.filters.trashed,
         field: this.filters.field || null,
         direction: this.filters.direction || null,
