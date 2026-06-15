@@ -5,12 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
 class Oferta extends Model
 {
     use SoftDeletes, LogsActivity;
+
+    // Statusy oferty (porownywane lowercase) ktore powoduja
+    // automatyczna archiwizacje powiazanego zapytania.
+    protected const TERMINAL_LOST_STATUSES = ['przegrana', 'rezygnacja'];
 
     protected $guarded = [];
 
@@ -19,6 +24,48 @@ class Oferta extends Model
         'data_kontakt' => 'date',
         'data_wyslania' => 'date',
     ];
+
+    protected static function booted()
+    {
+        static::created(function ($oferta) {
+            self::maybeArchiveParentZapytanie($oferta);
+        });
+        static::updated(function ($oferta) {
+            if ($oferta->wasChanged('oferta_status_id')) {
+                self::maybeArchiveParentZapytanie($oferta);
+            }
+        });
+    }
+
+    protected static function maybeArchiveParentZapytanie(self $oferta): void
+    {
+        try {
+            if (!$oferta->oferta_status_id) {
+                return;
+            }
+            $status = OfertaStatus::find($oferta->oferta_status_id);
+            if (!$status) {
+                return;
+            }
+            $name = strtolower(trim($status->name));
+            if (!in_array($name, self::TERMINAL_LOST_STATUSES, true)) {
+                return;
+            }
+            $zapytanie = $oferta->zapytania()->first();
+            if ($zapytanie && !$zapytanie->trashed()) {
+                $zapytanie->delete();
+                Log::info('Auto-archiwizacja zapytania (status oferty)', [
+                    'oferta_id' => $oferta->id,
+                    'zapytania_id' => $zapytanie->id,
+                    'status' => $name,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Blad auto-archiwizacji zapytania: ' . $e->getMessage(), [
+                'oferta_id' => $oferta->id,
+            ]);
+        }
+    }
 
     public function getActivitylogOptions(): LogOptions
     {

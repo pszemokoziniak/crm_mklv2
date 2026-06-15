@@ -38,11 +38,11 @@
     <!-- Filtry -->
     <div class="flex items-center justify-between mb-4">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Status archiwum:</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Wyświetlaj:</label>
         <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-          <option :value="null">Wszystko (bez usuniętych)</option>
-          <option value="with">Wszystko (z usuniętymi)</option>
-          <option value="only">Tylko usunięte</option>
+          <option :value="null">Aktualne</option>
+          <option value="only">Archiwum</option>
+          <option value="with">Wszystko</option>
         </select>
       </search-filter>
     </div>
