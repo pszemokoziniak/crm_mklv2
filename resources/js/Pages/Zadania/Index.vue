@@ -11,10 +11,11 @@
           <option value="do_akceptacji">Do akceptacji</option>
           <option value="zamkniete">Zamknięte</option>
         </select>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Widok:</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Wyświetlaj:</label>
         <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-          <option value="with">Wszystko</option>
+          <option :value="null">Aktualne</option>
           <option value="only">Archiwum</option>
+          <option value="with">Wszystko</option>
         </select>
       </search-filter>
       <Link class="btn-indigo flex items-center justify-center px-6 py-2 rounded-lg shadow-md transition-all hover:shadow-lg active:scale-95" href="/zadania/create">
