@@ -77,20 +77,23 @@ class HandleInertiaRequests extends Middleware
                 $allMainMenus = MainMenu::with('uprawnienia')->orderBy('order')->get();
                 $userRoles = $user->getRoleNames()->toArray(); // Get user's role names
                 $isSuperAdmin = $user->hasRole('super-admin');
+                $isAdmin = $user->hasRole('Administrator');
+                $hasFullAccess = $isSuperAdmin || $isAdmin;
 
                 Log::info('User ID: ' . $user->id . ', Name: ' . $user->first_name . ' ' . $user->last_name);
                 Log::info('User Roles: ' . implode(', ', $userRoles)); // Log user roles
                 Log::info('Is Super Admin: ' . ($isSuperAdmin ? 'Yes' : 'No'));
+                Log::info('Is Administrator: ' . ($isAdmin ? 'Yes' : 'No'));
                 Log::info('Total Main Menus fetched: ' . $allMainMenus->count());
 
-                $filteredMenus = $allMainMenus->filter(function ($menuItem) use ($userRoles, $isSuperAdmin) {
+                $filteredMenus = $allMainMenus->filter(function ($menuItem) use ($userRoles, $hasFullAccess) {
                     Log::info('Processing menu item: ' . $menuItem->name);
                     $menuItemRoles = $menuItem->uprawnienia->pluck('name')->toArray(); // Get roles associated with menu item
                     Log::info('Menu item associated roles: ' . implode(', ', $menuItemRoles));
 
-                    // Super admin sees everything
-                    if ($isSuperAdmin) {
-                        Log::info('User is super admin, showing menu item: ' . $menuItem->name);
+                    // Super admin / Administrator sees everything
+                    if ($hasFullAccess) {
+                        Log::info('User is super-admin/Administrator, showing menu item: ' . $menuItem->name);
                         return true;
                     }
 
