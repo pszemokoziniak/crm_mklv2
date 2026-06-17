@@ -23,12 +23,12 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        // Kierownictwo: super-admin i administrator
-        $isKierownictwo = $user->hasAnyRole(['super-admin', 'administrator']);
+        // Kierownictwo: super-admin, Administrator i Kierownictwo (wedlug Spatie rola jest case-sensitive)
+        $isKierownictwo = $user->hasAnyRole(['super-admin', 'Administrator', 'Kierownictwo']);
         $selectedUserId = Request::get('user_id');
 
-        // Jeśli Kierownictwo nie wybrało nikogo, $filterUserId jest null (widzą wszystko).
-        // Jeśli to nie Kierownictwo (np. Eksport Techniczny), zawsze filtrujemy po ich ID.
+        // Jesli Kierownictwo nie wybralo nikogo, $filterUserId jest null (widza wszystko).
+        // Jesli to nie Kierownictwo (np. Eksport, Techniczny), zawsze filtrujemy po ich ID.
         $filterUserId = $isKierownictwo ? $selectedUserId : $user->id;
 
         // === Statystyki miesiąc do miesiąca ===
