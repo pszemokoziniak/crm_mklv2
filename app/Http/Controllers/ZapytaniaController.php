@@ -444,10 +444,73 @@ class ZapytaniaController extends Controller
 
         // Mail PRELIMINARZ dla wznowienia - bazujemy na fladze preliminarz z wznowienia
         if (($wznowienie->preliminarz ?? null) === 'Tak') {
-            $this->sendPreliminarzMail($zapytania->id);
+            $this->sendWznowienieMail($wznowienie->id);
         }
 
         return Redirect::route('zapytania.edit', $zapytania->id)->with('success', 'Wznowienie dodane.');
+    }
+
+    /**
+     * Wysyla bogaty mail z danymi WZNOWIENIA do osob z flaga preliminarz_email=1.
+     * Dane projektu/klienta brane z parent zapytania, dane terminów/kwot/opracowuje z wznowienia.
+     */
+    protected function sendWznowienieMail(int $wznowienieId): void
+    {
+        try {
+            $wznowienie = ZapytaniaWznowienie::with([
+                'zapytanie.client',
+                'zapytanie.kraj',
+                'zakres',
+                'waluta',
+                'opracowuje',
+            ])->find($wznowienieId);
+
+            if (!$wznowienie || !$wznowienie->zapytanie) {
+                Log::warning('sendWznowienieMail: nie znaleziono wznowienia lub parent zapytania', ['wznowienie_id' => $wznowienieId]);
+                return;
+            }
+
+            $parent = $wznowienie->zapytanie;
+
+            // Merged data: parent dla danych klient/projekt, wznowienie dla terminow/kwoty/opracowuje
+            $data = new \stdClass();
+            $data->id_zapyt = $parent->id_zapyt;
+            $data->wznowienie = 2; // pokaze badge WZNOWIENIE w blade
+            $data->client = $parent->client;
+            $data->nazwa_projektu = $parent->nazwa_projektu;
+            $data->miejscowosc = $parent->miejscowosc;
+            $data->kraj = $parent->kraj;
+            $data->zakres = $wznowienie->zakres;
+            $data->data_otrzymania = $wznowienie->data_otrzymania ? $wznowienie->data_otrzymania->format('Y-m-d') : null;
+            $data->data_zlozenia = $wznowienie->data_zlozenia ? $wznowienie->data_zlozenia->format('Y-m-d') : null;
+            $data->opracowuje = $wznowienie->opracowuje;
+            $data->start = $wznowienie->start ? $wznowienie->start->format('Y-m-d') : null;
+            $data->end = $wznowienie->end ? $wznowienie->end->format('Y-m-d') : null;
+            $data->kwota = $wznowienie->kwota;
+            $data->waluta = $wznowienie->waluta;
+            $data->opis = $wznowienie->text;
+
+            $emails = User::where('preliminarz_email', true)
+                ->whereNotNull('email')
+                ->where('email', '!=', '')
+                ->pluck('email');
+
+            if ($emails->isEmpty()) {
+                Log::info('sendWznowienieMail: brak userow z flaga preliminarz_email=true', ['wznowienie_id' => $wznowienieId]);
+                return;
+            }
+
+            Mail::send(new ZapytaniaMail($data, $emails->all()));
+            Log::info('sendWznowienieMail: mail wyslany', [
+                'wznowienie_id' => $wznowienieId,
+                'zapytania_id' => $parent->id,
+                'recipients' => $emails->all(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Blad wysylki maila wznowienia: ' . $e->getMessage(), [
+                'wznowienie_id' => $wznowienieId,
+            ]);
+        }
     }
 
     /**
