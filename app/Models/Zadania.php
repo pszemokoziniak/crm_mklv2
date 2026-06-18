@@ -78,6 +78,22 @@ class Zadania extends Model
                 ]);
             }
         });
+
+        // Auto-archiwizacja zamknietych zadan
+        static::updated(function ($zadania) {
+            if ($zadania->wasChanged('status') && $zadania->status === self::STATUS_ZAMKNIETE && !$zadania->trashed()) {
+                try {
+                    $zadania->delete();
+                    Log::info('Auto-archiwizacja zadania (status=zamkniete)', [
+                        'zadania_id' => $zadania->id,
+                    ]);
+                } catch (\Throwable $e) {
+                    Log::error('Blad auto-archiwizacji zadania: ' . $e->getMessage(), [
+                        'zadania_id' => $zadania->id,
+                    ]);
+                }
+            }
+        });
     }
 
     public function resolveRouteBinding($value, $field = null)
