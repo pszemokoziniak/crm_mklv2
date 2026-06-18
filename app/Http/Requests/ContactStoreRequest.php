@@ -24,9 +24,10 @@ class ContactStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nazwa' => ['required', 'max:50'],
-            'ulica' => ['required', 'max:50'],
-            'linkedIn' => ['nullable', 'max:50'],
+            'nazwa' => ['required', 'max:200'],
+            'ulica' => ['required', 'max:200'],
+            'www' => ['nullable', 'max:200'],
+            'linkedIn' => ['nullable', 'max:200'],
             'message' => ['required', 'max:10000'],
             'user_id' => ['required', 'max:36'],
             'kraj_id' => ['required', 'max:36'],
@@ -36,7 +37,7 @@ class ContactStoreRequest extends FormRequest
     public function messages() {
         return [
             'required'  => 'Pole :attribute jest wymagane.',
-            'max'  => 'Nie więcej niż 50 znaków.',
+            'max'  => 'Nie więcej niż :max znaków.',
         ];
     }
 
