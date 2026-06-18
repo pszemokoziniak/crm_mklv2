@@ -25,7 +25,7 @@ class ZadaniaController extends Controller
     {
         return Inertia::render('Zadania/Index', [
             'filters' => Request::all('search', 'trashed', 'status'),
-            'zadanias' => Zadania::with(['user', 'responsiblePerson'])
+            'zadanias' => Zadania::with(['user', 'responsiblePerson', 'client'])
                 ->filter(Request::only('search', 'trashed', 'status'))
                 ->paginate(10)
                 ->withQueryString()
@@ -37,6 +37,7 @@ class ZadaniaController extends Controller
                     'status' => $zadania->status,
                     'deadline' => $zadania->deadline ? $zadania->deadline->format('Y-m-d') : null,
                     'user' => $zadania->user,
+                    'client' => $zadania->client ? ['id' => $zadania->client->id, 'nazwa' => $zadania->client->nazwa] : null,
                     'deleted_at' => $zadania->deleted_at,
                     'created_at' => $zadania->created_at->format('Y-m-d H:i')
                 ])

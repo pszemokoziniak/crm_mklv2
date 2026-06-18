@@ -32,13 +32,13 @@
                 <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Temat</div>
               </th>
               <th class="px-6 py-1.5">
+                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Klient</div>
+              </th>
+              <th class="px-6 py-1.5">
                 <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Status</div>
               </th>
               <th class="px-6 py-1.5">
                 <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Termin wykonania</div>
-              </th>
-              <th class="px-6 py-1.5">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Dodał</div>
               </th>
               <th class="px-6 py-1.5">
                 <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Obecny opiekun / Data</div>
@@ -57,6 +57,12 @@
                 </Link>
               </td>
               <td class="px-6 py-4">
+                <Link class="flex items-center text-gray-600" :href="`/zadania/${item.id}/edit`" tabindex="-1">
+                  <span v-if="item.client" class="text-xs font-medium">{{ item.client.nazwa }}</span>
+                  <span v-else class="text-xs text-gray-300 italic">—</span>
+                </Link>
+              </td>
+              <td class="px-6 py-4">
                 <Link class="flex items-center" :href="`/zadania/${item.id}/edit`" tabindex="-1">
                   <span :class="getStatusClass(item.status)" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium">
                     {{ getStatusLabel(item.status) }}
@@ -68,13 +74,6 @@
                   <div v-if="item.deadline" :class="getDeadlineClass(item.deadline)" class="px-2 py-0.5 rounded text-xs font-bold shadow-sm">
                     {{ item.deadline ? item.deadline.split('T')[0] : '-' }}
                   </div>
-                </Link>
-              </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-600" :href="`/zadania/${item.id}/edit`" tabindex="-1">
-                  <span v-if="item.user" class="text-xs font-medium">
-                    {{ item.user.last_name }} {{ item.user.first_name }}
-                  </span>
                 </Link>
               </td>
               <td class="px-6 py-4">
