@@ -119,12 +119,13 @@
 
         <div class="p-8">
           <div v-if="kontakty.length > 0" class="space-y-6">
-            <div v-for="kontakt in kontakty" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+            <div v-for="kontakt in kontakty" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm" :class="{ 'opacity-70': kontakt.deleted_at }">
               <!-- Główny wpis w wątku -->
               <div class="bg-gray-50/50 p-4 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                   <span class="font-bold text-indigo-900">{{ kontakt.subject }}</span>
                   <span class="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full font-medium">Wątek</span>
+                  <span v-if="kontakt.deleted_at" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-600 border border-rose-100" :title="`Zarchiwizowane ${kontakt.deleted_at}`">ARCHIWUM</span>
                 </div>
                 <div class="flex items-center gap-4">
                   <span class="text-xs text-gray-500">{{ kontakt.call_date }} {{ kontakt.call_time }}</span>
@@ -177,11 +178,14 @@
     <div class="mt-12">
       <h2 class="text-2xl font-bold text-gray-900 mb-6">Zapytania i Oferty</h2>
       <div class="space-y-6">
-        <div v-for="zapytanie in zapytania" :key="zapytanie.id" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div v-for="zapytanie in zapytania" :key="zapytanie.id" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" :class="{ 'opacity-70': zapytanie.deleted_at }">
           <!-- Zapytanie Header -->
           <div class="bg-gray-50/50 px-6 py-4 border-b border-gray-100 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
             <div class="md:col-span-5 flex flex-col">
-              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Zapytanie</span>
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-2">
+                <span>Zapytanie</span>
+                <span v-if="zapytanie.deleted_at" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-600 border border-rose-100" :title="`Zarchiwizowane ${zapytanie.deleted_at}`">ARCHIWUM</span>
+              </span>
               <Link :href="`/zapytania/${zapytanie.id}/edit`" class="text-base font-bold text-gray-900 hover:text-indigo-600 transition-colors truncate" :title="zapytanie.nazwa_projektu">
                 {{ zapytanie.nazwa_projektu }}
               </Link>
@@ -207,12 +211,13 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-50">
-                <tr v-for="oferta in zapytanie.oferty" :key="oferta.id" class="hover:bg-indigo-50/20 transition-colors">
+                <tr v-for="oferta in zapytanie.oferty" :key="oferta.id" class="hover:bg-indigo-50/20 transition-colors" :class="{ 'opacity-60': oferta.deleted_at }">
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
                       <Link :href="`/oferta/${oferta.id}/edit`" class="flex flex-col group">
-                        <span class="text-sm font-semibold text-indigo-600 group-hover:underline">
+                        <span class="text-sm font-semibold text-indigo-600 group-hover:underline flex items-center gap-2">
                           {{ oferta.numer_oferty }}
+                          <span v-if="oferta.deleted_at" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-600 border border-rose-100" :title="`Zarchiwizowane ${oferta.deleted_at}`">ARCHIWUM</span>
                         </span>
                         <span class="text-[10px] text-gray-400 group-hover:text-indigo-400 transition-colors">
                           {{ oferta.created_at }}

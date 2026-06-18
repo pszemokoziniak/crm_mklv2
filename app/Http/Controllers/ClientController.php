@@ -123,10 +123,14 @@ class ClientController extends Controller
             'kraj' => Kraj::get(),
             'user' => User::get(),
             'client_id' => $client->id,
-            'zapytania' => $client->zapytania()->with(['oferty.status', 'oferty.waluta', 'user'])->orderBy('created_at', 'desc')->get()->map(fn ($zapytanie) => [
+            'zapytania' => $client->zapytania()
+                ->withTrashed()
+                ->with(['oferty' => fn ($q) => $q->withTrashed(), 'oferty.status', 'oferty.waluta', 'user'])
+                ->orderBy('created_at', 'desc')->get()->map(fn ($zapytanie) => [
                 'id' => $zapytanie->id,
                 'nazwa_projektu' => $zapytanie->nazwa_projektu,
                 'created_at' => $zapytanie->created_at->format('Y-m-d'),
+                'deleted_at' => $zapytanie->deleted_at ? $zapytanie->deleted_at->format('Y-m-d') : null,
                 'user' => $zapytanie->user ? $zapytanie->user->first_name . ' ' . $zapytanie->user->last_name : '-',
                 'oferty' => $zapytanie->oferty->map(fn ($oferta) => [
                     'id' => $oferta->id,
@@ -135,9 +139,11 @@ class ClientController extends Controller
                     'kwota' => $oferta->kwota,
                     'waluta' => $oferta->waluta ? $oferta->waluta->name : '',
                     'created_at' => $oferta->created_at->format('Y-m-d'),
+                    'deleted_at' => $oferta->deleted_at ? $oferta->deleted_at->format('Y-m-d') : null,
                 ]),
             ]),
             'kontakty' => Kontakt::with(['user', 'kontaktperson', 'children.user', 'children.kontaktperson'])
+                ->withTrashed()
                 ->where('client_id', $client->id)
                 ->whereNull('parent_id')
                 ->orderBy('created_at', 'desc')
@@ -148,6 +154,7 @@ class ClientController extends Controller
                     'description' => $kontakt->description,
                     'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null,
                     'call_time' => $kontakt->call_time,
+                    'deleted_at' => $kontakt->deleted_at ? $kontakt->deleted_at->format('Y-m-d') : null,
                     'user' => $kontakt->user,
                     'kontaktperson' => $kontakt->kontaktperson,
                     'children' => $kontakt->children->map(fn ($reply) => [
