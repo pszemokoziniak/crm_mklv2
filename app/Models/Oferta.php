@@ -60,8 +60,16 @@ class Oferta extends Model
                     'status' => $name,
                 ]);
             }
+            // Sama oferta tez trafia do archiwum (status terminalny = nic juz z nia nie robimy)
+            if (!$oferta->trashed()) {
+                $oferta->delete();
+                Log::info('Auto-archiwizacja oferty (status terminalny)', [
+                    'oferta_id' => $oferta->id,
+                    'status' => $name,
+                ]);
+            }
         } catch (\Throwable $e) {
-            Log::error('Blad auto-archiwizacji zapytania: ' . $e->getMessage(), [
+            Log::error('Blad auto-archiwizacji oferty/zapytania: ' . $e->getMessage(), [
                 'oferta_id' => $oferta->id,
             ]);
         }
