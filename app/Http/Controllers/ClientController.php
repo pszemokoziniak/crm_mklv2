@@ -143,7 +143,6 @@ class ClientController extends Controller
                 ]),
             ]),
             'kontakty' => Kontakt::with(['user', 'kontaktperson', 'children.user', 'children.kontaktperson'])
-                ->withTrashed()
                 ->where('client_id', $client->id)
                 ->whereNull('parent_id')
                 ->orderBy('created_at', 'desc')
@@ -154,7 +153,6 @@ class ClientController extends Controller
                     'description' => $kontakt->description,
                     'call_date' => $kontakt->call_date ? $kontakt->call_date->format('Y-m-d') : null,
                     'call_time' => $kontakt->call_time,
-                    'deleted_at' => $kontakt->deleted_at ? $kontakt->deleted_at->format('Y-m-d') : null,
                     'user' => $kontakt->user,
                     'kontaktperson' => $kontakt->kontaktperson,
                     'children' => $kontakt->children->map(fn ($reply) => [
