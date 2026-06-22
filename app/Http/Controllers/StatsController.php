@@ -26,27 +26,29 @@ class StatsController extends Controller
             'start' => $start,
             'end' => $end,
             'filters' => Request::all('start', 'end'),
-            'clientNumber' => $this->clientNumber(),
+            'clientNumber' => $this->clientNumber($start, $end),
             'clientNumberByUser' => $this->clientNumberByUser($start, $end),
-            'clientActive' => $this->clientActive(),
+            'clientActive' => $this->clientActive($start, $end),
             'increaseClients' => $this->increaseClients($start, $end),
             'clientBranza' => $this->clientBranza($start, $end),
-            'clientZapytaniaSumAmount' => $this->clientZapytaniaSumAmount(),
-            'clientOfertaSumAmount' => $this->clientOfertaSumAmount(),
-            'quantityZapytania' => $this->quantityZapytania(),
+            'clientZapytaniaSumAmount' => $this->clientZapytaniaSumAmount($start, $end),
+            'clientOfertaSumAmount' => $this->clientOfertaSumAmount($start, $end),
+            'quantityZapytania' => $this->quantityZapytania($start, $end),
             'zapytaniaOfertySumAmount' => $this->zapytaniaOfertySumAmount($start, $end),
-            'zapytaniaBranze' => $this->zapytaniaBranze(),
-            'zapytaniaZakres' => $this->zapytaniaZakres(),
-            'zapytaniaUsers' => $this->zapytaniaUsers(),
-            'quantityOferta' => $this->quantityOferta(),
-            'ofertaStatus' => $this->ofertaStatus(),
-            'ofertaStatusWin' => $this->ofertaStatusWin(),
+            'zapytaniaBranze' => $this->zapytaniaBranze($start, $end),
+            'zapytaniaZakres' => $this->zapytaniaZakres($start, $end),
+            'zapytaniaUsers' => $this->zapytaniaUsers($start, $end),
+            'quantityOferta' => $this->quantityOferta($start, $end),
+            'ofertaStatus' => $this->ofertaStatus($start, $end),
+            'ofertaStatusWin' => $this->ofertaStatusWin($start, $end),
         ]);
     }
 
-    public function clientNumber()
+    public function clientNumber($start, $end)
     {
-        return Client::count();
+        return Client::where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->count();
     }
 
     public function clientNumberByUser($start, $end)
@@ -60,10 +62,17 @@ class StatsController extends Controller
             ->get();
     }
 
-    public function clientActive()
+    public function clientActive($start, $end)
     {
-        $activeClient = (int) Zapytania::select('client_id')->groupBy('client_id')->get()->count();
-        $nonActiveClient = (int) $this->clientNumber() - $activeClient;
+        $activeClient = (int) Zapytania::select('client_id')
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->groupBy('client_id')
+            ->get()->count();
+        $nonActiveClient = (int) $this->clientNumber($start, $end) - $activeClient;
+        if ($nonActiveClient < 0) {
+            $nonActiveClient = 0;
+        }
         return [$activeClient, $nonActiveClient];
     }
 
@@ -111,10 +120,12 @@ class StatsController extends Controller
         return [$name, $count];
     }
 
-    public function clientZapytaniaSumAmount()
+    public function clientZapytaniaSumAmount($start, $end)
     {
         $data = Zapytania::select(DB::raw('clients.id, clients.nazwa, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('clients', 'clients.id', '=', 'zapytanias.client_id')
+            ->where('zapytanias.created_at', '>=', $start)
+            ->where('zapytanias.created_at', '<=', $end)
             ->groupBy('clients.nazwa', 'clients.id')
             ->get();
 
@@ -127,10 +138,12 @@ class StatsController extends Controller
         return [$labels, $amounts];
     }
 
-    public function clientOfertaSumAmount()
+    public function clientOfertaSumAmount($start, $end)
     {
         $data = Oferta::select(DB::raw('clients.id, clients.nazwa, SUM(ofertas.kwotaPLN) AS count'))
             ->join('clients', 'clients.id', '=', 'ofertas.client_id')
+            ->where('ofertas.created_at', '>=', $start)
+            ->where('ofertas.created_at', '<=', $end)
             ->groupBy('clients.nazwa', 'clients.id')
             ->orderBy('count', 'DESC')
             ->limit(15)
@@ -145,13 +158,16 @@ class StatsController extends Controller
         return [$labels, $amounts];
     }
 
-    public function quantityZapytania()
+    public function quantityZapytania($start, $end)
     {
-        $count = Zapytania::count();
-        $sum = (float) Zapytania::sum('kwotaPLN');
+        $base = Zapytania::where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end);
 
-        $withOferta = Zapytania::whereHas('oferty')->count();
-        $withOfertaSum = (float) Zapytania::whereHas('oferty')->sum('kwotaPLN');
+        $count = (clone $base)->count();
+        $sum = (float) (clone $base)->sum('kwotaPLN');
+
+        $withOferta = (clone $base)->whereHas('oferty')->count();
+        $withOfertaSum = (float) (clone $base)->whereHas('oferty')->sum('kwotaPLN');
 
         $withoutOferta = $count - $withOferta;
         $withoutOfertaSum = $sum - $withOfertaSum;
@@ -205,11 +221,13 @@ class StatsController extends Controller
         return [$months, $zapytaniaMonthSum, $ofertyMonthSum, $ofertyWygraneMonthSum];
     }
 
-    public function zapytaniaBranze()
+    public function zapytaniaBranze($start, $end)
     {
         $data = Zapytania::select(DB::raw('clients.id, branzas.name, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('clients', 'clients.id', '=', 'zapytanias.client_id')
             ->join('branzas', 'branzas.id', '=', 'clients.branza_id')
+            ->where('zapytanias.created_at', '>=', $start)
+            ->where('zapytanias.created_at', '<=', $end)
             ->groupBy('branzas.name', 'clients.id')
             ->get();
 
@@ -222,10 +240,12 @@ class StatsController extends Controller
         return [$labels, $amounts];
     }
 
-    public function zapytaniaZakres()
+    public function zapytaniaZakres($start, $end)
     {
         $data = Zapytania::select(DB::raw('zakres.id, zakres.name, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('zakres', 'zakres.id', '=', 'zapytanias.zakres_id')
+            ->where('zapytanias.created_at', '>=', $start)
+            ->where('zapytanias.created_at', '<=', $end)
             ->groupBy('zakres.name', 'zakres.id')
             ->get();
 
@@ -238,10 +258,12 @@ class StatsController extends Controller
         return [$labels, $amounts];
     }
 
-    public function zapytaniaUsers()
+    public function zapytaniaUsers($start, $end)
     {
         $data = Zapytania::select(DB::raw('users.id, users.last_name, users.first_name, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('users', 'users.id', '=', 'zapytanias.user_id')
+            ->where('zapytanias.created_at', '>=', $start)
+            ->where('zapytanias.created_at', '<=', $end)
             ->groupBy('users.last_name', 'users.first_name', 'users.id')
             ->get();
 
@@ -254,13 +276,19 @@ class StatsController extends Controller
         return [$labels, $amounts];
     }
 
-    public function quantityOferta()
+    public function quantityOferta($start, $end)
     {
-        $count = Oferta::count();
-        $sum = (float) Oferta::sum('kwotaPLN');
+        $count = Oferta::where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->count();
+        $sum = (float) Oferta::where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->sum('kwotaPLN');
 
         $byStatus = Oferta::select(DB::raw('oferta_statuses.name, COUNT(*) as qty, SUM(ofertas.kwotaPLN) as total'))
             ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
+            ->where('ofertas.created_at', '>=', $start)
+            ->where('ofertas.created_at', '<=', $end)
             ->groupBy('oferta_statuses.name')
             ->orderBy('total', 'DESC')
             ->get()
@@ -277,10 +305,12 @@ class StatsController extends Controller
         ];
     }
 
-    public function ofertaStatus()
+    public function ofertaStatus($start, $end)
     {
         $data = Oferta::select(DB::raw('oferta_statuses.id, oferta_statuses.name, SUM(ofertas.kwotaPLN) AS count'))
             ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
+            ->where('ofertas.created_at', '>=', $start)
+            ->where('ofertas.created_at', '<=', $end)
             ->where(function ($query) {
                 $query->where('oferta_statuses.name', 'Wygrana')
                       ->orWhere('oferta_statuses.name', 'Przegrana');
@@ -301,10 +331,12 @@ class StatsController extends Controller
         return [$labels, $amounts];
     }
 
-    public function ofertaStatusWin()
+    public function ofertaStatusWin($start, $end)
     {
         $data = Oferta::select(DB::raw('oferta_statuses.id, oferta_statuses.name, SUM(ofertas.kwotaPLN) AS count'))
             ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
+            ->where('ofertas.created_at', '>=', $start)
+            ->where('ofertas.created_at', '<=', $end)
             ->groupBy('oferta_statuses.name', 'oferta_statuses.id')
             ->get();
 
