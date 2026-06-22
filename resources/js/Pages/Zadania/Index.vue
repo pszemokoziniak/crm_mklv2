@@ -28,20 +28,40 @@
         <table class="w-full whitespace-nowrap">
           <thead>
             <tr class="text-left text-gray-500 bg-gray-50/50 border-b border-gray-100">
-              <th class="px-6 py-1.5">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Temat</div>
+              <th class="px-6 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('subject')">
+                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'subject' }">
+                  <span>Temat</span>
+                  <span v-if="form.field === 'subject'" class="ml-1">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="ml-1 text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Klient</div>
+              <th class="px-6 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('client')">
+                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'client' }">
+                  <span>Klient</span>
+                  <span v-if="form.field === 'client'" class="ml-1">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="ml-1 text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Status</div>
+              <th class="px-6 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('status')">
+                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'status' }">
+                  <span>Status</span>
+                  <span v-if="form.field === 'status'" class="ml-1">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="ml-1 text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Termin wykonania</div>
+              <th class="px-6 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('deadline')">
+                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'deadline' }">
+                  <span>Termin wykonania</span>
+                  <span v-if="form.field === 'deadline'" class="ml-1">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="ml-1 text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Obecny opiekun / Data</div>
+              <th class="px-6 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('created_at')">
+                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'created_at' }">
+                  <span>Obecny opiekun / Data</span>
+                  <span v-if="form.field === 'created_at'" class="ml-1">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="ml-1 text-gray-300">↕</span>
+                </div>
               </th>
               <th class="px-6 py-1.5 w-12" />
             </tr>
@@ -135,6 +155,8 @@ export default {
         search: this.filters.search,
         trashed: this.filters.trashed,
         status: this.filters.status,
+        field: this.filters.field || null,
+        direction: this.filters.direction || null,
       },
     }
   },
@@ -149,6 +171,17 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    toggleSort(field) {
+      if (this.form.field !== field) {
+        this.form.field = field
+        this.form.direction = 'desc'
+      } else if (this.form.direction === 'desc') {
+        this.form.direction = 'asc'
+      } else {
+        this.form.field = null
+        this.form.direction = null
+      }
     },
     getStatusClass(status) {
       switch (status) {

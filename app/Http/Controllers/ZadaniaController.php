@@ -23,10 +23,32 @@ class ZadaniaController extends Controller
 
     public function index()
     {
+        $sortField = Request::input('field');
+        $sortDirection = Request::input('direction') === 'asc' ? 'asc' : 'desc';
+
+        $query = Zadania::with(['user', 'responsiblePerson', 'client'])
+            ->filter(Request::only('search', 'trashed', 'status'));
+
+        // Sortowanie - obslugiwane kolumny
+        if ($sortField === 'subject') {
+            $query->orderBy('subject', $sortDirection);
+        } elseif ($sortField === 'client') {
+            $query->leftJoin('clients', 'zadanias.client_id', '=', 'clients.id')
+                ->orderBy('clients.nazwa', $sortDirection)
+                ->select('zadanias.*');
+        } elseif ($sortField === 'status') {
+            $query->orderBy('status', $sortDirection);
+        } elseif ($sortField === 'deadline') {
+            $query->orderByRaw('deadline IS NULL, deadline ' . $sortDirection);
+        } elseif ($sortField === 'created_at') {
+            $query->orderBy('created_at', $sortDirection);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
         return Inertia::render('Zadania/Index', [
-            'filters' => Request::all('search', 'trashed', 'status'),
-            'zadanias' => Zadania::with(['user', 'responsiblePerson', 'client'])
-                ->filter(Request::only('search', 'trashed', 'status'))
+            'filters' => Request::all('search', 'trashed', 'status', 'field', 'direction'),
+            'zadanias' => $query
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($zadania) => [
