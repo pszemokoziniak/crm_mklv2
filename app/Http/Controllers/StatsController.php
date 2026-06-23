@@ -7,6 +7,7 @@ use App\Models\Oferta;
 use App\Models\Zapytania;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -15,16 +16,19 @@ class StatsController extends Controller
 {
     public function index()
     {
-        $start = new Carbon('first day of September 2018', 'Europe/Warsaw');
-        $start = $start->format('Y-m-d');
-        $end = Carbon::now()->format('Y-m-d');
+        $defaultStart = (new Carbon('first day of September 2018', 'Europe/Warsaw'))->format('Y-m-d');
+        $defaultEnd = Carbon::now()->format('Y-m-d');
 
-        $start = array_values(Request::all('start'))[0] ? array_values(Request::all('start'))[0] : $start;
-        $end = array_values(Request::all('end'))[0] ? array_values(Request::all('end'))[0] : $end;
+        $start = Request::input('start') ?: $defaultStart;
+        // $end powiekszamy do konca dnia, zeby przedzial byl inkluzywny dla rekordow z koncowej daty
+        $endRaw = Request::input('end') ?: $defaultEnd;
+        $end = Carbon::parse($endRaw)->endOfDay()->format('Y-m-d H:i:s');
+
+        Log::info('Stats: filter', ['start' => $start, 'end' => $end, 'raw_query' => Request::query()]);
 
         return Inertia::render('Stats/Index', [
             'start' => $start,
-            'end' => $end,
+            'end' => $endRaw,
             'filters' => Request::all('start', 'end'),
             'clientNumber' => $this->clientNumber($start, $end),
             'clientNumberByUser' => $this->clientNumberByUser($start, $end),
