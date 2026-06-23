@@ -40,7 +40,8 @@ export default {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true
+        maintainAspectRatio: true,
+        plugins: { legend: { display: false } },
       }
     }
   }
