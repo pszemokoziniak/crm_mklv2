@@ -227,12 +227,13 @@ class StatsController extends Controller
 
     public function zapytaniaBranze($start, $end)
     {
-        $data = Zapytania::select(DB::raw('clients.id, branzas.name, SUM(zapytanias.kwotaPLN) AS count'))
+        $data = Zapytania::select(DB::raw('branzas.name, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('clients', 'clients.id', '=', 'zapytanias.client_id')
             ->join('branzas', 'branzas.id', '=', 'clients.branza_id')
             ->where('zapytanias.created_at', '>=', $start)
             ->where('zapytanias.created_at', '<=', $end)
-            ->groupBy('branzas.name', 'clients.id')
+            ->groupBy('branzas.name')
+            ->orderBy('count', 'DESC')
             ->get();
 
         $labels = [];
