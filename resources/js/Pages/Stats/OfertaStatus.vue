@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-2xl font-bold p-1 mt-3">Oferty status</h1>
+    <h1 class="text-xl font-bold text-center text-indigo-700 py-3 mt-8 border-b border-indigo-100">Oferty status</h1>
     <div class="flex flex-col md:flex-row md:items-center gap-6 p-2">
       <div class="w-full md:w-1/2 lg:w-2/5" style="height: 400px;">
         <Pie :data="data" :options="options" />

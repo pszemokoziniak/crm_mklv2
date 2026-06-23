@@ -7,18 +7,17 @@
       <text-input v-model="form.end" type="date" class="pb-8 pr-6 w-full lg:w-1/4" label="Do" />
     </div>
 
-    <div class="bg-white rounded-md shadow overflow-x-auto">
-      <h2 class="flex items-center text-3xl font-extrabold dark:text-white p-1">Klienci</h2>
-      <hr />
-      <p class="text-2xl p-1">Ilość klientów - {{ clientNumber }}</p>
+    <div class="bg-white rounded-md shadow overflow-x-auto p-4 space-y-6">
+      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm">Klienci</h2>
+      <p class="text-2xl font-medium text-gray-700 text-center">Ilość klientów: <span class="text-indigo-600 font-bold">{{ clientNumber }}</span></p>
       <users-add-clients :client-number="clientNumber" :client-number-by-user="clientNumberByUser" />
       <active-client :client-active="clientActive" />
       <increase-client :increase-clients="increaseClients" />
       <client-branza :client-branza="clientBranza" />
       <clients-zapytania-sum-amount :client-zapytania-sum-amount="clientZapytaniaSumAmount" />
       <clients-oferty-sum-amount :client-oferta-sum-amount="clientOfertaSumAmount" />
-      <h2 class="flex items-center text-3xl font-extrabold dark:text-white p-1">Zapytania</h2>
-      <hr />
+
+      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm mt-10">Zapytania</h2>
       <div class="p-3">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
           <div class="bg-gray-50 rounded-lg p-3 border">
@@ -37,8 +36,8 @@
       <zapytania-branze :zapytania-branze="zapytaniaBranze" />
       <zapytania-zakres :zapytania-zakres="zapytaniaZakres" />
       <zapytania-users :zapytania-users="zapytaniaUsers" />
-      <h2 class="flex items-center text-3xl font-extrabold dark:text-white p-1">Oferty</h2>
-      <hr />
+
+      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm mt-10">Oferty</h2>
       <div class="p-3">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
           <div class="bg-gray-50 rounded-lg p-3 border">

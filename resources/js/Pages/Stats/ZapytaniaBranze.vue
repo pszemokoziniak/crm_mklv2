@@ -1,5 +1,5 @@
 <template>
-  <h1 class="text-2xl font-bold p-1 mt-3">Najlepsze branże / Zapytania</h1>
+  <h1 class="text-xl font-bold text-center text-indigo-700 py-3 mt-8 border-b border-indigo-100">Najlepsze branże / Zapytania</h1>
   <div class="w-3/4 h-100">
     <Bar :data="data" :options="options" />
   </div>

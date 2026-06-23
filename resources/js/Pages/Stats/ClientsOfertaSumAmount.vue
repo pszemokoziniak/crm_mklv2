@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-2xl font-bold p-1 mt-3">Top 15 klientów / Oferty (PLN)</h1>
+    <h1 class="text-xl font-bold text-center text-indigo-700 py-3 mt-8 border-b border-indigo-100">Top 15 klientów / Oferty (PLN)</h1>
     <div class="w-full" :style="{ height: chartHeight + 'px' }">
       <Bar :data="data" :options="options" />
     </div>

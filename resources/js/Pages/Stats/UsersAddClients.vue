@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-2xl font-bold p-1">Pracownicy którzy dodali klientów</h1>
+    <h1 class="text-xl font-bold text-center text-indigo-700 py-3 mt-8 border-b border-indigo-100">Pracownicy którzy dodali klientów</h1>
     <div class="max-w-2xl mt-2 space-y-2 px-1">
       <div v-for="item in clientNumberByUser" :key="item.id" class="flex items-center gap-3">
         <div class="w-40 text-sm font-medium text-gray-700 truncate text-right">
