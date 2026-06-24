@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Oferta;
+use App\Models\OfertaStatus;
 use App\Models\Zapytania;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -188,38 +189,38 @@ class StatsController extends Controller
 
     public function zapytaniaOfertySumAmount($start, $end)
     {
-        $start = Carbon::parse($start);
+        $start = Carbon::parse($start)->startOfMonth();
         $end = Carbon::parse($end);
-        $start->setDay(1);
 
         $months = [];
         $zapytaniaMonthSum = [];
         $ofertyMonthSum = [];
         $ofertyWygraneMonthSum = [];
 
+        // Id statusu 'wygrana' (case-insensitive) - jezeli go nie ma, wygrane sumy beda zero
+        $wygranaStatusId = OfertaStatus::whereRaw('LOWER(TRIM(name)) = ?', ['wygrana'])->value('id');
+
         foreach (CarbonPeriod::create($start, '1 month', $end) as $month) {
-            $zapytania = Zapytania::select('start', 'kwotaPLN')
-                ->whereMonth('start', $month->format('m'))
-                ->whereYear('start', $month->format('Y'))
+            $monthStart = $month->copy()->startOfMonth();
+            $monthEnd = $month->copy()->endOfMonth();
+
+            $zapytaniaSum = (float) Zapytania::whereBetween('created_at', [$monthStart, $monthEnd])
                 ->sum('kwotaPLN');
 
-            $oferty = Zapytania::with('oferty')
-                ->whereMonth('start', $month->format('m'))
-                ->whereYear('start', $month->format('Y'))
-                ->get()->sum('oferty.kwotaPLN');
+            $ofertySum = (float) Oferta::whereBetween('created_at', [$monthStart, $monthEnd])
+                ->sum('kwotaPLN');
 
-            $ofertyWygrane = Zapytania::with('oferty')
-                ->whereMonth('start', $month->format('m'))
-                ->whereYear('start', $month->format('Y'))
-                ->whereHas('oferty', function ($query) {
-                    $query->where('oferta_status_id', '603f809e-aa41-49be-b25f-2166dd93bd5e');
-                })
-                ->get()->sum('oferty.kwotaPLN');
+            $ofertyWygraneSum = 0;
+            if ($wygranaStatusId) {
+                $ofertyWygraneSum = (float) Oferta::where('oferta_status_id', $wygranaStatusId)
+                    ->whereBetween('created_at', [$monthStart, $monthEnd])
+                    ->sum('kwotaPLN');
+            }
 
-            $zapytaniaMonthSum[] = $zapytania;
-            $ofertyMonthSum[] = $oferty;
-            $ofertyWygraneMonthSum[] = $ofertyWygrane;
             $months[] = $month->format('m-Y');
+            $zapytaniaMonthSum[] = $zapytaniaSum;
+            $ofertyMonthSum[] = $ofertySum;
+            $ofertyWygraneMonthSum[] = $ofertyWygraneSum;
         }
 
         return [$months, $zapytaniaMonthSum, $ofertyMonthSum, $ofertyWygraneMonthSum];
