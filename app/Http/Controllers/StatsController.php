@@ -127,7 +127,8 @@ class StatsController extends Controller
 
     public function clientZapytaniaSumAmount($start, $end)
     {
-        $data = Zapytania::select(DB::raw('clients.id, clients.nazwa, SUM(zapytanias.kwotaPLN) AS count'))
+        $data = Zapytania::withTrashed()
+            ->select(DB::raw('clients.id, clients.nazwa, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('clients', 'clients.id', '=', 'zapytanias.client_id')
             ->where('zapytanias.created_at', '>=', $start)
             ->where('zapytanias.created_at', '<=', $end)
@@ -145,7 +146,8 @@ class StatsController extends Controller
 
     public function clientOfertaSumAmount($start, $end)
     {
-        $data = Oferta::select(DB::raw('clients.id, clients.nazwa, SUM(ofertas.kwotaPLN) AS count'))
+        $data = Oferta::withTrashed()
+            ->select(DB::raw('clients.id, clients.nazwa, SUM(ofertas.kwotaPLN) AS count'))
             ->join('clients', 'clients.id', '=', 'ofertas.client_id')
             ->where('ofertas.created_at', '>=', $start)
             ->where('ofertas.created_at', '<=', $end)
@@ -165,7 +167,8 @@ class StatsController extends Controller
 
     public function quantityZapytania($start, $end)
     {
-        $base = Zapytania::where('created_at', '>=', $start)
+        $base = Zapytania::withTrashed()
+            ->where('created_at', '>=', $start)
             ->where('created_at', '<=', $end);
 
         $count = (clone $base)->count();
@@ -204,15 +207,18 @@ class StatsController extends Controller
             $monthStart = $month->copy()->startOfMonth();
             $monthEnd = $month->copy()->endOfMonth();
 
-            $zapytaniaSum = (float) Zapytania::whereBetween('created_at', [$monthStart, $monthEnd])
+            $zapytaniaSum = (float) Zapytania::withTrashed()
+                ->whereBetween('created_at', [$monthStart, $monthEnd])
                 ->sum('kwotaPLN');
 
-            $ofertySum = (float) Oferta::whereBetween('created_at', [$monthStart, $monthEnd])
+            $ofertySum = (float) Oferta::withTrashed()
+                ->whereBetween('created_at', [$monthStart, $monthEnd])
                 ->sum('kwotaPLN');
 
             $ofertyWygraneSum = 0;
             if ($wygranaStatusId) {
-                $ofertyWygraneSum = (float) Oferta::where('oferta_status_id', $wygranaStatusId)
+                $ofertyWygraneSum = (float) Oferta::withTrashed()
+                    ->where('oferta_status_id', $wygranaStatusId)
                     ->whereBetween('created_at', [$monthStart, $monthEnd])
                     ->sum('kwotaPLN');
             }
@@ -228,7 +234,8 @@ class StatsController extends Controller
 
     public function zapytaniaBranze($start, $end)
     {
-        $data = Zapytania::select(DB::raw('branzas.name, SUM(zapytanias.kwotaPLN) AS count'))
+        $data = Zapytania::withTrashed()
+            ->select(DB::raw('branzas.name, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('clients', 'clients.id', '=', 'zapytanias.client_id')
             ->join('branzas', 'branzas.id', '=', 'clients.branza_id')
             ->where('zapytanias.created_at', '>=', $start)
@@ -248,7 +255,8 @@ class StatsController extends Controller
 
     public function zapytaniaZakres($start, $end)
     {
-        $data = Zapytania::select(DB::raw('zakres.id, zakres.name, SUM(zapytanias.kwotaPLN) AS count'))
+        $data = Zapytania::withTrashed()
+            ->select(DB::raw('zakres.id, zakres.name, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('zakres', 'zakres.id', '=', 'zapytanias.zakres_id')
             ->where('zapytanias.created_at', '>=', $start)
             ->where('zapytanias.created_at', '<=', $end)
@@ -266,7 +274,8 @@ class StatsController extends Controller
 
     public function zapytaniaUsers($start, $end)
     {
-        $data = Zapytania::select(DB::raw('users.id, users.last_name, users.first_name, SUM(zapytanias.kwotaPLN) AS count'))
+        $data = Zapytania::withTrashed()
+            ->select(DB::raw('users.id, users.last_name, users.first_name, SUM(zapytanias.kwotaPLN) AS count'))
             ->join('users', 'users.id', '=', 'zapytanias.user_id')
             ->where('zapytanias.created_at', '>=', $start)
             ->where('zapytanias.created_at', '<=', $end)
@@ -284,14 +293,17 @@ class StatsController extends Controller
 
     public function quantityOferta($start, $end)
     {
-        $count = Oferta::where('created_at', '>=', $start)
+        $count = Oferta::withTrashed()
+            ->where('created_at', '>=', $start)
             ->where('created_at', '<=', $end)
             ->count();
-        $sum = (float) Oferta::where('created_at', '>=', $start)
+        $sum = (float) Oferta::withTrashed()
+            ->where('created_at', '>=', $start)
             ->where('created_at', '<=', $end)
             ->sum('kwotaPLN');
 
-        $byStatus = Oferta::select(DB::raw('oferta_statuses.name, COUNT(*) as qty, SUM(ofertas.kwotaPLN) as total'))
+        $byStatus = Oferta::withTrashed()
+            ->select(DB::raw('oferta_statuses.name, COUNT(*) as qty, SUM(ofertas.kwotaPLN) as total'))
             ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
             ->where('ofertas.created_at', '>=', $start)
             ->where('ofertas.created_at', '<=', $end)
@@ -313,14 +325,12 @@ class StatsController extends Controller
 
     public function ofertaStatus($start, $end)
     {
-        $data = Oferta::select(DB::raw('oferta_statuses.id, oferta_statuses.name, SUM(ofertas.kwotaPLN) AS count'))
+        $data = Oferta::withTrashed()
+            ->select(DB::raw('oferta_statuses.id, oferta_statuses.name, SUM(ofertas.kwotaPLN) AS count'))
             ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
             ->where('ofertas.created_at', '>=', $start)
             ->where('ofertas.created_at', '<=', $end)
-            ->where(function ($query) {
-                $query->where('oferta_statuses.name', 'Wygrana')
-                      ->orWhere('oferta_statuses.name', 'Przegrana');
-            })
+            ->whereRaw('LOWER(TRIM(oferta_statuses.name)) IN (?, ?)', ['wygrana', 'przegrana'])
             ->groupBy('oferta_statuses.name', 'oferta_statuses.id')
             ->get();
 
@@ -339,7 +349,8 @@ class StatsController extends Controller
 
     public function ofertaStatusWin($start, $end)
     {
-        $data = Oferta::select(DB::raw('oferta_statuses.id, oferta_statuses.name, SUM(ofertas.kwotaPLN) AS count'))
+        $data = Oferta::withTrashed()
+            ->select(DB::raw('oferta_statuses.id, oferta_statuses.name, SUM(ofertas.kwotaPLN) AS count'))
             ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
             ->where('ofertas.created_at', '>=', $start)
             ->where('ofertas.created_at', '<=', $end)

@@ -52,8 +52,10 @@
           </div>
         </div>
       </div>
-      <oferta-status :oferta-status="ofertaStatus" />
-      <oferta-status-win :oferta-status-win="ofertaStatusWin" />
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <oferta-status :oferta-status="ofertaStatus" />
+        <oferta-status-win :oferta-status-win="ofertaStatusWin" />
+      </div>
     </div>
   </div>
 </template>
