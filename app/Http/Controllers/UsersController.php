@@ -23,15 +23,27 @@ class UsersController extends Controller
 
     public function index()
     {
+        $sortField = Request::input('field');
+        $sortDirection = Request::input('direction') === 'asc' ? 'asc' : 'desc';
+
+        $query = Auth::user()->account->users()
+            ->filter(Request::only('search', 'role', 'trashed'));
+
+        if ($sortField === 'name') {
+            $query->orderBy('last_name', $sortDirection)->orderBy('first_name', $sortDirection);
+        } elseif ($sortField === 'email') {
+            $query->orderBy('email', $sortDirection);
+        } else {
+            $query->orderByName();
+        }
+
         return Inertia::render('Users/Index', [
-            'filters' => Request::all('search', 'role', 'trashed'),
+            'filters' => Request::all('search', 'role', 'trashed', 'field', 'direction'),
             'roles' => Role::all()->map(fn ($role) => [
                 'id' => $role->id,
                 'name' => $role->name,
             ]),
-            'users' => Auth::user()->account->users()
-                ->orderByName()
-                ->filter(Request::only('search', 'role', 'trashed'))
+            'users' => $query
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($user) => [

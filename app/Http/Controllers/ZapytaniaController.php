@@ -50,12 +50,36 @@ class ZapytaniaController extends Controller
             })->count(),
         ];
 
+        $sortField = Request::input('field');
+        $sortDirection = Request::input('direction') === 'asc' ? 'asc' : 'desc';
+
+        $query = Zapytania::with(['client', 'user', 'kraj', 'zakres', 'waluta', 'otrzymal', 'opracowuje'])
+            ->filter(Request::only('search', 'trashed'));
+
+        if ($sortField === 'projekt') {
+            $query->orderBy('nazwa_projektu', $sortDirection);
+        } elseif ($sortField === 'client') {
+            $query->leftJoin('clients', 'zapytanias.client_id', '=', 'clients.id')
+                ->orderBy('clients.nazwa', $sortDirection)
+                ->select('zapytanias.*');
+        } elseif ($sortField === 'kraj') {
+            $query->leftJoin('krajs', 'zapytanias.kraj_id', '=', 'krajs.id')
+                ->orderBy('krajs.name', $sortDirection)
+                ->select('zapytanias.*');
+        } elseif ($sortField === 'zakres') {
+            $query->leftJoin('zakres', 'zapytanias.zakres_id', '=', 'zakres.id')
+                ->orderBy('zakres.name', $sortDirection)
+                ->select('zapytanias.*');
+        } elseif ($sortField === 'created_at') {
+            $query->orderBy('zapytanias.created_at', $sortDirection);
+        } else {
+            $query->OrderByCreatedAt();
+        }
+
         return Inertia::render('Zapytania/Index', [
-            'filters' => Request::all('search', 'trashed'),
+            'filters' => Request::all('search', 'trashed', 'field', 'direction'),
             'stats' => $stats,
-            'zapytanias' => Zapytania::with(['client', 'user', 'kraj', 'zakres', 'waluta', 'otrzymal', 'opracowuje'])
-                ->OrderByCreatedAt()
-                ->filter(Request::only('search', 'trashed'))
+            'zapytanias' => $query
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($zapytania) => [

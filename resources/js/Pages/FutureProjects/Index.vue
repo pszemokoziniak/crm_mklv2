@@ -22,66 +22,94 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-        <table class="w-full">
+      <div>
+        <table class="w-full table-fixed">
+          <colgroup>
+            <col style="width:24%" /><!-- Projekt -->
+            <col style="width:22%" /><!-- Klient -->
+            <col style="width:18%" /><!-- Kraj / Miasto -->
+            <col style="width:16%" /><!-- Rodzaj obiektu -->
+            <col style="width:17%" /><!-- Faza projektu -->
+            <col style="width:3%" /><!-- Arrow -->
+          </colgroup>
           <thead>
             <tr class="text-left text-gray-500 bg-gray-50/50 border-b border-gray-100">
-              <th class="px-6 py-1.5 whitespace-nowrap">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Projekt</div>
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('nazwa')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'nazwa' }">
+                  <span>Projekt</span>
+                  <span v-if="form.field === 'nazwa'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5 whitespace-nowrap">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Klient</div>
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('client')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'client' }">
+                  <span>Klient</span>
+                  <span v-if="form.field === 'client'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5 whitespace-nowrap">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Kraj / Miasto</div>
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('kraj')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'kraj' }">
+                  <span>Kraj / Miasto</span>
+                  <span v-if="form.field === 'kraj'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5 whitespace-nowrap">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Rodzaj obiektu</div>
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('objekt')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'objekt' }">
+                  <span>Rodzaj obiektu</span>
+                  <span v-if="form.field === 'objekt'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5 whitespace-nowrap">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Faza projektu</div>
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('faza')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'faza' }">
+                  <span>Faza projektu</span>
+                  <span v-if="form.field === 'faza'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5 w-12" />
+              <th class="px-3 py-1.5" />
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
             <tr v-for="item in futureprojects.data" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center focus:text-indigo-500" :href="`/futureproject/${item.id}/edit`">
-                  <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors truncate" :title="item.nazwa">{{ item.nazwa }}</span>
+                  <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors text-sm truncate" :title="item.nazwa">{{ item.nazwa }}</span>
                   <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-600" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
-                  <span v-if="item.client" class="text-sm truncate" :title="item.client.nazwa">{{ item.client.nazwa }}</span>
+              <td class="px-3 py-3 overflow-hidden">
+                <Link class="block text-gray-600 truncate" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
+                  <span v-if="item.client" class="text-sm" :title="item.client.nazwa">{{ item.client.nazwa }}</span>
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-600" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
-                  <div class="text-sm truncate">
+              <td class="px-3 py-3 overflow-hidden">
+                <Link class="block text-gray-600 truncate" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
+                  <div class="text-sm">
                     <span v-if="item.kraj" class="font-semibold">{{ item.kraj.name }}</span>
                     <span v-if="item.miasto" class="text-gray-500 ml-1">({{ item.miasto }})</span>
                   </div>
                 </Link>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
-                  <span v-if="item.objekt" class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold truncate" :title="item.objekt.name">
+                  <span v-if="item.objekt" class="inline-block max-w-full truncate px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold" :title="item.objekt.name">
                     {{ item.objekt.name }}
                   </span>
                 </Link>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
-                  <span v-if="item.faza" class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold truncate" :title="item.faza.name">
+                  <span v-if="item.faza" class="inline-block max-w-full truncate px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold" :title="item.faza.name">
                     {{ item.faza.name }}
                   </span>
                 </Link>
               </td>
-              <td class="px-6 py-4 text-right">
-                <Link class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
-                  <icon name="cheveron-right" class="w-5 h-5" />
+              <td class="px-1 py-3 text-center">
+                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
+                  <icon name="cheveron-right" class="w-3 h-3" />
                 </Link>
               </td>
             </tr>
@@ -132,6 +160,8 @@ export default {
       form: {
         search: this.filters.search,
         trashed: this.filters.trashed,
+        field: this.filters.field || null,
+        direction: this.filters.direction || null,
       },
     }
   },
@@ -146,6 +176,17 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    toggleSort(field) {
+      if (this.form.field !== field) {
+        this.form.field = field
+        this.form.direction = 'desc'
+      } else if (this.form.direction === 'desc') {
+        this.form.direction = 'asc'
+      } else {
+        this.form.field = null
+        this.form.direction = null
+      }
     },
   },
 }

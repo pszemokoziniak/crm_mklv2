@@ -87,59 +87,87 @@
 
     <!-- Desktop: widok tabeli -->
     <div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <table class="w-full">
+      <table class="w-full table-fixed">
+        <colgroup>
+          <col style="width:26%" /><!-- Projekt -->
+          <col style="width:22%" /><!-- Klient -->
+          <col style="width:12%" class="hidden lg:table-column" /><!-- Kraj -->
+          <col style="width:15%" /><!-- Zakres -->
+          <col style="width:22%" class="hidden lg:table-column" /><!-- Zarejestrował -->
+          <col style="width:3%" /><!-- Arrow -->
+        </colgroup>
         <thead>
           <tr class="text-left text-gray-500 bg-gray-50/50 border-b border-gray-100">
-            <th class="px-3 py-1.5">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Projekt</span>
+            <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('projekt')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'projekt' }">
+                <span>Projekt</span>
+                <span v-if="form.field === 'projekt'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
-            <th class="px-3 py-1.5">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Klient</span>
+            <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('client')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'client' }">
+                <span>Klient</span>
+                <span v-if="form.field === 'client'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
-            <th class="px-3 py-1.5 hidden lg:table-cell">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Kraj</span>
+            <th class="px-3 py-1.5 hidden lg:table-cell cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('kraj')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'kraj' }">
+                <span>Kraj</span>
+                <span v-if="form.field === 'kraj'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
-            <th class="px-3 py-1.5">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Zakres</span>
+            <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('zakres')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'zakres' }">
+                <span>Zakres</span>
+                <span v-if="form.field === 'zakres'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
-            <th class="px-3 py-1.5 hidden lg:table-cell">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Zarejestrował</span>
+            <th class="px-3 py-1.5 hidden lg:table-cell cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('created_at')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'created_at' }">
+                <span>Zarejestrował</span>
+                <span v-if="form.field === 'created_at'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
             <th class="py-1.5" />
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
           <tr v-for="item in zapytanias.data" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
-            <td class="px-3 py-2.5">
-              <Link class="block focus:text-indigo-500" :href="`/zapytania/${item.id}/edit`">
+            <td class="px-3 py-2.5 overflow-hidden">
+              <Link class="block truncate focus:text-indigo-500" :href="`/zapytania/${item.id}/edit`">
                 <div class="flex items-center">
-                  <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors text-xs" :title="item.nazwa_projektu">{{ item.nazwa_projektu }}</span>
+                  <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors text-xs truncate" :title="item.nazwa_projektu">{{ item.nazwa_projektu }}</span>
                   <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                 </div>
-                <span class="text-[10px] text-gray-400 font-medium mt-0.5 block">{{ item.id_zapyt }}</span>
+                <span class="text-[10px] text-gray-400 font-medium mt-0.5 block truncate">{{ item.id_zapyt }}</span>
               </Link>
             </td>
-            <td class="px-3 py-2.5">
-              <Link class="block text-gray-600" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                <span v-if="item.client" class="text-xs font-medium">{{ item.client.nazwa }}</span>
+            <td class="px-3 py-2.5 overflow-hidden">
+              <Link class="block text-gray-600 truncate" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+                <span v-if="item.client" class="text-xs font-medium" :title="item.client.nazwa">{{ item.client.nazwa }}</span>
               </Link>
             </td>
-            <td class="px-3 py-2.5 hidden lg:table-cell">
-              <Link class="block text-gray-500" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+            <td class="px-3 py-2.5 hidden lg:table-cell overflow-hidden">
+              <Link class="block text-gray-500 truncate" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
                 <span v-if="item.kraj" class="text-xs whitespace-nowrap">{{ countryFlag(item.kraj.name) }} {{ item.kraj.name }}</span>
               </Link>
             </td>
-            <td class="px-3 py-2.5">
-              <Link class="block" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                <span v-if="item.zakres" class="inline-block px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[8px] font-bold rounded uppercase tracking-tight leading-tight">
+            <td class="px-3 py-2.5 overflow-hidden">
+              <Link class="block truncate" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+                <span v-if="item.zakres" class="inline-block px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[8px] font-bold rounded uppercase tracking-tight leading-tight" :title="item.zakres.name">
                   {{ item.zakres.name }}
                 </span>
               </Link>
             </td>
-            <td class="px-3 py-2.5 hidden lg:table-cell whitespace-nowrap">
-              <Link class="block" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+            <td class="px-3 py-2.5 hidden lg:table-cell overflow-hidden">
+              <Link class="block truncate" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
                 <template v-if="item.otrzymal">
-                  <div class="text-xs font-medium text-gray-700">{{ item.otrzymal.first_name }} {{ item.otrzymal.last_name }}</div>
+                  <div class="text-xs font-medium text-gray-700 truncate">{{ item.otrzymal.last_name }} {{ item.otrzymal.first_name }}</div>
                   <div class="text-[10px] text-gray-400 mt-0.5">{{ item.created_at }}</div>
                 </template>
               </Link>
@@ -197,6 +225,8 @@ export default {
       form: {
         search: this.filters.search,
         trashed: this.filters.trashed,
+        field: this.filters.field || null,
+        direction: this.filters.direction || null,
       },
     }
   },
@@ -217,6 +247,17 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    toggleSort(field) {
+      if (this.form.field !== field) {
+        this.form.field = field
+        this.form.direction = 'desc'
+      } else if (this.form.direction === 'desc') {
+        this.form.direction = 'asc'
+      } else {
+        this.form.field = null
+        this.form.direction = null
+      }
     },
     countryFlag(name) {
       const map = {

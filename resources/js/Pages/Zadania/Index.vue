@@ -24,89 +24,97 @@
       </Link>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-        <table class="w-full whitespace-nowrap">
+      <div>
+        <table class="w-full table-fixed">
+          <colgroup>
+            <col style="width:26%" /><!-- Temat -->
+            <col style="width:22%" /><!-- Klient -->
+            <col style="width:12%" /><!-- Status -->
+            <col style="width:15%" /><!-- Termin wykonania -->
+            <col style="width:22%" /><!-- Obecny opiekun / Data -->
+            <col style="width:3%" /><!-- Arrow -->
+          </colgroup>
           <thead>
             <tr class="text-left text-gray-500 bg-gray-50/50 border-b border-gray-100">
-              <th class="px-6 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('subject')">
-                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'subject' }">
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('subject')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'subject' }">
                   <span>Temat</span>
                   <span v-if="form.field === 'subject'" class="ml-1">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
                   <span v-else class="ml-1 text-gray-300">↕</span>
                 </div>
               </th>
-              <th class="px-6 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('client')">
-                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'client' }">
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('client')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'client' }">
                   <span>Klient</span>
                   <span v-if="form.field === 'client'" class="ml-1">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
                   <span v-else class="ml-1 text-gray-300">↕</span>
                 </div>
               </th>
-              <th class="px-6 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('status')">
-                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'status' }">
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('status')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'status' }">
                   <span>Status</span>
                   <span v-if="form.field === 'status'" class="ml-1">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
                   <span v-else class="ml-1 text-gray-300">↕</span>
                 </div>
               </th>
-              <th class="px-6 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('deadline')">
-                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'deadline' }">
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('deadline')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'deadline' }">
                   <span>Termin wykonania</span>
                   <span v-if="form.field === 'deadline'" class="ml-1">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
                   <span v-else class="ml-1 text-gray-300">↕</span>
                 </div>
               </th>
-              <th class="px-6 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('created_at')">
-                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'created_at' }">
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('created_at')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'created_at' }">
                   <span>Obecny opiekun / Data</span>
                   <span v-if="form.field === 'created_at'" class="ml-1">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
                   <span v-else class="ml-1 text-gray-300">↕</span>
                 </div>
               </th>
-              <th class="px-6 py-1.5 w-12" />
+              <th class="px-3 py-1.5" />
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
             <tr v-for="item in zadanias.data" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center focus:text-indigo-500" :href="`/zadania/${item.id}/edit`">
-                  <span v-if="item.subject" class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                  <span v-if="item.subject" class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors text-sm truncate" :title="item.subject">
                     {{ item.subject }}
                   </span>
                   <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-600" :href="`/zadania/${item.id}/edit`" tabindex="-1">
-                  <span v-if="item.client" class="text-xs font-medium">{{ item.client.nazwa }}</span>
+              <td class="px-3 py-3 overflow-hidden">
+                <Link class="block text-gray-600 truncate" :href="`/zadania/${item.id}/edit`" tabindex="-1">
+                  <span v-if="item.client" class="text-xs font-medium" :title="item.client.nazwa">{{ item.client.nazwa }}</span>
                   <span v-else class="text-xs text-gray-300 italic">—</span>
                 </Link>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center" :href="`/zadania/${item.id}/edit`" tabindex="-1">
-                  <span :class="getStatusClass(item.status)" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium">
+                  <span :class="getStatusClass(item.status)" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap">
                     {{ getStatusLabel(item.status) }}
                   </span>
                 </Link>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center" :href="`/zadania/${item.id}/edit`" tabindex="-1">
-                  <div v-if="item.deadline" :class="getDeadlineClass(item.deadline)" class="px-2 py-0.5 rounded text-xs font-bold shadow-sm">
+                  <div v-if="item.deadline" :class="getDeadlineClass(item.deadline)" class="px-2 py-0.5 rounded text-xs font-bold shadow-sm whitespace-nowrap">
                     {{ item.deadline ? item.deadline.split('T')[0] : '-' }}
                   </div>
                 </Link>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex flex-col" :href="`/zadania/${item.id}/edit`" tabindex="-1">
-                  <span v-if="item.responsible_person_id" class="text-xs font-medium text-gray-700">
+                  <span v-if="item.responsible_person_id" class="text-xs font-medium text-gray-700 truncate">
                     {{ item.responsible_person_id.last_name }} {{ item.responsible_person_id.first_name }}
                   </span>
                   <span class="text-[10px] text-gray-400 mt-0.5">{{ item.created_at }}</span>
                 </Link>
               </td>
-              <td class="px-6 py-4 text-right">
-                <Link class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/zadania/${item.id}/edit`" tabindex="-1">
-                  <icon name="cheveron-right" class="w-4 h-4" />
+              <td class="px-1 py-3 text-center">
+                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/zadania/${item.id}/edit`" tabindex="-1">
+                  <icon name="cheveron-right" class="w-3 h-3" />
                 </Link>
               </td>
             </tr>

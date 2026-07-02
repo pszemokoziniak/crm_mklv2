@@ -37,80 +37,92 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-        <table class="w-full">
+      <div>
+        <table class="w-full table-fixed">
+          <colgroup>
+            <col style="width:30%" /><!-- Nazwa -->
+            <col style="width:20%" /><!-- Branza -->
+            <col style="width:14%" /><!-- Kraj -->
+            <col style="width:16%" /><!-- Z/O/K -->
+            <col style="width:17%" /><!-- Opiekun -->
+            <col style="width:3%" /><!-- Arrow -->
+          </colgroup>
           <thead>
             <tr class="text-left text-gray-500 bg-gray-50/50 border-b border-gray-100">
-              <th class="px-6 py-1.5 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('nazwa')">
-                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">
-                  Nazwa
-                  <icon v-if="form.field === 'nazwa'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('nazwa')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'nazwa' }">
+                  <span>Nazwa</span>
+                  <span v-if="form.field === 'nazwa'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
                 </div>
               </th>
-              <th class="px-6 py-1.5 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('branza')">
-                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">
-                  Branża
-                  <icon v-if="form.field === 'branza'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('branza')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'branza' }">
+                  <span>Branża</span>
+                  <span v-if="form.field === 'branza'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
                 </div>
               </th>
-              <th class="px-6 py-1.5 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('kraj')">
-                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">
-                  Kraj
-                  <icon v-if="form.field === 'kraj'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('kraj')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'kraj' }">
+                  <span>Kraj</span>
+                  <span v-if="form.field === 'kraj'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
                 </div>
               </th>
-              <th class="px-6 py-1.5 whitespace-nowrap">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Z / O / K</div>
+              <th class="px-3 py-1.5">
+                <div class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Z / O / K</div>
               </th>
-              <th class="px-6 py-1.5 whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('user')">
-                <div class="flex items-center text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">
-                  Opiekun
-                  <icon v-if="form.field === 'user'" :name="form.direction === 'asc' ? 'cheveron-up' : 'cheveron-down'" class="w-3 h-3 ml-1" />
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="sort('user')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'user' }">
+                  <span>Opiekun</span>
+                  <span v-if="form.field === 'user'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
                 </div>
               </th>
-              <th class="px-6 py-1.5 w-12" />
+              <th class="px-3 py-1.5" />
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
             <tr v-for="item in clients.data" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center focus:text-indigo-500" :href="`/clients/${item.id}/edit`">
-                  <div :class="item.is_active ? 'bg-green-500' : 'bg-red-500'" class="w-2 h-2 rounded-full mr-3 shadow-sm" :title="item.is_active ? 'Aktywny (ostatnie 6 m-cy)' : 'Nieaktywny'" />
-                  <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{{ item.nazwa }}</span>
+                  <div :class="item.is_active ? 'bg-green-500' : 'bg-red-500'" class="flex-shrink-0 w-2 h-2 rounded-full mr-2 shadow-sm" :title="item.is_active ? 'Aktywny (ostatnie 6 m-cy)' : 'Nieaktywny'" />
+                  <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors text-sm truncate" :title="item.nazwa">{{ item.nazwa }}</span>
                   <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-600" :href="`/clients/${item.id}/edit`" tabindex="-1">
-                  <span class="text-sm">{{ item.branza }}</span>
+              <td class="px-3 py-3 overflow-hidden">
+                <Link class="block text-gray-600 truncate" :href="`/clients/${item.id}/edit`" tabindex="-1">
+                  <span class="text-sm" :title="item.branza">{{ item.branza }}</span>
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-600" :href="`/clients/${item.id}/edit`" tabindex="-1">
-                  <span class="text-sm whitespace-nowrap">{{ item.kraj }}</span>
+              <td class="px-3 py-3 overflow-hidden">
+                <Link class="block text-gray-600 truncate" :href="`/clients/${item.id}/edit`" tabindex="-1">
+                  <span class="text-sm whitespace-nowrap" :title="item.kraj">{{ item.kraj }}</span>
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center gap-2" :href="`/clients/${item.id}/edit`" tabindex="-1">
-                  <div class="flex items-center justify-center w-7 h-7 rounded bg-indigo-50 text-indigo-600 text-xs font-bold" title="Zapytania">
+              <td class="px-3 py-3">
+                <Link class="flex items-center gap-1" :href="`/clients/${item.id}/edit`" tabindex="-1">
+                  <div class="flex items-center justify-center w-6 h-6 rounded bg-indigo-50 text-indigo-600 text-xs font-bold" title="Zapytania">
                     {{ item.zapytania_count }}
                   </div>
-                  <div class="flex items-center justify-center w-7 h-7 rounded bg-blue-50 text-blue-600 text-xs font-bold" title="Oferty">
+                  <div class="flex items-center justify-center w-6 h-6 rounded bg-blue-50 text-blue-600 text-xs font-bold" title="Oferty">
                     {{ item.oferty_count }}
                   </div>
-                  <div class="flex items-center justify-center w-7 h-7 rounded bg-emerald-50 text-emerald-600 text-xs font-bold" title="Kontakty">
+                  <div class="flex items-center justify-center w-6 h-6 rounded bg-emerald-50 text-emerald-600 text-xs font-bold" title="Kontakty">
                     {{ item.kontakty_count }}
                   </div>
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="flex items-center text-gray-600" :href="`/clients/${item.id}/edit`" tabindex="-1">
-                  <span class="text-sm font-medium">{{ item.user }}</span>
+              <td class="px-3 py-3 overflow-hidden">
+                <Link class="block text-gray-600 truncate" :href="`/clients/${item.id}/edit`" tabindex="-1">
+                  <span class="text-sm font-medium" :title="item.user">{{ item.user }}</span>
                 </Link>
               </td>
-              <td class="px-6 py-4 text-right">
-                <Link class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/clients/${item.id}/edit`" tabindex="-1">
-                  <icon name="cheveron-right" class="w-5 h-5" />
+              <td class="px-1 py-3 text-center">
+                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/clients/${item.id}/edit`" tabindex="-1">
+                  <icon name="cheveron-right" class="w-3 h-3" />
                 </Link>
               </td>
             </tr>

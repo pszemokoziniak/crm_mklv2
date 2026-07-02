@@ -33,25 +33,39 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-        <table class="w-full whitespace-nowrap">
+      <div>
+        <table class="w-full table-fixed">
+          <colgroup>
+            <col style="width:36%" /><!-- Uzytkownik -->
+            <col style="width:36%" /><!-- Email -->
+            <col style="width:25%" /><!-- Rola -->
+            <col style="width:3%" /><!-- Arrow -->
+          </colgroup>
           <thead>
             <tr class="text-left text-gray-500 bg-gray-50/50 border-b border-gray-100">
-              <th class="px-6 py-1.5 whitespace-nowrap">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Użytkownik</div>
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('name')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'name' }">
+                  <span>Użytkownik</span>
+                  <span v-if="form.field === 'name'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5 whitespace-nowrap">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Email</div>
+              <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('email')">
+                <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'email' }">
+                  <span>Email</span>
+                  <span v-if="form.field === 'email'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                  <span v-else class="text-gray-300">↕</span>
+                </div>
               </th>
-              <th class="px-6 py-1.5 whitespace-nowrap">
-                <div class="text-[10px] font-semibold uppercase tracking-tight scale-[0.8] origin-left whitespace-nowrap">Rola</div>
+              <th class="px-3 py-1.5">
+                <div class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Rola</div>
               </th>
-              <th class="px-6 py-1.5 w-12" />
+              <th class="px-3 py-1.5" />
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
             <tr v-for="user in users.data" :key="user.id" class="hover:bg-indigo-50/30 transition-colors group">
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center focus:outline-none" :href="`/users/${user.id}/edit`">
                   <div class="relative flex-shrink-0">
                     <img v-if="user.photo" class="block w-8 h-8 rounded-full border border-gray-200 shadow-sm" :src="user.photo" alt="photo" />
@@ -60,29 +74,29 @@
                     </div>
                     <div :class="user.active ? 'bg-green-500' : 'bg-gray-400'" class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 border-2 border-white rounded-full" />
                   </div>
-                  <div class="ml-3">
-                    <div class="text-xs font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                  <div class="ml-3 min-w-0 flex-1">
+                    <div class="text-xs font-bold text-gray-900 group-hover:text-indigo-600 transition-colors truncate" :title="user.name">
                       {{ user.name }}
                       <icon v-if="user.deleted_at" name="trash" class="inline-block ml-2 w-3 h-3 fill-rose-400" />
                     </div>
                   </div>
                 </Link>
               </td>
-              <td class="px-6 py-4">
-                <Link class="text-xs text-gray-600 font-medium" :href="`/users/${user.id}/edit`" tabindex="-1">
+              <td class="px-3 py-3 overflow-hidden">
+                <Link class="block text-xs text-gray-600 font-medium truncate" :href="`/users/${user.id}/edit`" tabindex="-1" :title="user.email">
                   {{ user.email }}
                 </Link>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 overflow-hidden">
                 <Link :href="`/users/${user.id}/edit`" tabindex="-1">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-600 uppercase tracking-wider shadow-sm">
+                  <span class="inline-flex max-w-full truncate items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-600 uppercase tracking-wider shadow-sm" :title="user.roles.join(', ')">
                     {{ user.roles.join(', ') }}
                   </span>
                 </Link>
               </td>
-              <td class="px-6 py-4 text-right">
-                <Link class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/users/${user.id}/edit`" tabindex="-1">
-                  <icon name="cheveron-right" class="w-4 h-4" />
+              <td class="px-1 py-3 text-center">
+                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/users/${user.id}/edit`" tabindex="-1">
+                  <icon name="cheveron-right" class="w-3 h-3" />
                 </Link>
               </td>
             </tr>
@@ -133,6 +147,8 @@ export default {
         search: this.filters.search,
         role: this.filters.role,
         trashed: this.filters.trashed,
+        field: this.filters.field || null,
+        direction: this.filters.direction || null,
       },
     }
   },
@@ -147,6 +163,17 @@ export default {
   methods: {
     reset() {
       this.form = mapValues(this.form, () => null)
+    },
+    toggleSort(field) {
+      if (this.form.field !== field) {
+        this.form.field = field
+        this.form.direction = 'desc'
+      } else if (this.form.direction === 'desc') {
+        this.form.direction = 'asc'
+      } else {
+        this.form.field = null
+        this.form.direction = null
+      }
     },
   },
 }

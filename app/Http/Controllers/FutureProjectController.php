@@ -28,16 +28,42 @@ class FutureProjectController extends Controller
     use StoreActivityLog;
     public function index()
     {
+        $sortField = Request::input('field');
+        $sortDirection = Request::input('direction') === 'asc' ? 'asc' : 'desc';
+
+        $query = FutureProject::with('client')
+            ->with('user')
+            ->with('opiekun')
+            ->with('kraj')
+            ->with('faza')
+            ->with('objekt')
+            ->filter(Request::only('search', 'trashed'));
+
+        if ($sortField === 'nazwa') {
+            $query->orderBy('nazwa', $sortDirection);
+        } elseif ($sortField === 'client') {
+            $query->leftJoin('clients', 'future_projects.client_id', '=', 'clients.id')
+                ->orderBy('clients.nazwa', $sortDirection)
+                ->select('future_projects.*');
+        } elseif ($sortField === 'kraj') {
+            $query->leftJoin('krajs', 'future_projects.kraj_id', '=', 'krajs.id')
+                ->orderBy('krajs.name', $sortDirection)
+                ->select('future_projects.*');
+        } elseif ($sortField === 'objekt') {
+            $query->leftJoin('objekts', 'future_projects.objekt_id', '=', 'objekts.id')
+                ->orderBy('objekts.name', $sortDirection)
+                ->select('future_projects.*');
+        } elseif ($sortField === 'faza') {
+            $query->leftJoin('fazas', 'future_projects.faza_id', '=', 'fazas.id')
+                ->orderBy('fazas.name', $sortDirection)
+                ->select('future_projects.*');
+        } else {
+            $query->OrderByCreatedAt();
+        }
+
         return Inertia::render('FutureProjects/Index', [
-            'filters' => Request::all('search', 'trashed'),
-            'futureprojects' => FutureProject::with('client')
-                ->with('user')
-                ->with('opiekun')
-                ->with('kraj')
-                ->with('faza')
-                ->with('objekt')
-                ->OrderByCreatedAt()
-                ->filter(Request::only('search', 'trashed'))
+            'filters' => Request::all('search', 'trashed', 'field', 'direction'),
+            'futureprojects' => $query
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($futureproject) => [
