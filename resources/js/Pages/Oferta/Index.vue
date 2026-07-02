@@ -99,12 +99,12 @@
     <div class="hidden md:block bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
       <table class="w-full table-fixed">
         <colgroup>
-          <col style="width:24%" /><!-- Zapytanie -->
-          <col style="width:24%" /><!-- Klient -->
-          <col style="width:12%" class="hidden lg:table-column" /><!-- Typ -->
-          <col style="width:11%" /><!-- Status -->
-          <col style="width:13%" class="hidden lg:table-column" /><!-- Kwota -->
-          <col style="width:13%" class="hidden lg:table-column" /><!-- Dodał -->
+          <col style="width:22%" /><!-- Zapytanie -->
+          <col style="width:22%" /><!-- Klient -->
+          <col style="width:11%" class="hidden lg:table-column" /><!-- Typ -->
+          <col style="width:14%" /><!-- Status -->
+          <col style="width:14%" class="hidden lg:table-column" /><!-- Kwota -->
+          <col style="width:14%" class="hidden lg:table-column" /><!-- Dodał -->
           <col style="width:3%" /><!-- Arrow -->
         </colgroup>
         <thead>
