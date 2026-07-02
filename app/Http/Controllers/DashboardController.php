@@ -23,8 +23,10 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        // Kierownictwo: super-admin, Administrator i Kierownictwo (wedlug Spatie rola jest case-sensitive)
-        $isKierownictwo = $user->hasAnyRole(['super-admin', 'Administrator', 'Kierownictwo']);
+        // Kierownictwo: super-admin, Administrator, Kierownictwo (Spatie case-sensitive)
+        // + osoby z flaga can_edit_all (per-user upowaznienie bez roli Administrator)
+        $isKierownictwo = $user->hasAnyRole(['super-admin', 'Administrator', 'Kierownictwo'])
+            || (bool) $user->can_edit_all;
         $selectedUserId = Request::get('user_id');
 
         // Jesli Kierownictwo nie wybralo nikogo, $filterUserId jest null (widza wszystko).

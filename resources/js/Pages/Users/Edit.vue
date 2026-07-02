@@ -60,6 +60,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <checkbox-input v-model="form.preliminarz_email" :error="form.errors.preliminarz_email" :disabled="disable" label="Powiadomienia Preliminarz" description="Czy użytkownik otrzymuje powiadomienia e-mail dla nowych zapytań z opcją PRELIMINARZ - TAK" />
+              <checkbox-input v-if="isSuperAdmin || isAdmin" v-model="form.can_edit_all" :error="form.errors.can_edit_all" :disabled="disable" label="Pełny dostęp do zapytań/ofert" description="Może przeglądać, edytować i filtrować zapytania oraz oferty wszystkich użytkowników (bez nadania roli Administrator)" />
             </div>
           </div>
 
@@ -201,6 +202,7 @@ export default {
         role: this.user.role,
         photo: null,
         preliminarz_email: this.user.preliminarz_email,
+        can_edit_all: this.user.can_edit_all,
       }),
     }
   },

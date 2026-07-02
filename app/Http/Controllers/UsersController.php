@@ -139,6 +139,7 @@ class UsersController extends Controller
                 'deleted_at' => $user->deleted_at,
                 'active' => $user->active,
                 'preliminarz_email' => $user->preliminarz_email,
+                'can_edit_all' => $user->can_edit_all,
                 'role' => $user->getRoleNames()->first(),
             ],
             'roles' => Role::all()->map(fn ($role) => [
@@ -172,13 +173,19 @@ class UsersController extends Controller
             'photo' => ['nullable', 'image', 'max:2048'], // Dodano max size dla bezpieczeństwa
             'active' => ['nullable'],
             'preliminarz_email' => ['boolean'],
+            'can_edit_all' => ['boolean'],
         ]);
 
         $oldRole = $user->getRoleNames()->first();
         // Explicitly cast to string to prevent JSON object saving
         $newRole = (string) Request::get('role');
 
-        $user->update(Request::only('first_name', 'last_name', 'email', 'active', 'preliminarz_email'));
+        // can_edit_all moze zmieniac tylko super-admin lub Administrator
+        $updatable = ['first_name', 'last_name', 'email', 'active', 'preliminarz_email'];
+        if (Auth::user()->hasRole('super-admin') || Auth::user()->hasRole('Administrator')) {
+            $updatable[] = 'can_edit_all';
+        }
+        $user->update(Request::only($updatable));
 
         if ($newRole && (Auth::user()->hasRole('super-admin') || Auth::user()->hasRole('Administrator'))) {
             if ($oldRole !== $newRole) {

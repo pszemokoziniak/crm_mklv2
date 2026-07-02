@@ -32,6 +32,7 @@ class User extends Authenticatable
         'password',
         'active',
         'preliminarz_email',
+        'can_edit_all',
     ];
 
     /**
@@ -53,6 +54,7 @@ class User extends Authenticatable
         'owner' => 'boolean',
         'email_verified_at' => 'datetime',
         'preliminarz_email' => 'boolean',
+        'can_edit_all' => 'boolean',
     ];
 
     public function getActivitylogOptions(): LogOptions
