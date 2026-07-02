@@ -89,11 +89,11 @@
     <div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <table class="w-full table-fixed">
         <colgroup>
-          <col style="width:26%" /><!-- Projekt -->
-          <col style="width:22%" /><!-- Klient -->
-          <col style="width:12%" class="hidden lg:table-column" /><!-- Kraj -->
-          <col style="width:15%" /><!-- Zakres -->
-          <col style="width:22%" class="hidden lg:table-column" /><!-- Zarejestrował -->
+          <col style="width:22%" /><!-- Projekt -->
+          <col style="width:20%" /><!-- Klient -->
+          <col style="width:10%" class="hidden lg:table-column" /><!-- Kraj -->
+          <col style="width:22%" /><!-- Zakres -->
+          <col style="width:23%" class="hidden lg:table-column" /><!-- Zarejestrował -->
           <col style="width:3%" /><!-- Arrow -->
         </colgroup>
         <thead>
@@ -158,8 +158,8 @@
               </Link>
             </td>
             <td class="px-3 py-2.5 overflow-hidden">
-              <Link class="block truncate" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                <span v-if="item.zakres" class="inline-block px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[8px] font-bold rounded uppercase tracking-tight leading-tight" :title="item.zakres.name">
+              <Link class="block" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+                <span v-if="item.zakres" class="inline-block max-w-full truncate align-middle px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[8px] font-bold rounded uppercase tracking-tight leading-tight" :title="item.zakres.name">
                   {{ item.zakres.name }}
                 </span>
               </Link>
