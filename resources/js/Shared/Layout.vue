@@ -134,7 +134,11 @@ export default {
       const diffSec = Math.floor((Date.now() - then.getTime()) / 1000)
       if (diffSec < 60) return 'teraz'
       const min = Math.floor(diffSec / 60)
-      return min + ' min temu'
+      if (min < 60) return min + ' min temu'
+      const hrs = Math.floor(min / 60)
+      if (hrs < 24) return hrs + ' godz. temu'
+      const days = Math.floor(hrs / 24)
+      return days + ' d. temu'
     },
   },
 }

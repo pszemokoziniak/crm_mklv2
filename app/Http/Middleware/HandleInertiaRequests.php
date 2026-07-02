@@ -76,9 +76,9 @@ class HandleInertiaRequests extends Middleware
                 if (!$request->user()->hasAnyRole(['super-admin', 'Administrator'])) {
                     return [];
                 }
-                // "Online" = ostatnia aktywnosc w ciagu 5 minut
+                // "Online" = ostatnia aktywnosc w ciagu ostatnich 24h
                 return User::whereNotNull('last_seen_at')
-                    ->where('last_seen_at', '>=', now()->subMinutes(5))
+                    ->where('last_seen_at', '>=', now()->subDay())
                     ->where('id', '!=', $request->user()->id) // pomijamy siebie
                     ->orderByDesc('last_seen_at')
                     ->get(['id', 'first_name', 'last_name', 'email', 'last_seen_at'])
