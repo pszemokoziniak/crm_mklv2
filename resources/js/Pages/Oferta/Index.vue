@@ -96,8 +96,17 @@
     </div>
 
     <!-- Desktop: widok tabeli -->
-    <div class="hidden md:block bg-white border border-gray-100 rounded-xl shadow-sm overflow-x-auto">
-      <table class="w-full">
+    <div class="hidden md:block bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+      <table class="w-full table-fixed">
+        <colgroup>
+          <col style="width:24%" /><!-- Zapytanie -->
+          <col style="width:24%" /><!-- Klient -->
+          <col style="width:12%" class="hidden lg:table-column" /><!-- Typ -->
+          <col style="width:11%" /><!-- Status -->
+          <col style="width:13%" class="hidden lg:table-column" /><!-- Kwota -->
+          <col style="width:13%" class="hidden lg:table-column" /><!-- Dodał -->
+          <col style="width:3%" /><!-- Arrow -->
+        </colgroup>
         <thead>
           <tr class="bg-gray-50/50 text-left text-gray-500 border-b border-gray-100">
             <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('zapytanie')">
