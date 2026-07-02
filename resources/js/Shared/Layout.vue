@@ -20,8 +20,15 @@
             </dropdown>
           </div>
           <div class="md:text-md flex items-center justify-between p-4 w-full text-sm bg-white border-b md:px-12 md:py-0 shadow-sm">
-            <div class="mr-4 mt-1 font-bold text-indigo-600 uppercase tracking-wider">
-              {{ auth.user.roles[0] || 'Użytkownik' }}
+            <div class="mr-4 mt-1 flex items-center gap-4">
+              <div class="font-bold text-indigo-600 uppercase tracking-wider">
+                {{ auth.user.roles[0] || 'Użytkownik' }}
+              </div>
+              <div v-if="imieninyToday.length > 0" class="hidden md:flex items-center gap-1.5 text-xs" :title="`Imieniny obchodzą dzisiaj: ${imieninyToday.join(', ')}`">
+                <span class="text-base leading-none">🎂</span>
+                <span class="text-gray-500 font-medium">Imieniny:</span>
+                <span class="text-gray-700 font-semibold">{{ imieninyToday.join(', ') }}</span>
+              </div>
             </div>
             <div class="flex items-center space-x-2">
               <dropdown v-if="myTodo && myTodo.total > 0" class="mt-1" placement="bottom-end">
@@ -153,6 +160,7 @@ import MainMenu from '@/Shared/MainMenu'
 import FlashMessages from '@/Shared/FlashMessages'
 import NotificationBell from '@/Shared/NotificationBell'
 import { initPushNotifications } from '@/Shared/PushNotifications'
+import { imieninyDnia } from '@/Shared/imieniny'
 
 export default {
   components: {
@@ -216,6 +224,9 @@ export default {
     todoTitle() {
       if (!this.myTodo) return ''
       return `Do zrobienia w ciagu 7 dni: ${this.myTodo.total} (zapytania ${this.myTodo.zapytania}, oferty ${this.myTodo.oferty}, kontakty ${this.myTodo.kontakty}, zadania ${this.myTodo.zadania})`
+    },
+    imieninyToday() {
+      return imieninyDnia(new Date())
     },
   },
   mounted() {
