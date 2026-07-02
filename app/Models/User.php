@@ -34,6 +34,8 @@ class User extends Authenticatable
         'preliminarz_email',
         'can_edit_all',
         'last_seen_at',
+        'last_login_at',
+        'last_logout_at',
     ];
 
     /**
@@ -57,6 +59,8 @@ class User extends Authenticatable
         'preliminarz_email' => 'boolean',
         'can_edit_all' => 'boolean',
         'last_seen_at' => 'datetime',
+        'last_login_at' => 'datetime',
+        'last_logout_at' => 'datetime',
     ];
 
     public function getActivitylogOptions(): LogOptions

@@ -61,6 +61,13 @@ class AuthenticatedSessionController extends Controller
         $user->login_time = now();
         $user->save();
 
+        // Zapisujemy jawny czas logowania i czyscimy logout (jest 'zalogowany')
+        DB::table('users')->where('id', Auth::id())->update([
+            'last_login_at' => now(),
+            'last_logout_at' => null,
+            'last_seen_at' => now(),
+        ]);
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 
@@ -71,11 +78,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
-        // Zerujemy last_seen_at zanim wylogujemy - dzieki temu user
-        // znika z listy 'online' od razu, a nie po 24h.
+        // Zapisujemy jawny czas wylogowania - status "zalogowany" liczymy jako
+        // last_login_at > last_logout_at, wiec ustawienie logout wystarczy.
         $user = Auth::guard('web')->user();
         if ($user) {
-            DB::table('users')->where('id', $user->id)->update(['last_seen_at' => null]);
+            DB::table('users')->where('id', $user->id)->update([
+                'last_logout_at' => now(),
+            ]);
         }
 
         Auth::guard('web')->logout();

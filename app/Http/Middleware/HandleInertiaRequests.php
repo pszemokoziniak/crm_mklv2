@@ -76,19 +76,29 @@ class HandleInertiaRequests extends Middleware
                 if (!$request->user()->hasAnyRole(['super-admin', 'Administrator'])) {
                     return [];
                 }
-                // "Online" = ostatnia aktywnosc w ciagu ostatnich 24h
-                return User::whereNotNull('last_seen_at')
-                    ->where('last_seen_at', '>=', now()->subDay())
+                // Bierzemy uzytkownikow ktorzy logowali sie w ciagu 7 dni
+                // (jeden wpis na usera - w users mamy zawsze 1 wiersz),
+                // sortowane od najnowszego logowania.
+                return User::whereNotNull('last_login_at')
+                    ->where('last_login_at', '>=', now()->subDays(7))
                     ->where('id', '!=', $request->user()->id) // pomijamy siebie
-                    ->orderByDesc('last_seen_at')
-                    ->get(['id', 'first_name', 'last_name', 'email', 'last_seen_at'])
-                    ->map(fn ($u) => [
-                        'id' => $u->id,
-                        'first_name' => $u->first_name,
-                        'last_name' => $u->last_name,
-                        'email' => $u->email,
-                        'last_seen_at' => $u->last_seen_at->format('Y-m-d H:i:s'),
-                    ])
+                    ->orderByDesc('last_login_at')
+                    ->get(['id', 'first_name', 'last_name', 'email', 'last_login_at', 'last_logout_at', 'last_seen_at'])
+                    ->map(function ($u) {
+                        // "Zalogowany" = login pozniejszy niz ewentualny logout
+                        $isLoggedIn = $u->last_logout_at === null
+                            || $u->last_login_at->gt($u->last_logout_at);
+                        return [
+                            'id' => $u->id,
+                            'first_name' => $u->first_name,
+                            'last_name' => $u->last_name,
+                            'email' => $u->email,
+                            'is_logged_in' => $isLoggedIn,
+                            'last_login_at' => $u->last_login_at->format('Y-m-d H:i:s'),
+                            'last_logout_at' => $u->last_logout_at ? $u->last_logout_at->format('Y-m-d H:i:s') : null,
+                            'last_seen_at' => $u->last_seen_at ? $u->last_seen_at->format('Y-m-d H:i:s') : null,
+                        ];
+                    })
                     ->values();
             },
             'mainMenus' => function () use ($request) {
