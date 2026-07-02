@@ -24,6 +24,57 @@
               {{ auth.user.roles[0] || 'Użytkownik' }}
             </div>
             <div class="flex items-center space-x-2">
+              <dropdown v-if="myTodo && myTodo.total > 0" class="mt-1" placement="bottom-end">
+                <template #default>
+                  <div class="group flex items-center gap-1.5 cursor-pointer select-none px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors" :title="todoTitle">
+                    <span class="text-base leading-none">{{ todoIcon }}</span>
+                    <span class="text-xs font-semibold" :class="todoColorClass">{{ myTodo.total }}</span>
+                  </div>
+                </template>
+                <template #dropdown>
+                  <div class="mt-2 py-2 text-sm bg-white rounded-lg shadow-xl border border-gray-100 min-w-[280px]">
+                    <div class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100 flex items-center gap-2">
+                      <span class="text-sm">{{ todoIcon }}</span>
+                      <span>{{ todoHeadline }}</span>
+                    </div>
+                    <Link href="/" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                      <span class="flex items-center gap-2 text-xs text-gray-700">
+                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                        Zapytania (termin złożenia)
+                      </span>
+                      <span class="text-xs font-bold" :class="myTodo.zapytania > 0 ? 'text-indigo-600' : 'text-gray-300'">{{ myTodo.zapytania }}</span>
+                    </Link>
+                    <Link href="/" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                      <span class="flex items-center gap-2 text-xs text-gray-700">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500" />
+                        Oferty (data kontaktu)
+                      </span>
+                      <span class="text-xs font-bold" :class="myTodo.oferty > 0 ? 'text-green-600' : 'text-gray-300'">{{ myTodo.oferty }}</span>
+                    </Link>
+                    <Link href="/" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                      <span class="flex items-center gap-2 text-xs text-gray-700">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                        Kontakty (termin)
+                      </span>
+                      <span class="text-xs font-bold" :class="myTodo.kontakty > 0 ? 'text-blue-600' : 'text-gray-300'">{{ myTodo.kontakty }}</span>
+                    </Link>
+                    <Link href="/" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                      <span class="flex items-center gap-2 text-xs text-gray-700">
+                        <span class="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                        Zadania (deadline)
+                      </span>
+                      <span class="text-xs font-bold" :class="myTodo.zadania > 0 ? 'text-orange-600' : 'text-gray-300'">{{ myTodo.zadania }}</span>
+                    </Link>
+                    <div class="border-t border-gray-100 my-1" />
+                    <Link href="/" class="block px-4 py-2 text-[10px] text-center text-indigo-600 hover:bg-indigo-50 font-semibold transition-colors">
+                      Zobacz zestawienie →
+                    </Link>
+                  </div>
+                </template>
+              </dropdown>
+              <div v-else-if="myTodo && myTodo.total === 0" class="flex items-center gap-1 px-2.5 py-1.5 select-none" title="Nic pilnego na horyzoncie — wolne! 🍹">
+                <span class="text-base leading-none">🍹</span>
+              </div>
               <dropdown v-if="isAdmin && onlineUsers && onlineUsers.length > 0" class="mt-1" placement="bottom-end">
                 <template #default>
                   <div class="group flex items-center gap-1.5 cursor-pointer select-none px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors" :title="onlineCount > 0 ? `${onlineCount} zalogowanych` : 'Nikt nie jest teraz zalogowany'">
@@ -125,6 +176,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    myTodo: {
+      type: Object,
+      default: null,
+    },
   },
   computed: {
     isAdmin() {
@@ -134,6 +189,33 @@ export default {
     onlineCount() {
       if (!this.onlineUsers) return 0
       return this.onlineUsers.filter(u => u.is_logged_in).length
+    },
+    todoIcon() {
+      const t = this.myTodo ? this.myTodo.total : 0
+      if (t === 0) return '🍹'
+      if (t <= 3) return '🔨'
+      if (t <= 10) return '💪'
+      if (t <= 25) return '🐴'
+      return '🥵'
+    },
+    todoColorClass() {
+      const t = this.myTodo ? this.myTodo.total : 0
+      if (t <= 3) return 'text-gray-700'
+      if (t <= 10) return 'text-indigo-600'
+      if (t <= 25) return 'text-orange-600'
+      return 'text-red-600'
+    },
+    todoHeadline() {
+      const t = this.myTodo ? this.myTodo.total : 0
+      if (t === 0) return 'Nic pilnego — chill 🍹'
+      if (t <= 3) return 'Kilka drobiazgów do zrobienia'
+      if (t <= 10) return 'Trochę roboty przed Tobą 💪'
+      if (t <= 25) return 'Do roboty jak koń! 🐴'
+      return 'Kupa roboty — trzymaj się! 🥵'
+    },
+    todoTitle() {
+      if (!this.myTodo) return ''
+      return `Do zrobienia w ciagu 7 dni: ${this.myTodo.total} (zapytania ${this.myTodo.zapytania}, oferty ${this.myTodo.oferty}, kontakty ${this.myTodo.kontakty}, zadania ${this.myTodo.zadania})`
     },
   },
   mounted() {

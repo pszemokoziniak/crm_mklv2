@@ -2,8 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Kontakt;
 use App\Models\MainMenu; // Import the MainMenu model
+use App\Models\Oferta;
 use App\Models\User;
+use App\Models\Zadania;
+use App\Models\Zapytania;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Illuminate\Support\Facades\Log; // Import Log facade
@@ -68,6 +72,48 @@ class HandleInertiaRequests extends Middleware
                 return $request->user() ? $request->user()->unreadNotifications()->count() : 0;
             },
             'vapidPublicKey' => config('webpush.vapid.public_key'),
+            'myTodo' => function () use ($request) {
+                if (!$request->user()) {
+                    return null;
+                }
+                $userId = $request->user()->id;
+                $soon = now()->addDays(7)->endOfDay();
+
+                // Zapytania: swoje (opracowuje/user) z data_zlozenia do 7 dni
+                $zapytania = Zapytania::where(function ($q) use ($userId) {
+                    $q->where('user_opracowuje_id', $userId)->orWhere('user_id', $userId);
+                })->whereNotNull('data_zlozenia')
+                  ->where('data_zlozenia', '<=', $soon)
+                  ->count();
+
+                // Oferty: swoje w statusie TOCZY z data_kontakt do 7 dni
+                $oferty = Oferta::where('user_id', $userId)
+                    ->whereNotNull('data_kontakt')
+                    ->where('data_kontakt', '<=', $soon)
+                    ->whereHas('ofertastatus', fn ($q) => $q->whereRaw('LOWER(TRIM(name)) = ?', ['toczy']))
+                    ->count();
+
+                // Kontakty: swoje (opiekun) z next_call_date do 7 dni
+                $kontakty = Kontakt::where('opiekun_id', $userId)
+                    ->whereNotNull('next_call_date')
+                    ->where('next_call_date', '<=', $soon)
+                    ->count();
+
+                // Zadania: aktywne przypisane do mnie z deadline do 7 dni
+                $zadania = Zadania::where('responsible_person_id', $userId)
+                    ->where('status', Zadania::STATUS_AKTYWNE)
+                    ->whereNotNull('deadline')
+                    ->where('deadline', '<=', $soon)
+                    ->count();
+
+                return [
+                    'zapytania' => $zapytania,
+                    'oferty' => $oferty,
+                    'kontakty' => $kontakty,
+                    'zadania' => $zadania,
+                    'total' => $zapytania + $oferty + $kontakty + $zadania,
+                ];
+            },
             'onlineUsers' => function () use ($request) {
                 if (!$request->user()) {
                     return [];
