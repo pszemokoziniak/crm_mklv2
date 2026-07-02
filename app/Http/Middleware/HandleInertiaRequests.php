@@ -72,6 +72,22 @@ class HandleInertiaRequests extends Middleware
                 return $request->user() ? $request->user()->unreadNotifications()->count() : 0;
             },
             'vapidPublicKey' => config('webpush.vapid.public_key'),
+            'userFirstNames' => function () use ($request) {
+                if (!$request->user()) {
+                    return [];
+                }
+                // Unikalne imiona aktywnych, nieusunietych userow - do podswietlania
+                // dzisiejszych imienin w headerze.
+                return User::whereNull('deleted_at')
+                    ->where('active', 1)
+                    ->whereNotNull('first_name')
+                    ->where('first_name', '!=', '')
+                    ->pluck('first_name')
+                    ->map(fn ($n) => trim($n))
+                    ->unique()
+                    ->values()
+                    ->all();
+            },
             'myTodo' => function () use ($request) {
                 if (!$request->user()) {
                     return null;

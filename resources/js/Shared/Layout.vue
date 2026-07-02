@@ -24,10 +24,18 @@
               <div class="font-bold text-indigo-600 uppercase tracking-wider">
                 {{ auth.user.roles[0] || 'Użytkownik' }}
               </div>
-              <div v-if="imieninyToday.length > 0" class="hidden md:flex items-center gap-1.5 text-xs" :title="`Imieniny obchodzą dzisiaj: ${imieninyToday.join(', ')}`">
+              <div v-if="imieninyToday.length > 0" class="hidden md:flex items-center gap-1.5 text-xs" :title="imieninyTitle">
                 <span class="text-base leading-none">🎂</span>
                 <span class="text-gray-500 font-medium">Imieniny:</span>
-                <span class="text-gray-700 font-semibold">{{ imieninyToday.join(', ') }}</span>
+                <span class="flex items-center gap-1 flex-wrap">
+                  <template v-for="(name, idx) in imieninyToday" :key="idx">
+                    <span
+                      :class="matchesEmployee(name)
+                        ? 'text-pink-600 font-bold underline decoration-pink-300 decoration-2 underline-offset-2'
+                        : 'text-gray-700 font-semibold'"
+                    >{{ name }}</span><span v-if="idx < imieninyToday.length - 1" class="text-gray-400">,</span>
+                  </template>
+                </span>
               </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -188,6 +196,10 @@ export default {
       type: Object,
       default: null,
     },
+    userFirstNames: {
+      type: Array,
+      default: () => [],
+    },
   },
   computed: {
     isAdmin() {
@@ -228,6 +240,15 @@ export default {
     imieninyToday() {
       return imieninyDnia(new Date())
     },
+    imieninyMatchedEmployees() {
+      // Lista pracownikow ktorzy dzis maja imieniny (do tooltipa)
+      return this.userFirstNames.filter(fn => this.imieninyToday.some(im => this.namesMatch(im, fn)))
+    },
+    imieninyTitle() {
+      const base = `Imieniny obchodzą dzisiaj: ${this.imieninyToday.join(', ')}`
+      if (this.imieninyMatchedEmployees.length === 0) return base
+      return `${base}\n\n🎉 W firmie świętują: ${this.imieninyMatchedEmployees.join(', ')}`
+    },
   },
   mounted() {
     if (this.vapidPublicKey) {
@@ -235,6 +256,23 @@ export default {
     }
   },
   methods: {
+    // Dopasowanie: user first_name w mianowniku vs imieniny (moga byc w dopelniaczu np. 'Marii').
+    // Uznajemy match jesli: dokladnie taki sam, lub imieniny to forma wywodzaca sie z imienia
+    // (imieniny zaczynaja sie od rdzenia imienia i roznica dlugosci <= 2 znaki).
+    namesMatch(imieninyName, userName) {
+      if (!imieninyName || !userName) return false
+      const im = imieninyName.toLowerCase().trim()
+      const u = userName.toLowerCase().trim()
+      if (im === u) return true
+      if (u.length < 4) return false // krotkie imiona jak "Ada" - wymagamy dokladnego dopasowania
+      const root = u.slice(0, -1) // np. "Maria" -> "Mari"
+      if (!im.startsWith(root)) return false
+      // Roznica dlugosci nie wieksza niz 2 (dopelniacz zwykle: +1..+2 znaki jak "Marii", "Marię", "Filipa")
+      return Math.abs(im.length - u.length) <= 2
+    },
+    matchesEmployee(imieninyName) {
+      return this.userFirstNames.some(fn => this.namesMatch(imieninyName, fn))
+    },
     formatRelative(dt) {
       if (!dt) return ''
       const then = new Date(dt.replace(' ', 'T'))
