@@ -24,6 +24,30 @@
               {{ auth.user.roles[0] || 'Użytkownik' }}
             </div>
             <div class="flex items-center space-x-2">
+              <dropdown v-if="isAdmin && onlineUsers && onlineUsers.length > 0" class="mt-1" placement="bottom-end">
+                <template #default>
+                  <div class="group flex items-center gap-1.5 cursor-pointer select-none px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors" :title="`${onlineUsers.length} zalogowanych: ${onlineUsers.map(u => u.first_name + ' ' + u.last_name).join(', ')}`">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                    </span>
+                    <span class="text-xs font-semibold text-gray-700 group-hover:text-indigo-600">{{ onlineUsers.length }} online</span>
+                  </div>
+                </template>
+                <template #dropdown>
+                  <div class="mt-2 py-2 text-sm bg-white rounded-lg shadow-xl border border-gray-100 min-w-[220px] max-h-96 overflow-y-auto">
+                    <div class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100">Zalogowani teraz</div>
+                    <div v-for="u in onlineUsers" :key="u.id" class="flex items-center px-4 py-2 hover:bg-indigo-50 transition-colors">
+                      <span class="flex-shrink-0 w-2 h-2 rounded-full bg-green-500 mr-3" />
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-semibold text-gray-800 truncate">{{ u.first_name }} {{ u.last_name }}</div>
+                        <div class="text-[10px] text-gray-400 truncate">{{ u.email }}</div>
+                      </div>
+                      <div class="text-[9px] text-gray-400 ml-2 whitespace-nowrap">{{ formatLastSeen(u.last_seen_at) }}</div>
+                    </div>
+                  </div>
+                </template>
+              </dropdown>
               <notification-bell :count="unreadNotificationsCount" />
               <dropdown class="mt-1" placement="bottom-end">
                 <template #default>
@@ -87,11 +111,31 @@ export default {
       default: 0,
     },
     vapidPublicKey: String,
+    onlineUsers: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  computed: {
+    isAdmin() {
+      if (!this.auth || !this.auth.user || !this.auth.user.roles) return false
+      return this.auth.user.roles.includes('super-admin') || this.auth.user.roles.includes('Administrator')
+    },
   },
   mounted() {
     if (this.vapidPublicKey) {
       initPushNotifications(this.vapidPublicKey)
     }
+  },
+  methods: {
+    formatLastSeen(dt) {
+      if (!dt) return ''
+      const then = new Date(dt.replace(' ', 'T'))
+      const diffSec = Math.floor((Date.now() - then.getTime()) / 1000)
+      if (diffSec < 60) return 'teraz'
+      const min = Math.floor(diffSec / 60)
+      return min + ' min temu'
+    },
   },
 }
 </script>

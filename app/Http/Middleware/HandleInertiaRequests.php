@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\MainMenu; // Import the MainMenu model
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Illuminate\Support\Facades\Log; // Import Log facade
@@ -67,6 +68,29 @@ class HandleInertiaRequests extends Middleware
                 return $request->user() ? $request->user()->unreadNotifications()->count() : 0;
             },
             'vapidPublicKey' => config('webpush.vapid.public_key'),
+            'onlineUsers' => function () use ($request) {
+                if (!$request->user()) {
+                    return [];
+                }
+                // Widoczne tylko dla super-admin i Administrator
+                if (!$request->user()->hasAnyRole(['super-admin', 'Administrator'])) {
+                    return [];
+                }
+                // "Online" = ostatnia aktywnosc w ciagu 5 minut
+                return User::whereNotNull('last_seen_at')
+                    ->where('last_seen_at', '>=', now()->subMinutes(5))
+                    ->where('id', '!=', $request->user()->id) // pomijamy siebie
+                    ->orderByDesc('last_seen_at')
+                    ->get(['id', 'first_name', 'last_name', 'email', 'last_seen_at'])
+                    ->map(fn ($u) => [
+                        'id' => $u->id,
+                        'first_name' => $u->first_name,
+                        'last_name' => $u->last_name,
+                        'email' => $u->email,
+                        'last_seen_at' => $u->last_seen_at->format('Y-m-d H:i:s'),
+                    ])
+                    ->values();
+            },
             'mainMenus' => function () use ($request) {
                 if (!$request->user()) {
                     Log::info('No user logged in, returning empty mainMenus.');
