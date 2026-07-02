@@ -10,7 +10,7 @@
       </svg>
       <span
         v-if="localCount > 0"
-        class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full"
+        class="absolute top-0 right-0 inline-flex items-center justify-center min-w-[14px] h-[14px] px-1 text-[8px] font-bold text-white bg-red-500 rounded-full leading-none"
       >
         {{ localCount > 9 ? '9+' : localCount }}
       </span>
