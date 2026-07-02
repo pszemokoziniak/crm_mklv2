@@ -96,31 +96,51 @@
     </div>
 
     <!-- Desktop: widok tabeli -->
-    <div class="hidden md:block bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+    <div class="hidden md:block bg-white border border-gray-100 rounded-xl shadow-sm overflow-x-auto">
       <table class="w-full">
         <thead>
           <tr class="bg-gray-50/50 text-left text-gray-500 border-b border-gray-100">
-            <th class="px-3 py-1.5">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Zapytanie</span>
+            <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('zapytanie')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'zapytanie' }">
+                <span>Zapytanie</span>
+                <span v-if="form.field === 'zapytanie'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
-            <th class="px-3 py-1.5">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Klient</span>
+            <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('client')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'client' }">
+                <span>Klient</span>
+                <span v-if="form.field === 'client'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
-            <th class="px-3 py-1.5 hidden lg:table-cell">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Typ</span>
+            <th class="px-3 py-1.5 hidden lg:table-cell cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('typ')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'typ' }">
+                <span>Typ</span>
+                <span v-if="form.field === 'typ'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
-            <th class="px-3 py-1.5">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Status</span>
+            <th class="px-3 py-1.5 cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('status')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'status' }">
+                <span>Status</span>
+                <span v-if="form.field === 'status'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
-            <th class="px-3 py-1.5 hidden lg:table-cell">
-              <button type="button" class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap hover:text-indigo-600 transition-colors" :class="{ 'text-indigo-600': form.field === 'kwota' }" @click="toggleSort('kwota')">
+            <th class="px-3 py-1.5 hidden lg:table-cell cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('kwota')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'kwota' }">
                 <span>Kwota</span>
-                <span v-if="form.field === 'kwota'" class="text-[10px]">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
-                <span v-else class="text-[10px] text-gray-300">↕</span>
-              </button>
+                <span v-if="form.field === 'kwota'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
-            <th class="px-3 py-1.5 hidden lg:table-cell">
-              <span class="text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap">Dodał</span>
+            <th class="px-3 py-1.5 hidden lg:table-cell cursor-pointer hover:text-indigo-600 transition-colors" @click="toggleSort('dodal')">
+              <div class="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-tight whitespace-nowrap" :class="{ 'text-indigo-600': form.field === 'dodal' }">
+                <span>Dodał</span>
+                <span v-if="form.field === 'dodal'">{{ form.direction === 'asc' ? '↑' : '↓' }}</span>
+                <span v-else class="text-gray-300">↕</span>
+              </div>
             </th>
             <th class="py-1.5" />
           </tr>

@@ -63,6 +63,27 @@ class OfertaController extends Controller
 
         if ($sortField === 'kwota') {
             $ofertasQuery->orderByRaw('kwota IS NULL, kwota ' . $sortDirection);
+        } elseif ($sortField === 'zapytanie') {
+            $ofertasQuery->leftJoin('zapytanias', 'ofertas.zapytania_id', '=', 'zapytanias.id')
+                ->orderBy('zapytanias.nazwa_projektu', $sortDirection)
+                ->select('ofertas.*');
+        } elseif ($sortField === 'client') {
+            $ofertasQuery->leftJoin('clients', 'ofertas.client_id', '=', 'clients.id')
+                ->orderBy('clients.nazwa', $sortDirection)
+                ->select('ofertas.*');
+        } elseif ($sortField === 'typ') {
+            $ofertasQuery->orderBy('typ', $sortDirection);
+        } elseif ($sortField === 'status') {
+            $ofertasQuery->leftJoin('oferta_statuses', 'ofertas.oferta_status_id', '=', 'oferta_statuses.id')
+                ->orderBy('oferta_statuses.name', $sortDirection)
+                ->select('ofertas.*');
+        } elseif ($sortField === 'dodal') {
+            $ofertasQuery->leftJoin('users', 'ofertas.user_id', '=', 'users.id')
+                ->orderBy('users.last_name', $sortDirection)
+                ->orderBy('users.first_name', $sortDirection)
+                ->select('ofertas.*');
+        } elseif ($sortField === 'created_at') {
+            $ofertasQuery->orderBy('ofertas.created_at', $sortDirection);
         } else {
             $ofertasQuery->OrderByCreatedAt();
         }
