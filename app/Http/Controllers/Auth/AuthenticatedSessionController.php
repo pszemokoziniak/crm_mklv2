@@ -9,6 +9,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -70,6 +71,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
+        // Zerujemy last_seen_at zanim wylogujemy - dzieki temu user
+        // znika z listy 'online' od razu, a nie po 24h.
+        $user = Auth::guard('web')->user();
+        if ($user) {
+            DB::table('users')->where('id', $user->id)->update(['last_seen_at' => null]);
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
