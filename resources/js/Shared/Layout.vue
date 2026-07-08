@@ -52,28 +52,28 @@
                       <span class="text-sm">{{ todoIcon }}</span>
                       <span>{{ todoHeadline }}</span>
                     </div>
-                    <Link href="/" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                    <Link href="/zapytania" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
                       <span class="flex items-center gap-2 text-xs text-gray-700">
                         <span class="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                         Zapytania (termin złożenia)
                       </span>
                       <span class="text-xs font-bold" :class="myTodo.zapytania > 0 ? 'text-indigo-600' : 'text-gray-300'">{{ myTodo.zapytania }}</span>
                     </Link>
-                    <Link href="/" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                    <Link href="/oferta" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
                       <span class="flex items-center gap-2 text-xs text-gray-700">
                         <span class="w-1.5 h-1.5 rounded-full bg-green-500" />
                         Oferty (data kontaktu)
                       </span>
                       <span class="text-xs font-bold" :class="myTodo.oferty > 0 ? 'text-green-600' : 'text-gray-300'">{{ myTodo.oferty }}</span>
                     </Link>
-                    <Link href="/" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                    <Link href="/kontakt" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
                       <span class="flex items-center gap-2 text-xs text-gray-700">
                         <span class="w-1.5 h-1.5 rounded-full bg-blue-500" />
                         Kontakty (termin)
                       </span>
                       <span class="text-xs font-bold" :class="myTodo.kontakty > 0 ? 'text-blue-600' : 'text-gray-300'">{{ myTodo.kontakty }}</span>
                     </Link>
-                    <Link href="/" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                    <Link href="/zadania" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
                       <span class="flex items-center gap-2 text-xs text-gray-700">
                         <span class="w-1.5 h-1.5 rounded-full bg-orange-500" />
                         Zadania (deadline)
@@ -82,7 +82,7 @@
                     </Link>
                     <div class="border-t border-gray-100 my-1" />
                     <Link href="/" class="block px-4 py-2 text-[10px] text-center text-indigo-600 hover:bg-indigo-50 font-semibold transition-colors">
-                      Zobacz zestawienie →
+                      Zobacz zestawienie na dashboardzie →
                     </Link>
                   </div>
                 </template>
