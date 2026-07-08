@@ -81,7 +81,7 @@
 
         <!-- Secondary Actions Bar -->
         <div v-if="!user.deleted_at && !isActive && canEdit" class="bg-white border-t border-gray-100">
-          <div class="grid divide-x divide-gray-100" :class="canSendPasswordLink ? 'grid-cols-2' : 'grid-cols-1'">
+          <div class="grid divide-x divide-gray-100" :class="actionButtonsClass">
             <button class="flex items-center justify-center px-4 py-4 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="disableForm">
               <icon name="edit" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
               <span class="text-sm font-bold">Edytuj dane</span>
@@ -89,6 +89,10 @@
             <button v-if="canSendPasswordLink" class="flex items-center justify-center px-4 py-4 hover:bg-indigo-50 text-indigo-600 transition-all group" @click="sendPasswordLink">
               <icon name="printer" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
               <span class="text-sm font-bold">Wyślij link do ustawienia hasła</span>
+            </button>
+            <button v-if="canImpersonate" class="flex items-center justify-center px-4 py-4 hover:bg-amber-50 text-amber-600 transition-all group" @click="impersonate">
+              <icon name="users" class="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span class="text-sm font-bold">Zaloguj się jako ten user</span>
             </button>
           </div>
         </div>
@@ -227,6 +231,14 @@ export default {
       // Tylko admini moga wyslac link do innego usera (nie samemu sobie - jest "Nie pamietam hasla" na stronie logowania)
       return (this.isSuperAdmin || this.isAdmin) && !this.isOwnProfile && !!this.user.email
     },
+    canImpersonate() {
+      // Admin moze zalogowac sie jako inny user (do testowania widokow)
+      return (this.isSuperAdmin || this.isAdmin) && !this.isOwnProfile && !this.user.deleted_at
+    },
+    actionButtonsClass() {
+      const n = 1 + (this.canSendPasswordLink ? 1 : 0) + (this.canImpersonate ? 1 : 0)
+      return n === 3 ? 'grid-cols-3' : (n === 2 ? 'grid-cols-2' : 'grid-cols-1')
+    },
     filteredActivities() {
       if (!this.activities) {
         return []
@@ -269,6 +281,11 @@ export default {
         this.$inertia.post(`/users/${this.user.id}/send-password-setup-link`, {}, {
           preserveScroll: true,
         })
+      }
+    },
+    impersonate() {
+      if (confirm(`Zalogować się jako ${this.user.first_name} ${this.user.last_name}? Twoja sesja zostanie zapamiętana - będziesz mógł łatwo wrócić z banera na górze.`)) {
+        this.$inertia.post(`/users/${this.user.id}/impersonate`)
       }
     },
     disableForm() {

@@ -1,5 +1,14 @@
 <template>
   <div>
+    <div v-if="impersonating" class="bg-amber-500 text-white px-4 py-2 flex items-center justify-between text-sm shadow-md">
+      <span>
+        ⚠️ Jesteś zalogowany jako <strong>{{ auth.user.first_name }} {{ auth.user.last_name }}</strong>
+        (impersonacja przez <strong>{{ impersonating.first_name }} {{ impersonating.last_name }}</strong>)
+      </span>
+      <button type="button" class="bg-white text-amber-700 font-bold px-3 py-1 rounded hover:bg-amber-50 transition-colors text-xs uppercase tracking-wide" @click="stopImpersonating">
+        Wróć do swojego konta →
+      </button>
+    </div>
     <div id="dropdown" />
     <div class="md:flex md:flex-col">
       <div class="md:flex md:flex-col md:h-screen">
@@ -292,6 +301,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    impersonating: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
@@ -369,6 +382,9 @@ export default {
     }
   },
   methods: {
+    stopImpersonating() {
+      this.$inertia.post('/impersonate/stop')
+    },
     openTodoModal(category) {
       if (this.myTodo && this.myTodo[category] > 0) {
         this.todoModal = category

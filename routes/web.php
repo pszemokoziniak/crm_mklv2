@@ -111,6 +111,8 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
         Route::delete('users/{user}', [UsersController::class, 'destroy'])->name('users.destroy');
         Route::put('users/{user}/restore', [UsersController::class, 'restore'])->name('users.restore');
         Route::post('users/{user}/send-password-setup-link', [UsersController::class, 'sendPasswordSetupLink'])->name('users.send-password-setup-link');
+        Route::post('users/{user}/impersonate', [\App\Http\Controllers\ImpersonationController::class, 'start'])->name('users.impersonate');
+        Route::post('impersonate/stop', [\App\Http\Controllers\ImpersonationController::class, 'stop'])->name('impersonate.stop');
 
         // Edit / Ustawienia
         Route::get('edit', [EditController::class, 'index'])->name('edit');

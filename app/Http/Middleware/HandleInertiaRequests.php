@@ -72,6 +72,21 @@ class HandleInertiaRequests extends Middleware
                 return $request->user() ? $request->user()->unreadNotifications()->count() : 0;
             },
             'vapidPublicKey' => config('webpush.vapid.public_key'),
+            'impersonating' => function () {
+                $impersonatorId = session('impersonator_id');
+                if (!$impersonatorId) {
+                    return null;
+                }
+                $impersonator = User::find($impersonatorId);
+                if (!$impersonator) {
+                    return null;
+                }
+                return [
+                    'id' => $impersonator->id,
+                    'first_name' => $impersonator->first_name,
+                    'last_name' => $impersonator->last_name,
+                ];
+            },
             'userFirstNames' => function () use ($request) {
                 if (!$request->user()) {
                     return [];
