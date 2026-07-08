@@ -93,33 +93,42 @@ class HandleInertiaRequests extends Middleware
                     return null;
                 }
                 $userId = $request->user()->id;
-                $soon = now()->addDays(7)->endOfDay();
+                $soonDate = \Carbon\Carbon::today()->addDays(7);
 
-                // Zapytania: swoje (opracowuje/user) z data_zlozenia do 7 dni
+                // Logika 1:1 z DashboardController - to samo co widok "Do zrobienia".
+
+                // Zapytania: moje, bez aktywnej oferty, nie sa parentem wznowienia
                 $zapytania = Zapytania::where(function ($q) use ($userId) {
                     $q->where('user_opracowuje_id', $userId)->orWhere('user_id', $userId);
-                })->whereNotNull('data_zlozenia')
-                  ->where('data_zlozenia', '<=', $soon)
+                })->whereDoesntHave('oferty', fn ($q) => $q->whereNull('deleted_at'))
+                  ->where(function ($q) {
+                      $q->whereNull('wznowienie')->orWhere('wznowienie', 0)->orWhere('wznowienie', 1);
+                  })
                   ->count();
 
-                // Oferty: swoje w statusie TOCZY z data_kontakt do 7 dni
-                $oferty = Oferta::where('user_id', $userId)
-                    ->whereNotNull('data_kontakt')
-                    ->where('data_kontakt', '<=', $soon)
-                    ->whereHas('ofertastatus', fn ($q) => $q->whereRaw('LOWER(TRIM(name)) = ?', ['toczy']))
+                // Oferty: moje w statusie TOCZY, z aktywnym parent zapytaniem
+                $oferty = Oferta::whereHas('zapytania', fn ($q) => $q->whereNull('deleted_at'))
+                    ->whereHas('ofertastatus', fn ($q) => $q->where('name', 'TOCZY'))
+                    ->where('user_id', $userId)
                     ->count();
 
-                // Kontakty: swoje (opiekun) z next_call_date do 7 dni
-                $kontakty = Kontakt::where('opiekun_id', $userId)
-                    ->whereNotNull('next_call_date')
-                    ->where('next_call_date', '<=', $soon)
-                    ->count();
+                // Kontakty: moje, tylko najnowszy wpis per watek (COALESCE parent_id, id),
+                // next_call_date <= dzis+7 LUB call_date=dzis
+                $kontakty = Kontakt::whereIn('id', function ($q) {
+                    $q->selectRaw('MAX(id)')->from('kontakts')->groupByRaw('COALESCE(parent_id, id)');
+                })->where('opiekun_id', $userId)
+                  ->where(function ($q) use ($soonDate) {
+                      $q->where('next_call_date', '<=', $soonDate)
+                        ->orWhere('call_date', \Carbon\Carbon::today());
+                  })
+                  ->count();
 
-                // Zadania: aktywne przypisane do mnie z deadline do 7 dni
-                $zadania = Zadania::where('responsible_person_id', $userId)
-                    ->where('status', Zadania::STATUS_AKTYWNE)
-                    ->whereNotNull('deadline')
-                    ->where('deadline', '<=', $soon)
+                // Zadania: moje, niezamkniete, bez deadline lub deadline <= dzis+7
+                $zadania = Zadania::where('status', '!=', 'zamkniete')
+                    ->where(function ($q) use ($soonDate) {
+                        $q->whereNull('deadline')->orWhere('deadline', '<=', $soonDate);
+                    })
+                    ->where('responsible_person_id', $userId)
                     ->count();
 
                 return [
