@@ -1,7 +1,9 @@
 <template>
-  <h1 class="text-xl font-bold text-center text-indigo-700 py-3 mt-8 border-b border-indigo-100">Najlepsi klienci / Zapytania</h1>
-  <div class="w-3/4 h-100">
-    <Bar :data="data" :options="options" />
+  <div>
+    <h1 class="text-xl font-bold text-center text-indigo-700 py-3 mt-8 border-b border-indigo-100">Top 15 klientów / Zapytania (PLN)</h1>
+    <div class="w-full" :style="{ height: chartHeight + 'px' }">
+      <Bar :data="data" :options="options" />
+    </div>
   </div>
 </template>
 
@@ -13,16 +15,16 @@ import {
   Legend,
   BarElement,
   CategoryScale,
-  LinearScale
+  LinearScale,
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export default {
-  name: 'App',
+  name: 'ClientsZapytaniaSumAmount',
   components: {
-    Bar
+    Bar,
   },
   props: {
     clientZapytaniaSumAmount: Array,
@@ -33,19 +35,45 @@ export default {
         labels: this.clientZapytaniaSumAmount[0],
         datasets: [
           {
-            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#7f95cd", "#2e5ea4","#c738b9","#ccdb6b","#7a3e0a","#3d7835","#cdcce3","#941b4b","#aebcbd","#cda9e8"],
+            label: 'Wartość zapytań (PLN)',
+            backgroundColor: '#6366f1',
+            borderRadius: 4,
             data: this.clientZapytaniaSumAmount[1],
-            barPercentage: 0.5,
-            categoryPercentage: 0.8,
-          }
-        ]
+          },
+        ],
       },
       options: {
+        indexAxis: 'y',
         responsive: true,
-        maintainAspectRatio: true,
-        plugins: { legend: { display: false } },
-      }
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN', maximumFractionDigits: 0 }).format(ctx.raw),
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: {
+              callback: (v) => new Intl.NumberFormat('pl-PL', { notation: 'compact', compactDisplay: 'short' }).format(v),
+            },
+            grid: { color: '#f3f4f6' },
+          },
+          y: {
+            ticks: { font: { size: 11 } },
+            grid: { display: false },
+          },
+        },
+      },
     }
-  }
+  },
+  computed: {
+    chartHeight() {
+      const count = this.clientZapytaniaSumAmount[0] ? this.clientZapytaniaSumAmount[0].length : 0
+      return Math.max(300, count * 40)
+    },
+  },
 }
 </script>

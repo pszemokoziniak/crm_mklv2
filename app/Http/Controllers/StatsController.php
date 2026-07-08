@@ -133,13 +133,15 @@ class StatsController extends Controller
             ->where('zapytanias.created_at', '>=', $start)
             ->where('zapytanias.created_at', '<=', $end)
             ->groupBy('clients.nazwa', 'clients.id')
+            ->orderBy('count', 'DESC')
+            ->limit(15)
             ->get();
 
         $labels = [];
         $amounts = [];
         foreach ($data as $item) {
             $labels[] = $item->nazwa;
-            $amounts[] = $item->count;
+            $amounts[] = round((float) $item->count, 0);
         }
         return [$labels, $amounts];
     }
