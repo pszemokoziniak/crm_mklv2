@@ -52,34 +52,34 @@
                       <span class="text-sm">{{ todoIcon }}</span>
                       <span>{{ todoHeadline }}</span>
                     </div>
-                    <Link href="/zapytania" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                    <button type="button" :disabled="myTodo.zapytania === 0" class="w-full flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors disabled:cursor-default disabled:hover:bg-transparent" @click="openTodoModal('zapytania')">
                       <span class="flex items-center gap-2 text-xs text-gray-700">
                         <span class="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                         Zapytania (termin złożenia)
                       </span>
                       <span class="text-xs font-bold" :class="myTodo.zapytania > 0 ? 'text-indigo-600' : 'text-gray-300'">{{ myTodo.zapytania }}</span>
-                    </Link>
-                    <Link href="/oferta" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                    </button>
+                    <button type="button" :disabled="myTodo.oferty === 0" class="w-full flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors disabled:cursor-default disabled:hover:bg-transparent" @click="openTodoModal('oferty')">
                       <span class="flex items-center gap-2 text-xs text-gray-700">
                         <span class="w-1.5 h-1.5 rounded-full bg-green-500" />
                         Oferty (data kontaktu)
                       </span>
                       <span class="text-xs font-bold" :class="myTodo.oferty > 0 ? 'text-green-600' : 'text-gray-300'">{{ myTodo.oferty }}</span>
-                    </Link>
-                    <Link href="/kontakt" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                    </button>
+                    <button type="button" :disabled="myTodo.kontakty === 0" class="w-full flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors disabled:cursor-default disabled:hover:bg-transparent" @click="openTodoModal('kontakty')">
                       <span class="flex items-center gap-2 text-xs text-gray-700">
                         <span class="w-1.5 h-1.5 rounded-full bg-blue-500" />
                         Kontakty (termin)
                       </span>
                       <span class="text-xs font-bold" :class="myTodo.kontakty > 0 ? 'text-blue-600' : 'text-gray-300'">{{ myTodo.kontakty }}</span>
-                    </Link>
-                    <Link href="/zadania" class="flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors">
+                    </button>
+                    <button type="button" :disabled="myTodo.zadania === 0" class="w-full flex items-center justify-between px-4 py-2 hover:bg-indigo-50 transition-colors disabled:cursor-default disabled:hover:bg-transparent" @click="openTodoModal('zadania')">
                       <span class="flex items-center gap-2 text-xs text-gray-700">
                         <span class="w-1.5 h-1.5 rounded-full bg-orange-500" />
                         Zadania (deadline)
                       </span>
                       <span class="text-xs font-bold" :class="myTodo.zadania > 0 ? 'text-orange-600' : 'text-gray-300'">{{ myTodo.zadania }}</span>
-                    </Link>
+                    </button>
                     <div class="border-t border-gray-100 my-1" />
                     <Link href="/" class="block px-4 py-2 text-[10px] text-center text-indigo-600 hover:bg-indigo-50 font-semibold transition-colors">
                       Zobacz zestawienie na dashboardzie →
@@ -156,6 +156,98 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal: podglad "do zrobienia" per kategoria -->
+    <div v-if="todoModal && myTodo && myTodo.items" class="fixed inset-0 z-50 flex items-start justify-center p-4 md:p-8 bg-black bg-opacity-50" @click="todoModal = null">
+      <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden" @click.stop>
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
+          <div class="flex items-center gap-3">
+            <span class="w-2.5 h-2.5 rounded-full" :class="todoModalColorClass" />
+            <h3 class="text-lg font-bold text-gray-800">{{ todoModalTitle }}</h3>
+            <span class="text-sm text-gray-400">({{ myTodo.items[todoModal].length }})</span>
+          </div>
+          <button type="button" class="text-gray-400 hover:text-gray-600 text-2xl leading-none" @click="todoModal = null">×</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+          <div v-if="myTodo.items[todoModal].length === 0" class="text-center text-gray-400 py-8">
+            Brak pozycji w tej kategorii.
+          </div>
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <!-- ZAPYTANIA -->
+            <template v-if="todoModal === 'zapytania'">
+              <Link v-for="it in myTodo.items.zapytania" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-indigo-300 transition-all p-4" @click="todoModal = null">
+                <div class="flex items-start justify-between mb-2">
+                  <span class="text-[10px] font-mono text-gray-400">{{ it.id_zapyt || '—' }}</span>
+                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Zaległe</span>
+                </div>
+                <div class="font-bold text-sm text-gray-900 mb-1 truncate" :title="it.nazwa_projektu">{{ it.nazwa_projektu || 'Brak nazwy' }}</div>
+                <div class="text-xs text-gray-600 mb-3 truncate" :title="it.client">{{ it.client || 'Brak klienta' }}</div>
+                <div class="flex flex-col gap-1 pt-2 border-t border-gray-50">
+                  <div class="text-[10px] uppercase text-gray-400 font-bold">Data złożenia</div>
+                  <div class="text-xs" :class="it.overdue ? 'text-red-600 font-bold' : 'text-gray-700'">{{ it.data_zlozenia || 'Brak daty' }}</div>
+                  <div v-if="it.opracowuje" class="text-[10px] text-gray-500 mt-1">Opracowuje: {{ it.opracowuje }}</div>
+                </div>
+              </Link>
+            </template>
+
+            <!-- OFERTY -->
+            <template v-else-if="todoModal === 'oferty'">
+              <Link v-for="it in myTodo.items.oferty" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-green-300 transition-all p-4" @click="todoModal = null">
+                <div class="flex items-start justify-between mb-2">
+                  <span class="text-[10px] font-mono text-gray-400">#{{ it.id }}</span>
+                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Zaległe</span>
+                </div>
+                <div class="font-bold text-sm text-gray-900 mb-1 truncate" :title="it.nazwa_projektu">{{ it.nazwa_projektu || 'Brak projektu' }}</div>
+                <div class="text-xs text-gray-600 mb-2 truncate" :title="it.client">{{ it.client || 'Brak klienta' }}</div>
+                <div v-if="it.kwota" class="text-sm font-bold text-green-700 mb-2">{{ formatKwota(it.kwota) }} <span class="text-xs">{{ it.waluta || '' }}</span></div>
+                <div class="flex flex-col gap-1 pt-2 border-t border-gray-50">
+                  <div class="text-[10px] uppercase text-gray-400 font-bold">Data kontaktu</div>
+                  <div class="text-xs" :class="it.overdue ? 'text-red-600 font-bold' : 'text-indigo-700 font-bold'">{{ it.data_kontakt || 'Brak daty' }}</div>
+                </div>
+              </Link>
+            </template>
+
+            <!-- KONTAKTY -->
+            <template v-else-if="todoModal === 'kontakty'">
+              <Link v-for="it in myTodo.items.kontakty" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all p-4" @click="todoModal = null">
+                <div class="flex items-start justify-between mb-2">
+                  <span class="text-[10px] font-mono text-gray-400">#{{ it.id }}</span>
+                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Zaległe</span>
+                </div>
+                <div class="font-bold text-sm text-gray-900 mb-1 truncate" :title="it.client">{{ it.client || 'Brak klienta' }}</div>
+                <div class="text-xs text-gray-600 italic mb-3 line-clamp-2" :title="it.subject">"{{ it.subject || 'brak tematu' }}"</div>
+                <div class="flex flex-col gap-1 pt-2 border-t border-gray-50">
+                  <div class="text-[10px] uppercase text-gray-400 font-bold">Termin kontaktu</div>
+                  <div class="text-xs" :class="it.overdue ? 'text-red-600 font-bold' : 'text-indigo-700 font-bold'">
+                    {{ it.next_call_date || 'Brak daty' }}
+                    <span v-if="it.next_call_time" class="ml-1 text-gray-500">{{ it.next_call_time }}</span>
+                  </div>
+                </div>
+              </Link>
+            </template>
+
+            <!-- ZADANIA -->
+            <template v-else-if="todoModal === 'zadania'">
+              <Link v-for="it in myTodo.items.zadania" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-orange-300 transition-all p-4" @click="todoModal = null">
+                <div class="flex items-start justify-between mb-2">
+                  <span class="text-[10px] font-mono text-gray-400">#{{ it.id }}</span>
+                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Zaległe</span>
+                </div>
+                <div class="font-bold text-sm text-gray-900 mb-1" :title="it.subject">{{ it.subject || 'Brak tematu' }}</div>
+                <div v-if="it.client" class="text-xs text-gray-600 mb-2 truncate">{{ it.client }}</div>
+                <div class="flex flex-col gap-1 pt-2 border-t border-gray-50">
+                  <div class="text-[10px] uppercase text-gray-400 font-bold">Termin wykonania</div>
+                  <div class="text-xs" :class="it.overdue ? 'text-red-600 font-bold' : (it.deadline ? 'text-orange-700 font-bold' : 'text-gray-400 italic')">
+                    {{ it.deadline || 'Brak terminu' }}
+                  </div>
+                </div>
+              </Link>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -201,6 +293,11 @@ export default {
       default: () => [],
     },
   },
+  data() {
+    return {
+      todoModal: null, // 'zapytania' | 'oferty' | 'kontakty' | 'zadania' | null
+    }
+  },
   computed: {
     isAdmin() {
       if (!this.auth || !this.auth.user || !this.auth.user.roles) return false
@@ -240,6 +337,22 @@ export default {
     imieninyToday() {
       return imieninyDnia(new Date())
     },
+    todoModalTitle() {
+      return ({
+        zapytania: 'Zapytania — termin złożenia',
+        oferty: 'Oferty — data kontaktu',
+        kontakty: 'Kontakty — nadchodzące terminy',
+        zadania: 'Zadania — deadline',
+      })[this.todoModal] || ''
+    },
+    todoModalColorClass() {
+      return ({
+        zapytania: 'bg-indigo-500',
+        oferty: 'bg-green-500',
+        kontakty: 'bg-blue-500',
+        zadania: 'bg-orange-500',
+      })[this.todoModal] || 'bg-gray-400'
+    },
     imieninyMatchedEmployees() {
       // Lista pracownikow ktorzy dzis maja imieniny (do tooltipa)
       return this.userFirstNames.filter(fn => this.imieninyToday.some(im => this.namesMatch(im, fn)))
@@ -256,6 +369,15 @@ export default {
     }
   },
   methods: {
+    openTodoModal(category) {
+      if (this.myTodo && this.myTodo[category] > 0) {
+        this.todoModal = category
+      }
+    },
+    formatKwota(v) {
+      if (!v) return '0'
+      return new Intl.NumberFormat('pl-PL').format(v)
+    },
     // Dopasowanie: user first_name w mianowniku vs imieniny (moga byc w dopelniaczu np. 'Marii').
     // Uznajemy match jesli: dokladnie taki sam, lub imieniny to forma wywodzaca sie z imienia
     // (imieniny zaczynaja sie od rdzenia imienia i roznica dlugosci <= 2 znaki).

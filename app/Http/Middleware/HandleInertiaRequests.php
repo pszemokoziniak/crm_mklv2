@@ -93,50 +93,104 @@ class HandleInertiaRequests extends Middleware
                     return null;
                 }
                 $userId = $request->user()->id;
-                $soonDate = \Carbon\Carbon::today()->addDays(7);
+                $today = \Carbon\Carbon::today();
+                $soonDate = $today->copy()->addDays(7);
 
                 // Logika 1:1 z DashboardController - to samo co widok "Do zrobienia".
 
                 // Zapytania: moje, bez aktywnej oferty, nie sa parentem wznowienia
-                $zapytania = Zapytania::where(function ($q) use ($userId) {
-                    $q->where('user_opracowuje_id', $userId)->orWhere('user_id', $userId);
-                })->whereDoesntHave('oferty', fn ($q) => $q->whereNull('deleted_at'))
-                  ->where(function ($q) {
-                      $q->whereNull('wznowienie')->orWhere('wznowienie', 0)->orWhere('wznowienie', 1);
-                  })
-                  ->count();
+                $zapytaniaCollection = Zapytania::with(['client:id,nazwa', 'opracowuje:id,first_name,last_name'])
+                    ->where(function ($q) use ($userId) {
+                        $q->where('user_opracowuje_id', $userId)->orWhere('user_id', $userId);
+                    })->whereDoesntHave('oferty', fn ($q) => $q->whereNull('deleted_at'))
+                    ->where(function ($q) {
+                        $q->whereNull('wznowienie')->orWhere('wznowienie', 0)->orWhere('wznowienie', 1);
+                    })
+                    ->orderByRaw('data_zlozenia IS NULL, data_zlozenia ASC')
+                    ->limit(50)
+                    ->get();
 
                 // Oferty: moje w statusie TOCZY, z aktywnym parent zapytaniem
-                $oferty = Oferta::whereHas('zapytania', fn ($q) => $q->whereNull('deleted_at'))
+                $ofertyCollection = Oferta::with(['zapytania:id,nazwa_projektu', 'client:id,nazwa', 'waluta:id,name'])
+                    ->whereHas('zapytania', fn ($q) => $q->whereNull('deleted_at'))
                     ->whereHas('ofertastatus', fn ($q) => $q->where('name', 'TOCZY'))
                     ->where('user_id', $userId)
-                    ->count();
+                    ->orderByRaw('data_kontakt IS NULL, data_kontakt ASC')
+                    ->limit(50)
+                    ->get();
 
-                // Kontakty: moje, tylko najnowszy wpis per watek (COALESCE parent_id, id),
-                // next_call_date <= dzis+7 LUB call_date=dzis
-                $kontakty = Kontakt::whereIn('id', function ($q) {
-                    $q->selectRaw('MAX(id)')->from('kontakts')->groupByRaw('COALESCE(parent_id, id)');
-                })->where('opiekun_id', $userId)
-                  ->where(function ($q) use ($soonDate) {
-                      $q->where('next_call_date', '<=', $soonDate)
-                        ->orWhere('call_date', \Carbon\Carbon::today());
-                  })
-                  ->count();
+                // Kontakty: moje, tylko najnowszy wpis per watek
+                $kontaktyCollection = Kontakt::with(['client:id,nazwa'])
+                    ->whereIn('id', function ($q) {
+                        $q->selectRaw('MAX(id)')->from('kontakts')->groupByRaw('COALESCE(parent_id, id)');
+                    })->where('opiekun_id', $userId)
+                    ->where(function ($q) use ($soonDate, $today) {
+                        $q->where('next_call_date', '<=', $soonDate)
+                          ->orWhere('call_date', $today);
+                    })
+                    ->orderByRaw('next_call_date IS NULL, next_call_date ASC')
+                    ->limit(50)
+                    ->get();
 
                 // Zadania: moje, niezamkniete, bez deadline lub deadline <= dzis+7
-                $zadania = Zadania::where('status', '!=', 'zamkniete')
+                $zadaniaCollection = Zadania::with(['client:id,nazwa'])
+                    ->where('status', '!=', 'zamkniete')
                     ->where(function ($q) use ($soonDate) {
                         $q->whereNull('deadline')->orWhere('deadline', '<=', $soonDate);
                     })
                     ->where('responsible_person_id', $userId)
-                    ->count();
+                    ->orderByRaw('deadline IS NULL, deadline ASC')
+                    ->limit(50)
+                    ->get();
+
+                $isOverdue = fn ($date) => $date && \Carbon\Carbon::parse($date)->lt($today);
 
                 return [
-                    'zapytania' => $zapytania,
-                    'oferty' => $oferty,
-                    'kontakty' => $kontakty,
-                    'zadania' => $zadania,
-                    'total' => $zapytania + $oferty + $kontakty + $zadania,
+                    'zapytania' => $zapytaniaCollection->count(),
+                    'oferty' => $ofertyCollection->count(),
+                    'kontakty' => $kontaktyCollection->count(),
+                    'zadania' => $zadaniaCollection->count(),
+                    'total' => $zapytaniaCollection->count() + $ofertyCollection->count() + $kontaktyCollection->count() + $zadaniaCollection->count(),
+                    'items' => [
+                        'zapytania' => $zapytaniaCollection->map(fn ($z) => [
+                            'id' => $z->id,
+                            'id_zapyt' => $z->id_zapyt,
+                            'nazwa_projektu' => $z->nazwa_projektu,
+                            'client' => $z->client?->nazwa,
+                            'data_zlozenia' => $z->data_zlozenia?->format('Y-m-d'),
+                            'overdue' => $isOverdue($z->data_zlozenia),
+                            'opracowuje' => $z->opracowuje ? trim($z->opracowuje->first_name . ' ' . $z->opracowuje->last_name) : null,
+                            'link' => "/zapytania/{$z->id}/edit",
+                        ])->values(),
+                        'oferty' => $ofertyCollection->map(fn ($o) => [
+                            'id' => $o->id,
+                            'nazwa_projektu' => $o->zapytania?->nazwa_projektu,
+                            'client' => $o->client?->nazwa,
+                            'data_kontakt' => $o->data_kontakt?->format('Y-m-d'),
+                            'overdue' => $isOverdue($o->data_kontakt),
+                            'kwota' => $o->kwota,
+                            'waluta' => $o->waluta?->name,
+                            'link' => "/oferta/{$o->id}/edit",
+                        ])->values(),
+                        'kontakty' => $kontaktyCollection->map(fn ($k) => [
+                            'id' => $k->id,
+                            'thread_root_id' => $k->parent_id ?? $k->id,
+                            'subject' => $k->subject,
+                            'client' => $k->client?->nazwa,
+                            'next_call_date' => $k->next_call_date?->format('Y-m-d'),
+                            'next_call_time' => $k->next_call_time,
+                            'overdue' => $isOverdue($k->next_call_date),
+                            'link' => "/kontakt/" . ($k->parent_id ?? $k->id) . "/edit",
+                        ])->values(),
+                        'zadania' => $zadaniaCollection->map(fn ($z) => [
+                            'id' => $z->id,
+                            'subject' => $z->subject,
+                            'client' => $z->client?->nazwa,
+                            'deadline' => $z->deadline?->format('Y-m-d'),
+                            'overdue' => $isOverdue($z->deadline),
+                            'link' => "/zadania/{$z->id}/edit",
+                        ])->values(),
+                    ],
                 ];
             },
             'onlineUsers' => function () use ($request) {
