@@ -167,7 +167,7 @@
     </div>
 
     <!-- Modal: podglad "do zrobienia" per kategoria -->
-    <div v-if="todoModal && myTodo && myTodo.items" class="fixed inset-0 z-50 flex items-start justify-center p-4 md:p-8 bg-black bg-opacity-50" @click="todoModal = null">
+    <div v-if="todoModal && myTodo && myTodo.items" class="fixed inset-0 flex items-start justify-center p-4 md:p-8 bg-black bg-opacity-50" style="z-index:100000" @click="todoModal = null">
       <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden" @click.stop>
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
           <div class="flex items-center gap-3">
