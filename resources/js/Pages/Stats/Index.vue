@@ -10,12 +10,12 @@
     <div class="bg-white rounded-md shadow overflow-x-auto p-4 space-y-6">
       <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm">Klienci</h2>
       <p class="text-2xl font-medium text-gray-700 text-center">Ilość klientów: <span class="text-indigo-600 font-bold">{{ clientNumber }}</span></p>
-      <users-add-clients :client-number="clientNumber" :client-number-by-user="clientNumberByUser" />
-      <active-client :client-active="clientActive" />
-      <increase-client :increase-clients="increaseClients" />
-      <client-branza :client-branza="clientBranza" />
-      <clients-zapytania-sum-amount :client-zapytania-sum-amount="clientZapytaniaSumAmount" />
-      <clients-oferty-sum-amount :client-oferta-sum-amount="clientOfertaSumAmount" />
+      <users-add-clients :key="`uac-${dateKey}`" :client-number="clientNumber" :client-number-by-user="clientNumberByUser" />
+      <active-client :key="`ac-${dateKey}`" :client-active="clientActive" />
+      <increase-client :key="`ic-${dateKey}`" :increase-clients="increaseClients" />
+      <client-branza :key="`cb-${dateKey}`" :client-branza="clientBranza" />
+      <clients-zapytania-sum-amount :key="`czsa-${dateKey}`" :client-zapytania-sum-amount="clientZapytaniaSumAmount" />
+      <clients-oferty-sum-amount :key="`cosa-${dateKey}`" :client-oferta-sum-amount="clientOfertaSumAmount" />
 
       <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm mt-10">Zapytania</h2>
       <div class="p-3">
@@ -32,10 +32,10 @@
           </div>
         </div>
       </div>
-      <zapytania-oferta-sum-amount :zapytania-oferty-sum-amount="zapytaniaOfertySumAmount" />
-      <zapytania-branze :zapytania-branze="zapytaniaBranze" />
-      <zapytania-zakres :zapytania-zakres="zapytaniaZakres" />
-      <zapytania-users :zapytania-users="zapytaniaUsers" />
+      <zapytania-oferta-sum-amount :key="`zosa-${dateKey}`" :zapytania-oferty-sum-amount="zapytaniaOfertySumAmount" />
+      <zapytania-branze :key="`zb-${dateKey}`" :zapytania-branze="zapytaniaBranze" />
+      <zapytania-zakres :key="`zz-${dateKey}`" :zapytania-zakres="zapytaniaZakres" />
+      <zapytania-users :key="`zu-${dateKey}`" :zapytania-users="zapytaniaUsers" />
 
       <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm mt-10">Oferty</h2>
       <div class="p-3">
@@ -53,8 +53,8 @@
         </div>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <oferta-status :oferta-status="ofertaStatus" />
-        <oferta-status-win :oferta-status-win="ofertaStatusWin" />
+        <oferta-status :key="`os-${dateKey}`" :oferta-status="ofertaStatus" />
+        <oferta-status-win :key="`osw-${dateKey}`" :oferta-status-win="ofertaStatusWin" />
       </div>
     </div>
   </div>
@@ -126,6 +126,13 @@ export default {
         end: this.end,
       },
     }
+  },
+  computed: {
+    // Klucz do force-rerender dzieci gdy zmieni sie zakres dat - inaczej
+    // wykresy inicjalizuja data() raz i nie reaguja na zmiane propa
+    dateKey() {
+      return `${this.start || ''}-${this.end || ''}`
+    },
   },
   watch: {
     form: {
