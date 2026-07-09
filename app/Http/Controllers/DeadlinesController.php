@@ -31,11 +31,12 @@ class DeadlinesController extends Controller
         $rangeStart = $viewMonth->copy()->startOfWeek(Carbon::MONDAY);
         $rangeEnd = $viewMonth->copy()->endOfMonth()->endOfWeek(Carbon::SUNDAY);
 
-        // Filtr per user (Kierownictwo widzi wszystkich, reszta - swoje)
+        // Uprawnienia: tylko super-admin i Administrator widza wszystkich i moga filtrowac per user.
+        // Pozostali (Kierownictwo, Eksport, Techniczny, Praktyki) - tylko wlasne rekordy.
         $user = Auth::user();
-        $isKierownictwo = $user->hasAnyRole(['super-admin', 'Administrator', 'Kierownictwo']) || (bool) $user->can_edit_all;
+        $hasFullAccess = $user->hasAnyRole(['super-admin', 'Administrator']);
         $selectedUserId = Request::get('user_id');
-        $filterUserId = $isKierownictwo ? ($selectedUserId ? (int) $selectedUserId : null) : $user->id;
+        $filterUserId = $hasFullAccess ? ($selectedUserId ? (int) $selectedUserId : null) : $user->id;
 
         $events = [];
 
@@ -150,7 +151,7 @@ class DeadlinesController extends Controller
                 'kontakty' => collect($events)->where('type', 'kontakt')->count(),
                 'zadania' => collect($events)->where('type', 'zadanie')->count(),
             ],
-            'users' => $isKierownictwo ? \App\Models\User::select('id', 'first_name', 'last_name')->orderBy(\Illuminate\Support\Facades\DB::raw('TRIM(last_name)'))->get() : [],
+            'users' => $hasFullAccess ? \App\Models\User::select('id', 'first_name', 'last_name')->orderBy(\Illuminate\Support\Facades\DB::raw('TRIM(last_name)'))->get() : [],
             'selectedUserId' => $selectedUserId ? (int) $selectedUserId : null,
         ]);
     }
