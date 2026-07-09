@@ -114,6 +114,9 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
         Route::post('users/{user}/impersonate', [\App\Http\Controllers\ImpersonationController::class, 'start'])->name('users.impersonate');
         Route::post('impersonate/stop', [\App\Http\Controllers\ImpersonationController::class, 'stop'])->name('impersonate.stop');
 
+        // Global search (Ctrl+K)
+        Route::get('search', [\App\Http\Controllers\SearchController::class, 'search'])->name('search');
+
         // Edit / Ustawienia
         Route::get('edit', [EditController::class, 'index'])->name('edit');
 

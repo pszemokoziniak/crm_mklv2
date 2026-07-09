@@ -48,6 +48,11 @@
               </div>
             </div>
             <div class="flex items-center space-x-2">
+              <button type="button" class="hidden md:flex items-center gap-2 px-3 py-1.5 text-xs text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors" title="Szybkie wyszukiwanie (Ctrl+K)" @click="$refs.globalSearch && $refs.globalSearch.openModal()">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" /></svg>
+                <span>Szukaj</span>
+                <kbd class="text-[9px] px-1 py-0.5 bg-white rounded border border-gray-200">Ctrl K</kbd>
+              </button>
               <dropdown v-if="myTodo && myTodo.total > 0" class="mt-1" placement="bottom-end">
                 <template #default>
                   <div class="group flex items-center gap-1.5 cursor-pointer select-none px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors" :title="todoTitle">
@@ -166,6 +171,9 @@
       </div>
     </div>
 
+    <!-- Global search (Ctrl+K) -->
+    <global-search ref="globalSearch" />
+
     <!-- Modal: podglad "do zrobienia" per kategoria -->
     <div v-if="todoModal && myTodo && myTodo.items" class="fixed inset-0 flex items-start justify-center p-4 md:p-8 bg-black bg-opacity-50" style="z-index:100000" @click="todoModal = null">
       <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden" @click.stop>
@@ -270,6 +278,7 @@ import FlashMessages from '@/Shared/FlashMessages'
 import NotificationBell from '@/Shared/NotificationBell'
 import { initPushNotifications } from '@/Shared/PushNotifications'
 import { imieninyDnia } from '@/Shared/imieniny'
+import GlobalSearch from '@/Shared/GlobalSearch'
 
 export default {
   components: {
@@ -280,6 +289,7 @@ export default {
     Logo,
     MainMenu,
     NotificationBell,
+    GlobalSearch,
   },
   props: {
     auth: Object,
