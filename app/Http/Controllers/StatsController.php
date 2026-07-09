@@ -46,7 +46,86 @@ class StatsController extends Controller
             'quantityOferta' => $this->quantityOferta($start, $end),
             'ofertaStatus' => $this->ofertaStatus($start, $end),
             'ofertaStatusWin' => $this->ofertaStatusWin($start, $end),
+            'conversionFunnel' => $this->conversionFunnel($start, $end),
         ]);
+    }
+
+    /**
+     * Lejek konwersji: Zapytania -> Zapytania z oferta -> Oferty -> Wygrane.
+     * Wszedzie liczymy po created_at (rejestracja w CRM w danym okresie).
+     */
+    public function conversionFunnel($start, $end)
+    {
+        $zapytaniaTotal = (int) Zapytania::withTrashed()
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->count();
+
+        // Zapytania ktore doprowadzily do przynajmniej jednej oferty (jakiejkolwiek)
+        $zapytaniaWithOferta = (int) Zapytania::withTrashed()
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->has('oferty')
+            ->count();
+
+        // Zapytania z przynajmniej jedna wygrana oferta
+        $zapytaniaWithWygrana = (int) Zapytania::withTrashed()
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->whereHas('oferty', function ($q) {
+                $q->whereHas('ofertastatus', fn ($s) => $s->whereRaw('LOWER(TRIM(name)) = ?', ['wygrana']));
+            })
+            ->count();
+
+        $ofertyTotal = (int) Oferta::withTrashed()
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->count();
+
+        $ofertyWygrane = (int) Oferta::withTrashed()
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->whereHas('ofertastatus', fn ($s) => $s->whereRaw('LOWER(TRIM(name)) = ?', ['wygrana']))
+            ->count();
+
+        $ofertyPrzegrane = (int) Oferta::withTrashed()
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->whereHas('ofertastatus', fn ($s) => $s->whereRaw('LOWER(TRIM(name)) = ?', ['przegrana']))
+            ->count();
+
+        $ofertyToczy = (int) Oferta::withTrashed()
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->whereHas('ofertastatus', fn ($s) => $s->whereRaw('LOWER(TRIM(name)) = ?', ['toczy']))
+            ->count();
+
+        $sumaWygranychPLN = (float) Oferta::withTrashed()
+            ->where('created_at', '>=', $start)
+            ->where('created_at', '<=', $end)
+            ->whereHas('ofertastatus', fn ($s) => $s->whereRaw('LOWER(TRIM(name)) = ?', ['wygrana']))
+            ->sum('kwotaPLN');
+
+        // Procenty (chronimy przed dzieleniem przez zero)
+        $pctZapytaniaToOferta = $zapytaniaTotal > 0 ? round($zapytaniaWithOferta / $zapytaniaTotal * 100, 1) : 0;
+        $pctZapytaniaToWygrana = $zapytaniaTotal > 0 ? round($zapytaniaWithWygrana / $zapytaniaTotal * 100, 1) : 0;
+        $pctOfertyToWygrana = $ofertyTotal > 0 ? round($ofertyWygrane / $ofertyTotal * 100, 1) : 0;
+        $pctOfertyToPrzegrana = $ofertyTotal > 0 ? round($ofertyPrzegrane / $ofertyTotal * 100, 1) : 0;
+
+        return [
+            'zapytania_total' => $zapytaniaTotal,
+            'zapytania_with_oferta' => $zapytaniaWithOferta,
+            'zapytania_with_wygrana' => $zapytaniaWithWygrana,
+            'oferty_total' => $ofertyTotal,
+            'oferty_wygrane' => $ofertyWygrane,
+            'oferty_przegrane' => $ofertyPrzegrane,
+            'oferty_toczy' => $ofertyToczy,
+            'suma_wygranych_pln' => $sumaWygranychPLN,
+            'pct_zapytania_to_oferta' => $pctZapytaniaToOferta,
+            'pct_zapytania_to_wygrana' => $pctZapytaniaToWygrana,
+            'pct_oferty_to_wygrana' => $pctOfertyToWygrana,
+            'pct_oferty_to_przegrana' => $pctOfertyToPrzegrana,
+        ];
     }
 
     public function clientNumber($start, $end)

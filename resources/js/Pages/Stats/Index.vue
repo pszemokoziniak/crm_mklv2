@@ -8,7 +8,10 @@
     </div>
 
     <div class="bg-white rounded-md shadow overflow-x-auto p-4 space-y-6">
-      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm">Klienci</h2>
+      <h2 class="text-3xl font-extrabold text-white text-center bg-emerald-600 py-4 rounded-lg shadow-sm">Sprzedaż</h2>
+      <conversion-funnel :key="`cf-${dateKey}`" :funnel="conversionFunnel" />
+
+      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm mt-10">Klienci</h2>
       <p class="text-2xl font-medium text-gray-700 text-center">Ilość klientów: <span class="text-indigo-600 font-bold">{{ clientNumber }}</span></p>
       <users-add-clients :key="`uac-${dateKey}`" :client-number="clientNumber" :client-number-by-user="clientNumberByUser" />
       <active-client :key="`ac-${dateKey}`" :client-active="clientActive" />
@@ -78,6 +81,7 @@ import ZapytaniaZakres from '@/Pages/Stats/ZapytaniaZakres.vue'
 import ZapytaniaUsers from '@/Pages/Stats/ZapytaniaUsers.vue'
 import OfertaStatus from '@/Pages/Stats/OfertaStatus.vue'
 import OfertaStatusWin from '@/Pages/Stats/OfertaStatusWin.vue'
+import ConversionFunnel from '@/Pages/Stats/ConversionFunnel.vue'
 import TextInput from '@/Shared/TextInput.vue'
 
 export default {
@@ -96,6 +100,7 @@ export default {
     ZapytaniaUsers,
     OfertaStatus,
     OfertaStatusWin,
+    ConversionFunnel,
   },
   layout: Layout,
   props: {
@@ -113,6 +118,7 @@ export default {
     quantityOferta: Object,
     ofertaStatus: Array,
     ofertaStatusWin: Array,
+    conversionFunnel: Object,
     start: Date,
     end: Date,
     quantityZapytania: Object,
