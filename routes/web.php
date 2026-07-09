@@ -117,6 +117,11 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
         // Global search (Ctrl+K)
         Route::get('search', [\App\Http\Controllers\SearchController::class, 'search'])->name('search');
 
+        // Notatki wewnetrzne (na Zapytaniach i Ofertach)
+        Route::post('notes', [\App\Http\Controllers\NoteController::class, 'store'])->name('notes.store');
+        Route::put('notes/{note}', [\App\Http\Controllers\NoteController::class, 'update'])->name('notes.update');
+        Route::delete('notes/{note}', [\App\Http\Controllers\NoteController::class, 'destroy'])->name('notes.destroy');
+
         // Edit / Ustawienia
         Route::get('edit', [EditController::class, 'index'])->name('edit');
 

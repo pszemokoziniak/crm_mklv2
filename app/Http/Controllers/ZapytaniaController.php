@@ -7,6 +7,7 @@ use App\Http\Requests\WznowienieUpdateRequest; // Import the new request
 use App\Http\Requests\ZapytaniaStoreRequest;
 use App\Mail\ZapytaniaMail;
 use App\Models\ArchiwumZapytania;
+use App\Models\Note;
 use App\Models\Branza;
 use App\Models\Client;
 use App\Models\Kraj;
@@ -289,6 +290,33 @@ class ZapytaniaController extends Controller
                     'waluta' => $wznowienie->waluta ? $wznowienie->waluta->only('name') : null,
                     'oferta_created_at' => ($latestOferta && $latestOferta->created_at->greaterThan($wznowienie->time)) ? $latestOferta->created_at->format('Y-m-d H:i:s') : null,
                     'oferta_id' => ($latestOferta && $latestOferta->created_at->greaterThan($wznowienie->time)) ? $latestOferta->id : null,
+                ]),
+            'notes' => Note::with('author:id,first_name,last_name')
+                ->where('notable_type', Zapytania::class)
+                ->where('notable_id', $zapytania->id)
+                ->orderByDesc('created_at')
+                ->get()
+                ->map(fn ($n) => [
+                    'id' => $n->id,
+                    'body' => $n->body,
+                    'author' => $n->author ? [
+                        'id' => $n->author->id,
+                        'first_name' => $n->author->first_name,
+                        'last_name' => $n->author->last_name,
+                    ] : null,
+                    'created_at' => $n->created_at->format('Y-m-d H:i'),
+                    'updated_at' => $n->updated_at->format('Y-m-d H:i'),
+                    'can_edit' => Auth::id() === $n->user_id,
+                    'can_delete' => Auth::id() === $n->user_id || Auth::user()->hasAnyRole(['super-admin', 'Administrator']),
+                ]),
+            'mentionableUsers' => User::where('active', 1)
+                ->whereNull('deleted_at')
+                ->orderBy(DB::raw('TRIM(last_name)'))
+                ->orderBy(DB::raw('TRIM(first_name)'))
+                ->get(['id', 'first_name', 'last_name'])
+                ->map(fn ($u) => [
+                    'id' => $u->id,
+                    'label' => trim($u->first_name . ' ' . $u->last_name),
                 ]),
         ]);
     }

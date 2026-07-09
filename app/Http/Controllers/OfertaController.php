@@ -6,6 +6,7 @@ use App\Http\Requests\OfertaStoreRequest;
 use App\Models\Client;
 use App\Models\Kraj;
 use App\Models\Kursy;
+use App\Models\Note;
 use App\Models\Oferta;
 use App\Models\OfertaStatus;
 use App\Models\User;
@@ -290,6 +291,33 @@ class OfertaController extends Controller
                 'changes' => $activity->changes,
                 'created_at' => $activity->created_at->format('Y-m-d H:i:s'),
             ]),
+            'notes' => Note::with('author:id,first_name,last_name')
+                ->where('notable_type', Oferta::class)
+                ->where('notable_id', $oferta->id)
+                ->orderByDesc('created_at')
+                ->get()
+                ->map(fn ($n) => [
+                    'id' => $n->id,
+                    'body' => $n->body,
+                    'author' => $n->author ? [
+                        'id' => $n->author->id,
+                        'first_name' => $n->author->first_name,
+                        'last_name' => $n->author->last_name,
+                    ] : null,
+                    'created_at' => $n->created_at->format('Y-m-d H:i'),
+                    'updated_at' => $n->updated_at->format('Y-m-d H:i'),
+                    'can_edit' => Auth::id() === $n->user_id,
+                    'can_delete' => Auth::id() === $n->user_id || Auth::user()->hasAnyRole(['super-admin', 'Administrator']),
+                ]),
+            'mentionableUsers' => User::where('active', 1)
+                ->whereNull('deleted_at')
+                ->orderBy(DB::raw('TRIM(last_name)'))
+                ->orderBy(DB::raw('TRIM(first_name)'))
+                ->get(['id', 'first_name', 'last_name'])
+                ->map(fn ($u) => [
+                    'id' => $u->id,
+                    'label' => trim($u->first_name . ' ' . $u->last_name),
+                ]),
         ]);
     }
 

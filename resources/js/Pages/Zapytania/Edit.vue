@@ -162,6 +162,9 @@
         </div>
       </div>
 
+      <!-- Notatki wewnetrzne -->
+      <notes-section type="zapytania" :notable-id="zapytania.id" :notes="notes" :mentionable-users="mentionableUsers" />
+
       <!-- Kontakty Section -->
       <div id="historia-kontaktow" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
@@ -491,6 +494,7 @@ import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
 import TextArea from '@/Shared/TextareaInput.vue'
 import Icon from '@/Shared/Icon.vue'
+import NotesSection from '@/Shared/NotesSection.vue'
 
 export default {
   components: {
@@ -503,6 +507,7 @@ export default {
     TextInput,
     TrashedMessage,
     NumberInput,
+    NotesSection,
   },
   layout: Layout,
   props: {
@@ -519,6 +524,8 @@ export default {
     kontakty: Array,
     activities: Array,
     wznowienia: Array, // Added wznowienia prop
+    notes: { type: Array, default: () => [] },
+    mentionableUsers: { type: Array, default: () => [] },
   },
   remember: 'form',
   data() {
