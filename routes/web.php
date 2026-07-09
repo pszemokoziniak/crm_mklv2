@@ -196,6 +196,8 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
 
     // Calendar
     Route::get('calendar', [CalendarController::class, 'index'])->name('calendar');
+    // Terminy - kalendarz wszystkich terminow (zapytania/oferty/kontakty/zadania)
+    Route::get('terminy', [\App\Http\Controllers\DeadlinesController::class, 'index'])->name('terminy');
 
     // Statystyki
     Route::get('stats', [StatsController::class, 'index'])->name('stats');
