@@ -16,7 +16,7 @@ class ImpersonationController extends Controller
     public function start(User $user)
     {
         $current = Auth::user();
-        if (!$current || !$current->hasAnyRole(['super-admin', 'Administrator'])) {
+        if (!$current || !$current->hasRole('super-admin')) {
             return Redirect::back()->with('error', 'Brak uprawnien do impersonacji.');
         }
 

@@ -232,8 +232,8 @@ export default {
       return (this.isSuperAdmin || this.isAdmin) && !this.isOwnProfile && !!this.user.email
     },
     canImpersonate() {
-      // Admin moze zalogowac sie jako inny user (do testowania widokow)
-      return (this.isSuperAdmin || this.isAdmin) && !this.isOwnProfile && !this.user.deleted_at
+      // Tylko super-admin moze impersonowac
+      return this.isSuperAdmin && !this.isOwnProfile && !this.user.deleted_at
     },
     actionButtonsClass() {
       const n = 1 + (this.canSendPasswordLink ? 1 : 0) + (this.canImpersonate ? 1 : 0)
