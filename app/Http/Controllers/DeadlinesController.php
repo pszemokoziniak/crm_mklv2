@@ -138,9 +138,11 @@ class DeadlinesController extends Controller
             $cursor->addDay();
         }
 
+        $plMonths = [1 => 'styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'];
+
         return Inertia::render('Deadlines/Index', [
             'viewMonth' => $viewMonth->format('Y-m'),
-            'viewMonthLabel' => $viewMonth->translatedFormat('LLLL Y'),
+            'viewMonthLabel' => $plMonths[(int) $viewMonth->format('n')] . ' ' . $viewMonth->format('Y'),
             'prevMonth' => $viewMonth->copy()->subMonth()->format('Y-m'),
             'nextMonth' => $viewMonth->copy()->addMonth()->format('Y-m'),
             'today' => Carbon::now()->format('Y-m'),
