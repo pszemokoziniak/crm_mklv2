@@ -19,6 +19,14 @@ class Oferta extends Model
 
     protected $guarded = [];
 
+    public static function isLostStatusName(?string $name): bool
+    {
+        if (!$name) {
+            return false;
+        }
+        return in_array(strtolower(trim($name)), self::TERMINAL_LOST_STATUSES, true);
+    }
+
     protected $casts = [
         'created_at' => 'date:Y-m-d',
         'data_kontakt' => 'date',
@@ -114,6 +122,10 @@ class Oferta extends Model
     public function status()
     {
         return $this->belongsTo(OfertaStatus::class, 'oferta_status_id', 'id');
+    }
+    public function utrataDetail()
+    {
+        return $this->hasOne(OfertaUtrataDetail::class);
     }
     public function scopeOrderByCreatedAt($query)
     {

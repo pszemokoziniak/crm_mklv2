@@ -9,6 +9,7 @@ use App\Models\Kursy;
 use App\Models\Note;
 use App\Models\Oferta;
 use App\Models\OfertaStatus;
+use App\Models\PowodUtraty;
 use App\Models\User;
 use App\Models\Waluta;
 use App\Models\Zakres;
@@ -93,7 +94,11 @@ class OfertaController extends Controller
             'filters' => Request::all('search', 'status', 'trashed', 'field', 'direction'),
             'stats' => $stats,
             'statusOptions' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
+            'lostStatusIds' => $this->lostStatusIds(),
+            'powodyUtraty' => PowodUtraty::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
+            'waluta' => Waluta::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'ofertas' => $ofertasQuery
+                ->with('utrataDetail')
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($oferta) => [
@@ -107,9 +112,19 @@ class OfertaController extends Controller
                     'status' => $oferta->status,
                     'user' => $oferta->user,
                     'deleted_at' => $oferta->deleted_at,
-                    'created_at' => $oferta->created_at->format('Y-m-d')
+                    'created_at' => $oferta->created_at->format('Y-m-d'),
+                    'utrataDetail' => $oferta->utrataDetail,
                 ])
         ]);
+    }
+
+    private function lostStatusIds(): array
+    {
+        return OfertaStatus::get()
+            ->filter(fn ($status) => Oferta::isLostStatusName($status->name))
+            ->pluck('id')
+            ->values()
+            ->all();
     }
 
     public function create()
@@ -250,12 +265,15 @@ class OfertaController extends Controller
                 'opis' => $oferta->opis,
                 'user_id' => $oferta->user_id,
                 'deleted_at' => $oferta->deleted_at,
+                'utrataDetail' => $oferta->utrataDetail,
             ],
             'clients' => Client::select('id', 'nazwa')->orderBy(DB::raw('TRIM(nazwa)'))->get(),
             'zapytanie' => $sortedZapytania,
             'clientById' => Client::select('id', 'nazwa')->where('id', $oferta->client_id)->withTrashed()->first(),
             'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->first(),
             'statuses' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
+            'lostStatusIds' => $this->lostStatusIds(),
+            'powodyUtraty' => PowodUtraty::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'waluta' => Waluta::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'kontakty' => Kontakt::with(['user', 'kontaktperson', 'children.user', 'children.kontaktperson'])
                 ->where('oferta_id', $oferta->id)

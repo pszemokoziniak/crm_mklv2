@@ -222,6 +222,16 @@
     <div class="mt-6">
       <pagination :links="ofertas.links" />
     </div>
+
+    <oferta-utrata-modal
+      :show="showUtrataModal"
+      :oferta-id="utrataOfertaId"
+      :powody-utraty="powodyUtraty"
+      :waluta="waluta"
+      :initial-data="utrataInitialData"
+      @close="showUtrataModal = false"
+      @saved="showUtrataModal = false"
+    />
   </div>
 </template>
 
@@ -234,9 +244,11 @@ import throttle from 'lodash/throttle'
 import mapValues from 'lodash/mapValues'
 import Pagination from '@/Shared/Pagination'
 import SearchFilter from '@/Shared/SearchFilter'
+import OfertaUtrataModal from '@/Shared/OfertaUtrataModal.vue'
 
 export default {
   components: {
+    OfertaUtrataModal,
     Head,
     Icon,
     Link,
@@ -249,6 +261,9 @@ export default {
     ofertas: Object,
     stats: Object,
     statusOptions: Array,
+    lostStatusIds: { type: Array, default: () => [] },
+    powodyUtraty: { type: Array, default: () => [] },
+    waluta: { type: Array, default: () => [] },
   },
   data() {
     return {
@@ -259,6 +274,9 @@ export default {
         field: this.filters.field || null,
         direction: this.filters.direction || null,
       },
+      showUtrataModal: false,
+      utrataOfertaId: null,
+      utrataInitialData: null,
     }
   },
   computed: {
@@ -301,9 +319,17 @@ export default {
     changeStatus(item, newStatusId) {
       const id = parseInt(newStatusId, 10)
       if (!item.status || item.status.id === id) return
+      const willBeLost = this.lostStatusIds.includes(id)
       this.$inertia.put(`/oferta/${item.id}/status`, { oferta_status_id: id }, {
         preserveScroll: true,
         preserveState: true,
+        onSuccess: () => {
+          if (!willBeLost) return
+          const refreshed = this.ofertas.data.find(o => o.id === item.id)
+          this.utrataOfertaId = item.id
+          this.utrataInitialData = refreshed ? refreshed.utrataDetail : null
+          this.showUtrataModal = true
+        },
       })
     },
   },
