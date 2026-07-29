@@ -94,7 +94,6 @@ class OfertaController extends Controller
             'filters' => Request::all('search', 'status', 'trashed', 'field', 'direction'),
             'stats' => $stats,
             'statusOptions' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
-            'lostStatusIds' => $this->lostStatusIds(),
             'powodyUtraty' => PowodUtraty::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'waluta' => Waluta::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'ofertas' => $ofertasQuery
@@ -116,15 +115,6 @@ class OfertaController extends Controller
                     'utrataDetail' => $oferta->utrataDetail,
                 ])
         ]);
-    }
-
-    private function lostStatusIds(): array
-    {
-        return OfertaStatus::get()
-            ->filter(fn ($status) => Oferta::isLostStatusName($status->name))
-            ->pluck('id')
-            ->values()
-            ->all();
     }
 
     public function create()
@@ -272,8 +262,6 @@ class OfertaController extends Controller
             'clientById' => Client::select('id', 'nazwa')->where('id', $oferta->client_id)->withTrashed()->first(),
             'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->first(),
             'statuses' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
-            'lostStatusIds' => $this->lostStatusIds(),
-            'powodyUtraty' => PowodUtraty::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'waluta' => Waluta::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'kontakty' => Kontakt::with(['user', 'kontaktperson', 'children.user', 'children.kontaktperson'])
                 ->where('oferta_id', $oferta->id)
@@ -352,6 +340,10 @@ class OfertaController extends Controller
 
         $redirect = Redirect::route('oferta')->with('success', 'Oferta poprawiona.');
 
+        if ($this->statusIsLost($oferta->oferta_status_id)) {
+            $redirect->with('openUtrataForOferta', $oferta->id);
+        }
+
         if ($kursData[2] === false) {
             $redirect->with('error', 'Uwaga: Nie znaleziono aktualnego kursu waluty w bazie. Użyto przelicznika 1.0.');
         }
@@ -369,7 +361,21 @@ class OfertaController extends Controller
 
         $this->storeActivityLog('Zmiana statusu oferty', $oferta->id, $oferta->client_id, 'oferta', 'zmiany', Auth::id());
 
-        return Redirect::back()->with('success', 'Status oferty zmieniony.');
+        $redirect = Redirect::back()->with('success', 'Status oferty zmieniony.');
+
+        if ($this->statusIsLost($oferta->oferta_status_id)) {
+            $redirect->with('openUtrataForOferta', $oferta->id);
+        }
+
+        return $redirect;
+    }
+
+    private function statusIsLost($statusId): bool
+    {
+        if (!$statusId) {
+            return false;
+        }
+        return Oferta::isLostStatusName(optional(OfertaStatus::find($statusId))->name);
     }
 
     public function destroy(Oferta $oferta)
@@ -381,7 +387,16 @@ class OfertaController extends Controller
     public function restore(Oferta $oferta)
     {
         $oferta->restore();
-        return Redirect::back()->with('success', 'Oferta przywrócona');
+
+        // Przywroc tez powiazane zapytanie - zostalo auto-zarchiwizowane
+        // gdy oferta dostala status przegrana/rezygnacja.
+        $zapytanie = $oferta->zapytania;
+        if ($zapytanie && $zapytanie->trashed()) {
+            $zapytanie->restore();
+            return Redirect::back()->with('success', 'Oferta i powiązane zapytanie przywrócone.');
+        }
+
+        return Redirect::back()->with('success', 'Oferta przywrócona.');
     }
 
     public function exchangeRate($walutaId)

@@ -100,16 +100,6 @@
         </div>
       </div>
 
-      <oferta-utrata-modal
-        :show="showUtrataModal"
-        :oferta-id="oferta.id"
-        :powody-utraty="powodyUtraty"
-        :waluta="waluta"
-        :initial-data="oferta.utrataDetail"
-        @close="showUtrataModal = false"
-        @saved="showUtrataModal = false"
-      />
-
       <!-- Notatki wewnetrzne -->
       <notes-section type="oferta" :notable-id="oferta.id" :notes="notes" :mentionable-users="mentionableUsers" />
 
@@ -273,7 +263,6 @@ import LoadingButton from '@/Shared/LoadingButton'
 import TrashedMessage from '@/Shared/TrashedMessage'
 import Icon from '@/Shared/Icon.vue'
 import NotesSection from '@/Shared/NotesSection.vue'
-import OfertaUtrataModal from '@/Shared/OfertaUtrataModal.vue'
 
 export default {
   components: {
@@ -287,7 +276,6 @@ export default {
     TextAreaInput,
     NumberInput,
     NotesSection,
-    OfertaUtrataModal,
   },
   layout: Layout,
   props: {
@@ -295,8 +283,6 @@ export default {
     zapytanie: Object,
     clients: Object,
     statuses: Object,
-    lostStatusIds: { type: Array, default: () => [] },
-    powodyUtraty: { type: Array, default: () => [] },
     clientById: Object,
     zapytaniaById: Object,
     waluta: Object,
@@ -311,7 +297,6 @@ export default {
       disable: true,
       isActive: false,
       isHistoryVisible: false,
-      showUtrataModal: false,
       form: this.$inertia.form({
         id: this.oferta.id,
         zapytania_id: this.oferta.zapytania_id,
@@ -353,14 +338,10 @@ export default {
   },
   methods: {
     update() {
-      const willBeLost = this.lostStatusIds.includes(this.form.oferta_status_id)
       this.form.put(`/oferta/${this.oferta.id}`, {
         onSuccess: () => {
           this.disable = true
           this.isActive = false
-          if (willBeLost) {
-            this.showUtrataModal = true
-          }
         },
       })
     },

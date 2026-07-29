@@ -261,7 +261,6 @@ export default {
     ofertas: Object,
     stats: Object,
     statusOptions: Array,
-    lostStatusIds: { type: Array, default: () => [] },
     powodyUtraty: { type: Array, default: () => [] },
     waluta: { type: Array, default: () => [] },
   },
@@ -288,6 +287,9 @@ export default {
       if (!this.stats.statuses) return []
       return this.stats.statuses.filter(s => s.count > 0).slice(0, 2)
     },
+    utrataFlash() {
+      return this.$page.props.flash ? this.$page.props.flash.openUtrataForOferta : null
+    },
   },
   watch: {
     form: {
@@ -295,6 +297,14 @@ export default {
       handler: throttle(function () {
         this.$inertia.get('/oferta', pickBy(this.form), { preserveState: true })
       }, 150),
+    },
+    // Po zmianie statusu na przegrana/rezygnacja (tu lub z ekranu edycji)
+    // kontroler flashuje id oferty -> otwieramy modal powodu utraty.
+    utrataFlash: {
+      immediate: true,
+      handler(id) {
+        if (id) this.openUtrataModal(id)
+      },
     },
   },
   methods: {
@@ -319,18 +329,17 @@ export default {
     changeStatus(item, newStatusId) {
       const id = parseInt(newStatusId, 10)
       if (!item.status || item.status.id === id) return
-      const willBeLost = this.lostStatusIds.includes(id)
+      // Modal powodu utraty otwiera watcher `utrataFlash` (kontroler flashuje id).
       this.$inertia.put(`/oferta/${item.id}/status`, { oferta_status_id: id }, {
         preserveScroll: true,
         preserveState: true,
-        onSuccess: () => {
-          if (!willBeLost) return
-          const refreshed = this.ofertas.data.find(o => o.id === item.id)
-          this.utrataOfertaId = item.id
-          this.utrataInitialData = refreshed ? refreshed.utrataDetail : null
-          this.showUtrataModal = true
-        },
       })
+    },
+    openUtrataModal(id) {
+      const row = this.ofertas.data.find(o => o.id === id)
+      this.utrataOfertaId = id
+      this.utrataInitialData = row ? row.utrataDetail : null
+      this.showUtrataModal = true
     },
   },
 }
