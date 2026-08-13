@@ -253,12 +253,18 @@ export default {
     },
     destroy() {
       if (confirm('Czy chcesz usunąć ten projekt?')) {
-        this.$inertia.delete(`/futureproject/${this.futureproject.id}`)
+        this.$inertia.delete(`/futureproject/${this.futureproject.id}`, {
+          preserveScroll: true,
+          onSuccess: () => this.$inertia.reload({ only: ['futureproject'] }),
+        })
       }
     },
     restore() {
       if (confirm('Chcesz przywrócić projekt?')) {
-        this.$inertia.put(`/futureproject/${this.futureproject.id}/restore`)
+        this.$inertia.put(`/futureproject/${this.futureproject.id}/restore`, {}, {
+          preserveScroll: true,
+          onSuccess: () => this.$inertia.reload({ only: ['futureproject'] }),
+        })
       }
     },
   },
