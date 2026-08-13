@@ -28,7 +28,7 @@ class FutureProjectRequest extends FormRequest
             'miasto' => ['required'],
             'kraj_id' => ['required'],
             'objekt_id' => ['required'],
-            'client_id' => ['required'],
+            'client_id' => ['nullable'],
             'start' => ['nullable', 'date'],
             'end' => ['nullable', 'date'],
             'opis' => ['nullable'],

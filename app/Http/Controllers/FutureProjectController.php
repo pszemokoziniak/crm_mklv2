@@ -181,7 +181,7 @@ class FutureProjectController extends Controller
     {
         $futureProject->delete();
 
-        return Redirect::back()->with('success', 'Zapytanie usunięte.');
+        return Redirect::back()->with('success', 'Projekt usunięty.');
     }
 
     public function restore(FutureProject $futureProject)

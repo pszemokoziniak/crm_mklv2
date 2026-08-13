@@ -10,7 +10,7 @@
       </h1>
     </div>
 
-    <trashed-message v-if="futureproject.deleted_at" class="mb-6 shadow-sm" @restore="restore"> Zapytanie zostało usunięte </trashed-message>
+    <trashed-message v-if="futureproject.deleted_at" class="mb-6 shadow-sm" @restore="restore"> Projekt został usunięty </trashed-message>
 
     <div class="w-full mb-8">
       <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500 ring-opacity-50 shadow-lg': isActive }">
@@ -32,7 +32,7 @@
             </select-input>
             <text-input v-model="form.start" :error="form.errors.start" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Start projektu" />
             <text-input v-model="form.end" :error="form.errors.end" type="date" class="pb-8 pr-6 w-full lg:w-1/2" label="Koniec projektu" />
-            <text-area v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" />
+            <text-area v-model="form.opis" :error="form.errors.opis" class="pb-8 pr-6 w-full lg:w-1/1" label="Opis" rows="8" />
             <text-input v-model="form.inwestor" :error="form.errors.inwestor" class="pb-8 pr-6 w-full lg:w-1/1" label="Inwestor" />
             <text-area v-model="form.dane_kontaktowe" :error="form.errors.dane_kontaktowe" class="pb-8 pr-6 w-full lg:w-1/1" label="Dane kontaktowe" />
             <select-input v-model="form.faza_id" :error="form.errors.faza_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Faza projektu">
@@ -252,7 +252,7 @@ export default {
       this.form.put(`/futureproject/${this.futureproject.id}`)
     },
     destroy() {
-      if (confirm('Czy chcesz usunąć te zapytanie?')) {
+      if (confirm('Czy chcesz usunąć ten projekt?')) {
         this.$inertia.delete(`/futureproject/${this.futureproject.id}`)
       }
     },
