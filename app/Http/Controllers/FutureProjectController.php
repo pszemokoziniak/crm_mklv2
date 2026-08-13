@@ -103,6 +103,13 @@ class FutureProjectController extends Controller
 
         $this->storeActivityLog('Dodano przyszły projekt', $data->id, $request->client_id, 'futureproject', 'zmiany', Auth::id());
 
+        // Faza "Zakończony" => od razu do archiwum (soft delete)
+        if ($this->isFazaZakonczona($data->faza_id)) {
+            $data->delete();
+
+            return Redirect::route('futureproject')->with('success', 'Projekt zakończony i przeniesiony do archiwum.');
+        }
+
         return Redirect::route('futureproject')->with('success', 'Zapisano.');
     }
 
@@ -174,7 +181,28 @@ class FutureProjectController extends Controller
 
         $this->storeActivityLog('Poprawiono przyszły projekt', $futureProject->id, $request->client_id, 'futureproject', 'zmiany', Auth::id());
 
+        // Faza "Zakończony" => automatyczne przeniesienie do archiwum (soft delete)
+        if ($this->isFazaZakonczona($futureProject->faza_id)) {
+            $futureProject->delete();
+
+            return Redirect::route('futureproject')->with('success', 'Projekt zakończony i przeniesiony do archiwum.');
+        }
+
         return Redirect::back()->with('success', 'Zapytanie poprawione.');
+    }
+
+    /**
+     * Czy podana faza to "Zakończony" (rozpoznawane po nazwie, odporne na zmianę id).
+     */
+    private function isFazaZakonczona($fazaId): bool
+    {
+        if (! $fazaId) {
+            return false;
+        }
+
+        $faza = Faza::find($fazaId);
+
+        return $faza && mb_strtolower(trim($faza->name)) === 'zakończony';
     }
 
     public function destroy(FutureProject $futureProject)
