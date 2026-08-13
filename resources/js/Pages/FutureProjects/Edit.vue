@@ -257,7 +257,7 @@ export default {
       }
     },
     restore() {
-      if (confirm('Chcesz przywrócić zapytanie?')) {
+      if (confirm('Chcesz przywrócić projekt?')) {
         this.$inertia.put(`/futureproject/${this.futureproject.id}/restore`)
       }
     },

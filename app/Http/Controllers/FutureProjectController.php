@@ -197,7 +197,7 @@ class FutureProjectController extends Controller
             return Redirect::route('futureproject')->with('success', 'Projekt zakończony i przeniesiony do archiwum.');
         }
 
-        return Redirect::back()->with('success', 'Zapytanie poprawione.');
+        return Redirect::back()->with('success', 'Projekt poprawiony.');
     }
 
     /**
@@ -232,6 +232,6 @@ class FutureProjectController extends Controller
             $futureProject->save();
         }
 
-        return Redirect::back()->with('success', 'Zapytanie przywrócone');
+        return Redirect::back()->with('success', 'Projekt przywrócony');
     }
 }
