@@ -214,8 +214,27 @@ class FutureProjectController extends Controller
         return $faza && mb_strtolower(trim($faza->name)) === 'zakończony';
     }
 
+    /**
+     * Id fazy "Zakończony" (rozpoznawane po nazwie), lub null gdy brak.
+     */
+    private function fazaZakonczonaId()
+    {
+        return optional(
+            Faza::get()->first(fn ($f) => mb_strtolower(trim($f->name)) === 'zakończony')
+        )->id;
+    }
+
     public function destroy(FutureProject $futureProject)
     {
+        // Archiwizacja ustawia fazę na "Zakończony" (zapamiętując poprzednią do przywrócenia).
+        $zakonczonaId = $this->fazaZakonczonaId();
+
+        if ($zakonczonaId && (int) $futureProject->faza_id !== (int) $zakonczonaId) {
+            $futureProject->faza_id_prev = $futureProject->faza_id;
+            $futureProject->faza_id = $zakonczonaId;
+            $futureProject->save();
+        }
+
         $futureProject->delete();
 
         return Redirect::back()->with('success', 'Projekt usunięty.');

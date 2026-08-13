@@ -255,7 +255,11 @@ export default {
       if (confirm('Czy chcesz usunąć ten projekt?')) {
         this.$inertia.delete(`/futureproject/${this.futureproject.id}`, {
           preserveScroll: true,
-          onSuccess: () => this.$inertia.reload({ only: ['futureproject'] }),
+          preserveState: true,
+          onSuccess: () => this.$inertia.reload({
+            only: ['futureproject'],
+            onSuccess: () => { this.form.faza_id = this.futureproject.faza_id },
+          }),
         })
       }
     },
@@ -263,7 +267,11 @@ export default {
       if (confirm('Chcesz przywrócić projekt?')) {
         this.$inertia.put(`/futureproject/${this.futureproject.id}/restore`, {}, {
           preserveScroll: true,
-          onSuccess: () => this.$inertia.reload({ only: ['futureproject'] }),
+          preserveState: true,
+          onSuccess: () => this.$inertia.reload({
+            only: ['futureproject'],
+            onSuccess: () => { this.form.faza_id = this.futureproject.faza_id },
+          }),
         })
       }
     },
