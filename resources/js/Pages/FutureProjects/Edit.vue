@@ -256,22 +256,26 @@ export default {
         this.$inertia.delete(`/futureproject/${this.futureproject.id}`, {
           preserveScroll: true,
           preserveState: true,
-          onSuccess: () => this.$inertia.reload({
-            only: ['futureproject'],
-            onSuccess: () => { this.form.faza_id = this.futureproject.faza_id },
-          }),
+          onSuccess: () => {
+            // Archiwizacja ustawia fazę na "Zakończony" — odzwierciedl to od razu w formularzu.
+            const zakonczona = this.faza.find((f) => (f.name || '').trim().toLowerCase() === 'zakończony')
+            if (zakonczona) this.form.faza_id = zakonczona.id
+            this.$inertia.reload({ only: ['futureproject'] })
+          },
         })
       }
     },
     restore() {
       if (confirm('Chcesz przywrócić projekt?')) {
+        // Poprzednia faza (sprzed archiwizacji) — trzeba odczytać przed akcją, bo serwer ją wyczyści.
+        const prevFazaId = this.futureproject.faza_id_prev
         this.$inertia.put(`/futureproject/${this.futureproject.id}/restore`, {}, {
           preserveScroll: true,
           preserveState: true,
-          onSuccess: () => this.$inertia.reload({
-            only: ['futureproject'],
-            onSuccess: () => { this.form.faza_id = this.futureproject.faza_id },
-          }),
+          onSuccess: () => {
+            if (prevFazaId) this.form.faza_id = prevFazaId
+            this.$inertia.reload({ only: ['futureproject'] })
+          },
         })
       }
     },

@@ -130,6 +130,7 @@ class FutureProjectController extends Controller
                 'dane_kontaktowe' => $futureProject->dane_kontaktowe,
                 'data_kontakt' => $futureProject->data_kontakt,
                 'faza_id' => $futureProject->faza_id,
+                'faza_id_prev' => $futureProject->faza_id_prev,
                 'user_id' => $futureProject->user_id,
                 'opiekun_id' => $futureProject->opiekun_id,
                 'kwota' => $futureProject->kwota,
