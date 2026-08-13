@@ -177,12 +177,21 @@ class FutureProjectController extends Controller
 
     public function update(FutureProject $futureProject, FutureProjectRequest $request)
     {
+        // Faza sprzed zmiany — potrzebna, gdyby wybrano "Zakończony" (do przywrócenia).
+        $previousFazaId = $futureProject->faza_id;
+
         $futureProject->update($request->all());
 
         $this->storeActivityLog('Poprawiono przyszły projekt', $futureProject->id, $request->client_id, 'futureproject', 'zmiany', Auth::id());
 
         // Faza "Zakończony" => automatyczne przeniesienie do archiwum (soft delete)
         if ($this->isFazaZakonczona($futureProject->faza_id)) {
+            // Zapamiętaj poprzednią fazę (o ile sama nie była "Zakończony"), aby przywrócenie mogło ją cofnąć.
+            if ($previousFazaId && ! $this->isFazaZakonczona($previousFazaId)) {
+                $futureProject->faza_id_prev = $previousFazaId;
+                $futureProject->save();
+            }
+
             $futureProject->delete();
 
             return Redirect::route('futureproject')->with('success', 'Projekt zakończony i przeniesiony do archiwum.');
@@ -215,6 +224,13 @@ class FutureProjectController extends Controller
     public function restore(FutureProject $futureProject)
     {
         $futureProject->restore();
+
+        // Jeśli rekord trafił do archiwum przez fazę "Zakończony" — cofnij fazę na poprzednią.
+        if ($futureProject->faza_id_prev) {
+            $futureProject->faza_id = $futureProject->faza_id_prev;
+            $futureProject->faza_id_prev = null;
+            $futureProject->save();
+        }
 
         return Redirect::back()->with('success', 'Zapytanie przywrócone');
     }
