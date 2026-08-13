@@ -34,6 +34,10 @@ export default {
     selected(selected) {
       this.$emit('update:modelValue', selected)
     },
+    modelValue(modelValue) {
+      // Odzwierciedl programową zmianę modelu z rodzica (v-model dwukierunkowy).
+      this.selected = modelValue
+    },
   },
   methods: {
     focus() {
