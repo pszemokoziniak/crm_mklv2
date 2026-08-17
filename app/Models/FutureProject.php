@@ -91,6 +91,8 @@ class FutureProject extends Model
                         });
                 });
             }
+        })->when($filters['faza_id'] ?? null, function ($query, $fazaId) {
+            $query->where('faza_id', $fazaId);
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();

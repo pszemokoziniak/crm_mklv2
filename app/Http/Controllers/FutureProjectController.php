@@ -37,7 +37,7 @@ class FutureProjectController extends Controller
             ->with('kraj')
             ->with('faza')
             ->with('objekt')
-            ->filter(Request::only('search', 'trashed'));
+            ->filter(Request::only('search', 'trashed', 'faza_id'));
 
         if ($sortField === 'nazwa') {
             $query->orderBy('nazwa', $sortDirection);
@@ -62,7 +62,8 @@ class FutureProjectController extends Controller
         }
 
         return Inertia::render('FutureProjects/Index', [
-            'filters' => Request::all('search', 'trashed', 'field', 'direction'),
+            'filters' => Request::all('search', 'trashed', 'field', 'direction', 'faza_id'),
+            'faza' => Faza::orderBy(DB::raw('TRIM(name)'))->get()->map->only('id', 'name'),
             'futureprojects' => $query
                 ->paginate(10)
                 ->withQueryString()

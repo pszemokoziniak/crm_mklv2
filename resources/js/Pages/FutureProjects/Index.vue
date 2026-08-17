@@ -12,11 +12,18 @@
 
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Archiwum:</label>
-        <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-          <option :value="null" />
-          <option value="with">Wszystko</option>
+        <div class="mb-4">
+          <label class="block mb-1 text-gray-700 text-sm font-medium">Faza projektu:</label>
+          <select v-model="form.faza_id" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-sm focus:ring-indigo-500">
+            <option :value="null">Wszystkie</option>
+            <option v-for="item in faza" :key="item.id" :value="item.id">{{ item.name }}</option>
+          </select>
+        </div>
+        <label class="block mb-1 text-gray-700 text-sm font-medium">Wyświetlaj:</label>
+        <select v-model="form.trashed" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-sm focus:ring-indigo-500">
+          <option :value="null">Aktualne</option>
           <option value="only">Archiwum</option>
+          <option value="with">Wszystko</option>
         </select>
       </search-filter>
     </div>
@@ -153,12 +160,14 @@ export default {
   layout: Layout,
   props: {
     filters: Object,
+    faza: Object,
     futureprojects: Object,
   },
   data() {
     return {
       form: {
         search: this.filters.search,
+        faza_id: this.filters.faza_id ? Number(this.filters.faza_id) : null,
         trashed: this.filters.trashed,
         field: this.filters.field || null,
         direction: this.filters.direction || null,
