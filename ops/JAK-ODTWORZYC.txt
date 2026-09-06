@@ -1,0 +1,124 @@
+JAK ODTWORZYĆ CRM Z KOPII
+=========================
+
+Kopie robi /usr/local/sbin/crm-backup.sh, codziennie o 03:00 z crona roota.
+Dziennik: /var/log/crm-backup.log
+
+CRM chodzi w Dockerze (kontenery crm-app, crm-web, crm-db). Baza jest w
+kontenerze crm-db. UWAGA: root@crm-db NIE dziala (haslo root z docker-compose.yml
+zostalo dopisane po utworzeniu wolumenu bazy). Do bazy logujemy sie uzytkownikiem
+aplikacji crm_user, ktorego crm-db ma w swoim srodowisku ($MYSQL_USER/$MYSQL_PASSWORD).
+crm_user ma pelne prawa TYLKO do bazy crm_database (nie zalozy nowej bazy) — dlatego
+test odtworzenia robimy w OSOBNYM, tymczasowym kontenerze MySQL, a nie obok produkcji.
+
+Co tu lezy
+----------
+baza/crm_database-RRRR-MM-DD.sql.gz        30 ostatnich kopii dziennych
+baza/miesieczna-crm_database-...sql.gz     kopie z 1. dnia miesiaca, 13 ostatnich
+pliki/RRRR-MM-DD/                          14 migawek storage/app (twarde
+                                           dowiazania, kazda wyglada jak pelna kopia)
+konfiguracja/env-RRRR-MM-DD                .env z APP_KEY — bez niego nie odczytasz
+                                           zaszyfrowanych pol z bazy
+konfiguracja/docker-compose-RRRR-MM-DD.yml definicja kontenerow
+
+=====================================================================
+ODTWORZENIE BAZY — najpierw do OSOBNEJ bazy (bezpiecznie), potem podmiana
+=====================================================================
+
+KROK 1. Sprawdz dump w tymczasowym, izolowanym kontenerze MySQL
+---------------------------------------------------------------
+(Nie dotyka produkcji. Obraz mysql:8.0 jest juz na serwerze.)
+
+  DUMP=/var/backups/crm/baza/crm_database-RRRR-MM-DD.sql.gz
+
+  docker run --rm -d --name crm-restore-test -e MYSQL_ROOT_PASSWORD=verify mysql:8.0
+  # poczekaj az wstanie:
+  until docker exec crm-restore-test mysqladmin -uroot -pverify ping --silent 2>/dev/null; do sleep 1; done
+
+  docker exec crm-restore-test mysql -uroot -pverify \
+      -e "CREATE DATABASE crm_database_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+  zcat "$DUMP" | docker exec -i crm-restore-test mysql -uroot -pverify crm_database_test
+
+  # policz tabele i wybrane rekordy, sprawdz polskie znaki:
+  docker exec crm-restore-test mysql -uroot -pverify crm_database_test \
+      -e "SELECT COUNT(*) tabele FROM information_schema.tables WHERE table_schema='crm_database_test';
+          SELECT COUNT(*) klienci FROM clients;
+          SELECT nazwa FROM clients WHERE nazwa REGEXP '[ąćęłńóśźż]' LIMIT 3;"
+
+  # porownaj z produkcja:
+  docker exec crm-db sh -c 'exec env MYSQL_PWD="$MYSQL_PASSWORD" mysql -u"$MYSQL_USER" crm_database \
+      -e "SELECT COUNT(*) klienci_prod FROM clients"'
+
+  # gdy sie zgadza — sprzataj kontener testowy (baza znika razem z nim):
+  docker rm -f crm-restore-test
+
+KROK 2. Dopiero teraz nadpisanie dzialajacej bazy (ostroznie, kasuje biezace dane)
+---------------------------------------------------------------------------------
+  systemctl stop nginx            # albo: docker stop crm-web   (zeby nikt nie pisal)
+  zcat "$DUMP" | docker exec -i crm-db sh -c \
+      'exec env MYSQL_PWD="$MYSQL_PASSWORD" mysql -u"$MYSQL_USER" "$MYSQL_DATABASE"'
+  systemctl start nginx           # albo: docker start crm-web
+
+=====================================================================
+ODTWORZENIE PLIKOW (storage/app)
+=====================================================================
+  rsync -a /var/backups/crm/pliki/RRRR-MM-DD/ /var/www/crm_mkl/storage/app/
+  chown -R root:www-data /var/www/crm_mkl/storage/app
+  find /var/www/crm_mkl/storage/app -type d -exec chmod 775 {} \;
+  find /var/www/crm_mkl/storage/app -type f -exec chmod 664 {} \;
+
+Pojedynczy plik: po prostu skopiuj go z odpowiedniej migawki pliki/RRRR-MM-DD/.
+
+=====================================================================
+UWAGA — kopia lokalna vs poza serwerem
+=====================================================================
+/var/backups/crm to kopia NA TYM SAMYM SERWERZE. Chroni przed skasowaniem danych,
+nieudana migracja i bledem w aplikacji — NIE chroni przed utrata calego VPS-a
+(awaria, ransomware na roota, zamkniecie konta u dostawcy). Od tego jest B2.
+
+=====================================================================
+KOPIA POZA SERWEREM (Backblaze B2)
+=====================================================================
+Konfiguracja: /usr/local/sbin/crm-b2-konfiguruj.sh (jednorazowo)
+Zdalny w rclone: crm-b2-crypt  (szyfrowanie po naszej stronie)
+Kubelek CRM jest OSOBNY od HRM, z Object Lock (compliance) i domyslna retencja 30 dni.
+
+Co leci do chmury po kazdym backupie:
+  baza/crm_database-RRRR-MM-DD.sql.gz   nowy plik kazdego dnia
+  konfiguracja/env-RRRR-MM-DD           nowy plik kazdego dnia
+  konfiguracja/docker-compose-...yml    nowy plik kazdego dnia
+  pliki/                                JEDNA aktualna kopia storage/app;
+                                        historie daje wersjonowanie kubelka
+
+Podglad:
+  rclone ls   crm-b2-crypt:baza | tail
+  rclone size crm-b2-crypt:
+
+Odtworzenie z chmury (po utracie serwera, na nowej maszynie z rclone.conf i haslami):
+  rclone copy crm-b2-crypt:baza/crm_database-RRRR-MM-DD.sql.gz /root/
+  # dalej jak KROK 1/2 powyzej (dump jest identyczny)
+  rclone sync crm-b2-crypt:pliki/ /var/www/crm_mkl/storage/app/
+  chown -R root:www-data /var/www/crm_mkl/storage/app
+
+Starsza wersja pliku (gdy biezaca zostala nadpisana albo zaszyfrowana przez ransomware):
+  rclone --b2-versions ls  crm-b2-crypt:pliki | grep NAZWA
+  rclone --b2-versions copy crm-b2-crypt:pliki/NAZWA-vRRRR-MM-DD... /root/
+
+DWIE RZECZY, KTORE TRZEBA WIEDZIEC
+----------------------------------
+1. HASLO SZYFRUJACE. Dane sa szyfrowane na serwerze, zanim trafia do B2. Bez hasla
+   z konfiguracji rclone (crm-b2-crypt) kopia w chmurze jest nie do odczytania —
+   nikt tego nie odzyska, ani MKL, ani Backblaze. Haslo MUSI byc zapisane poza
+   serwerem (menedzer hasel). Jest INNE niz haslo HRM.
+
+2. CZEGO SZYFROWANIE NIE ZALATWIA. Haslo lezy w /root/.config/rclone/rclone.conf
+   na tym samym serwerze. Chroni przed tym, ze dostawca chmury widzi dane — NIE
+   chroni przed kims, kto zdobedzie roota na VPS-ie. Przed skasowaniem/zaszyfrowaniem
+   kopii przez takiego kogos chroni dopiero Object Lock (compliance) na kubelku:
+   plikow nie da sie skasowac ani nadpisac przed uplywem retencji, nawet majac klucz.
+
+ODTWORZENIE SAMEJ KONFIGURACJI rclone
+-------------------------------------
+Plik /root/.config/rclone/rclone.conf zawiera remoty HRM i CRM. Kreatory tworza
+kopie tego pliku przed kazda zmiana: rclone.conf.przed-crm-* i .przed-hrm-*.
+Po odtworzeniu sprawdz:  rclone listremotes   (maja byc 4 remoty).
