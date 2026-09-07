@@ -158,6 +158,11 @@ rm -f "$PROBKA"
 # domyslna retencja realnie chroni pliki (rclone nie wysyla naglowka retencji).
 echo
 echo "--- weryfikacja Object Lock (API b2_list_buckets) ---"
+# Ta sekcja jest wylacznie diagnostyczna (konfiguracja jest juz zapisana i
+# przetestowana wyzej). Parsowanie JSON uzywa potokow z "head -1", ktore pod
+# 'set -e'/'pipefail' potrafia falszywie wywalic skrypt (SIGPIPE) — dlatego
+# na czas tej weryfikacji rozluzniamy rygor, zeby nigdy nie przerwala kreatora.
+set +e +o pipefail
 AUTH=$(curl -s -u "$KEYID:$APPKEY" https://api.backblazeb2.com/b2api/v2/b2_authorize_account || true)
 APIURL=$(printf '%s' "$AUTH" | grep -oE '"apiUrl":"[^"]*"'             | head -1 | sed 's/.*":"//; s/"$//')
 TOKEN=$(printf '%s'  "$AUTH" | grep -oE '"authorizationToken":"[^"]*"' | head -1 | sed 's/.*":"//; s/"$//')
