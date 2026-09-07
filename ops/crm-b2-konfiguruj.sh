@@ -124,10 +124,15 @@ echo "OK: remoty HRM nietkniete, remoty CRM dodane ($PRZED -> $PO)."
 # --- test polaczenia ---
 echo
 echo "--- test polaczenia z kubelkiem CRM ---"
-if rclone lsd "crm-b2:$KUBELEK" >/dev/null 2>&1; then
+if TESTOUT=$(rclone lsd "crm-b2:$KUBELEK" 2>&1); then
     echo "OK: klucz dziala, kubelek $KUBELEK dostepny."
 else
-    echo "BLAD: nie moge otworzyc kubelka $KUBELEK. Sprawdz nazwe, keyID i applicationKey."
+    echo "BLAD: nie moge otworzyc kubelka $KUBELEK. Sprawdz nazwe kubelka, keyID i applicationKey."
+    echo "Najczestsze przyczyny: literowka w nazwie kubelka; klucz ograniczony do INNEGO"
+    echo "kubelka; wklejony keyID zamiast applicationKey (lub odwrotnie)."
+    echo "--- pelny komunikat rclone: ---"
+    echo "$TESTOUT"
+    echo "--- konfiguracja CRM zostaje zapisana; popraw dane i uruchom kreator ponownie ---"
     exit 1
 fi
 
