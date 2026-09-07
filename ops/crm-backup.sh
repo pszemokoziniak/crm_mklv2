@@ -106,7 +106,12 @@ posprzataj "$CEL/konfiguracja"  "docker-compose-*.yml"      "$ILE_DUMPOW"
 # Dopoki nie ma skonfigurowanego zdalnego "crm-b2-crypt", ta czesc nic nie robi
 # i backup lokalny dziala jak dotad. Konfiguracja: crm-b2-konfiguruj.sh
 ZDALNY=crm-b2-crypt
-if rclone listremotes 2>/dev/null | grep -qx "$ZDALNY:"; then
+# listremotes czytamy do zmiennej i grepujemy z here-stringa — potok
+# "rclone listremotes | grep -q" pod 'set -o pipefail' potrafi falszywie
+# zwrocic blad (grep -q konczy wczesniej -> rclone dostaje SIGPIPE), przez co
+# wysylka bylaby pomijana mimo istniejacego remotu.
+REMOTY=$(rclone listremotes 2>/dev/null || true)
+if grep -qx "$ZDALNY:" <<<"$REMOTY"; then
     WYSLANO=1
 
     # Dump i konfiguracje dokladamy jako nowe pliki — w kubelku zostaje historia.

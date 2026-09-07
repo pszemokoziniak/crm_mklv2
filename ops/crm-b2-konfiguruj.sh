@@ -105,16 +105,22 @@ install -m 600 "$NOWY" "$KONF"
 rm -f "$NOWY"
 
 # --- WERYFIKACJA, ze nie zabilismy remotow HRM ---
-PO=$(rclone listremotes 2>/dev/null | wc -l)
+# UWAGA: listremotes czytamy RAZ do zmiennej i grepujemy z here-stringa. Potok
+# "rclone listremotes | grep -q" pod 'set -o pipefail' potrafi falszywie zwrocic
+# blad: grep -q konczy po dopasowaniu, rclone dostaje SIGPIPE, a pipefail uznaje
+# caly potok za nieudany — co wczesniej wywolywalo falszywy rollback.
+REMOTY=$(rclone listremotes 2>/dev/null || true)
+PO=$(grep -c ':' <<<"$REMOTY" || true)
 echo
 echo "--- remoty rclone po zmianie ---"
-rclone listremotes
-if ! rclone listremotes | grep -qx "hrm-b2:" || ! rclone listremotes | grep -qx "hrm-b2-crypt:"; then
+printf '%s\n' "$REMOTY"
+brak_remote() { ! grep -qx "$1" <<<"$REMOTY"; }
+if brak_remote "hrm-b2:" || brak_remote "hrm-b2-crypt:"; then
     echo "BLAD KRYTYCZNY: zniknely remoty HRM! Przywracam plik z kopii."
     [ -n "$KOPIA" ] && cp -a "$KOPIA" "$KONF"
     exit 1
 fi
-if ! rclone listremotes | grep -qx "crm-b2:" || ! rclone listremotes | grep -qx "crm-b2-crypt:"; then
+if brak_remote "crm-b2:" || brak_remote "crm-b2-crypt:"; then
     echo "BLAD: nie dodano remotow CRM. Przywracam plik z kopii."
     [ -n "$KOPIA" ] && cp -a "$KOPIA" "$KONF"
     exit 1
@@ -163,12 +169,12 @@ else
     BUCKETS=$(curl -s -H "Authorization: $TOKEN" \
         -d "{\"accountId\":\"$ACCT\",\"bucketName\":\"$KUBELEK\"}" \
         "$APIURL/b2api/v2/b2_list_buckets" || true)
-    FL=$(printf '%s' "$BUCKETS" | grep -oE '"fileLockConfiguration":\{[^}]*\{[^}]*\}[^}]*\}' | head -1)
+    FL=$(grep -oE '"fileLockConfiguration":\{[^}]*\{[^}]*\}[^}]*\}' <<<"$BUCKETS" | head -1 || true)
     echo "fileLockConfiguration: ${FL:-<brak / klucz bez prawa odczytu ustawien kubelka>}"
     OK_LOCK=1
-    printf '%s' "$BUCKETS" | grep -q '"isFileLockEnabled":true'          || { echo "  ! Object Lock NIE jest wlaczony"; OK_LOCK=0; }
-    printf '%s' "$BUCKETS" | grep -q '"mode":"compliance"'               || { echo "  ! tryb NIE jest compliance (albo brak domyslnej retencji)"; OK_LOCK=0; }
-    printf '%s' "$BUCKETS" | grep -qE '"duration":30'                    || { echo "  ! domyslna retencja NIE wynosi 30"; OK_LOCK=0; }
+    grep -q  '"isFileLockEnabled":true' <<<"$BUCKETS" || { echo "  ! Object Lock NIE jest wlaczony"; OK_LOCK=0; }
+    grep -q  '"mode":"compliance"'      <<<"$BUCKETS" || { echo "  ! tryb NIE jest compliance (albo brak domyslnej retencji)"; OK_LOCK=0; }
+    grep -qE '"duration":30'            <<<"$BUCKETS" || { echo "  ! domyslna retencja NIE wynosi 30"; OK_LOCK=0; }
     if [ "$OK_LOCK" = 1 ]; then
         echo "OK: Object Lock = compliance, domyslna retencja 30 dni — chroni pliki."
     else
