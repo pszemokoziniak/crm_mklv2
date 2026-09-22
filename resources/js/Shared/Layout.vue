@@ -154,6 +154,8 @@
                     <Link class="block px-6 py-2 text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors" :href="`/users/${auth.user.id}/edit`">Profil</Link>
                     <Link class="block px-6 py-2 text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors" href="/users">Użytkownicy</Link>
                     <div class="border-t border-gray-100 my-1" />
+                    <!-- Pełne przejście (nie Inertia Link) — /sso/do-hrm przekierowuje na inną domenę. -->
+                    <a class="block px-6 py-2 text-gray-700 hover:text-white hover:bg-indigo-600 transition-colors" href="/sso/do-hrm">Przejdź do HRM</a>
                     <Link class="block px-6 py-2 w-full text-left text-red-600 hover:text-white hover:bg-red-500 transition-colors" href="/logout" method="delete" as="button">Wyloguj</Link>
                   </div>
                 </template>

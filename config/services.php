@@ -29,6 +29,13 @@ return [
         'token' => env('HRM_API_TOKEN'),
     ],
 
+    // Handoff HRM <-> CRM (SSO-lite). Sekret ten sam w obu aplikacjach.
+    'sso' => [
+        'secret' => env('SSO_SECRET', ''),
+        'hrm_url' => env('SSO_HRM_URL'),
+        'crm_url' => env('SSO_CRM_URL'),
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),

@@ -9,6 +9,7 @@ use App\Http\Controllers\BranzaController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactsController;
+use App\Http\Controllers\SsoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EditController;
 use App\Http\Controllers\FazaController;
@@ -61,6 +62,11 @@ Route::post('login', [AuthenticatedSessionController::class, 'store'])
 
 Route::delete('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
+
+// SSO handoff CRM <-> HRM. „Wejście" bez auth (użytkownik nie jest jeszcze
+// zalogowany w tej aplikacji); token podpisany rozstrzyga tożsamość.
+Route::get('sso/wejscie', [SsoController::class, 'wejscie'])->name('sso.wejscie');
+Route::get('sso/do-hrm', [SsoController::class, 'doHrm'])->name('sso.do-hrm')->middleware('auth');
 
 Route::get('forgot-password', [ForgotPasswordController::class, 'create'])
     ->name('password.request')
