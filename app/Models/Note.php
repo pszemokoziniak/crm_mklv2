@@ -11,6 +11,11 @@ class Note extends Model
         'notable_type',
         'notable_id',
         'body',
+        'system',
+    ];
+
+    protected $casts = [
+        'system' => 'boolean',
     ];
 
     public function author()
@@ -21,5 +26,11 @@ class Note extends Model
     public function notable()
     {
         return $this->morphTo();
+    }
+
+    /** Załączniki dodane razem z komentarzem (wykorzystywane przez zgłoszenia). */
+    public function files()
+    {
+        return $this->hasMany(ZgloszenieFile::class, 'note_id')->orderBy('id');
     }
 }

@@ -56,6 +56,7 @@ class NoteMentionNotification extends Notification
         return match ($type) {
             'Zapytania' => "/zapytania/{$this->note->notable_id}/edit",
             'Oferta' => "/oferta/{$this->note->notable_id}/edit",
+            'Zgloszenie' => "/zgloszenia/{$this->note->notable_id}",
             default => '/',
         };
     }

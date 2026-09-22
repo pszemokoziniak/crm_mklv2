@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Zapytania;
+use App\Models\Zgloszenie;
 use App\Policies\ZapytaniaPolicy;
+use App\Policies\ZgloszeniePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -16,6 +18,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Zapytania::class => ZapytaniaPolicy::class,
+        Zgloszenie::class => ZgloszeniePolicy::class,
     ];
 
     /**

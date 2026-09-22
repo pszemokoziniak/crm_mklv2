@@ -52,6 +52,12 @@ class MainMenuSeeder extends Seeder
                 'order' => 6,
             ],
             [
+                'name' => 'Zgłoszenia',
+                'route' => '/zgloszenia',
+                'icon' => 'zgloszenia',
+                'order' => 6,
+            ],
+            [
                 'name' => 'Kalendarz',
                 'route' => '/calendar',
                 'icon' => 'calendar',

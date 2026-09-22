@@ -33,6 +33,7 @@ use App\Http\Controllers\UprawnieniaController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WalutaController;
 use App\Http\Controllers\ZadaniaController;
+use App\Http\Controllers\ZgloszeniaController;
 use App\Http\Controllers\ZakresController;
 use App\Http\Controllers\ZapytaniaController;
 use App\Http\Controllers\NotificationController;
@@ -274,6 +275,26 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
     Route::put('zadania/{zadania}/request-closure', [ZadaniaController::class, 'requestClosure'])->name('zadania.requestClosure');
     Route::put('zadania/{zadania}/approve-closure', [ZadaniaController::class, 'approveClosure'])->name('zadania.approveClosure');
     Route::put('zadania/{zadania}/reject-closure', [ZadaniaController::class, 'rejectClosure'])->name('zadania.rejectClosure');
+
+    // Zgłoszenia (kanban poprawek aplikacji — wzór z HRM)
+    Route::get('zgloszenia', [ZgloszeniaController::class, 'index'])->name('zgloszenia.index');
+    Route::get('zgloszenia/create', [ZgloszeniaController::class, 'create'])->name('zgloszenia.create');
+    Route::post('zgloszenia', [ZgloszeniaController::class, 'store'])->name('zgloszenia.store');
+    // Komentarze — PRZED trasami z {zgloszenie}, żeby 'komentarze' nie złapało się jako id.
+    Route::post('zgloszenia/{zgloszenie}/komentarze', [ZgloszeniaController::class, 'storeComment'])->name('zgloszenia.komentarze.store');
+    Route::put('zgloszenia/komentarze/{note}', [ZgloszeniaController::class, 'updateComment'])->name('zgloszenia.komentarze.update');
+    Route::delete('zgloszenia/komentarze/{note}', [ZgloszeniaController::class, 'destroyComment'])->name('zgloszenia.komentarze.destroy');
+    // Załączniki
+    Route::post('zgloszenia/{zgloszenie}/files', [ZgloszeniaController::class, 'storeFiles'])->name('zgloszenia.files.store');
+    Route::get('zgloszenia/{zgloszenie}/files/{file}', [ZgloszeniaController::class, 'showFile'])->name('zgloszenia.files.show');
+    Route::delete('zgloszenia/{zgloszenie}/files/{file}', [ZgloszeniaController::class, 'destroyFile'])->name('zgloszenia.files.destroy');
+    // Zgłoszenie
+    Route::get('zgloszenia/{zgloszenie}', [ZgloszeniaController::class, 'show'])->name('zgloszenia.show');
+    Route::get('zgloszenia/{zgloszenie}/edit', [ZgloszeniaController::class, 'edit'])->name('zgloszenia.edit');
+    Route::put('zgloszenia/{zgloszenie}', [ZgloszeniaController::class, 'update'])->name('zgloszenia.update');
+    Route::put('zgloszenia/{zgloszenie}/status', [ZgloszeniaController::class, 'updateStatus'])->name('zgloszenia.status');
+    Route::delete('zgloszenia/{zgloszenie}', [ZgloszeniaController::class, 'destroy'])->name('zgloszenia.destroy');
+    Route::put('zgloszenia/{zgloszenie}/restore', [ZgloszeniaController::class, 'restore'])->name('zgloszenia.restore');
 
     // Notifications
     Route::get('notifications/count', [NotificationController::class, 'count'])->name('notifications.count');
