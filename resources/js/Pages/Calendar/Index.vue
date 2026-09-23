@@ -35,15 +35,16 @@
                 {{ month }}
               </th>
             </tr>
-            <!-- Wiersz Dni -->
+            <!-- Wiersz Tygodni (kolumna = 1 tydzień, etykieta = poniedziałek) -->
             <tr class="bg-white border-b border-gray-300 shadow-sm">
               <th
-                v-for="(day, index) in days"
+                v-for="(week, index) in weeks"
                 :key="index"
                 class="border-r border-gray-100 p-1 text-center text-[11px] font-bold text-gray-600"
-                style="width: 40px; min-width: 40px;"
+                style="width: 56px; min-width: 56px;"
+                :title="`Tydzień ${week.week} (od ${week.label})`"
               >
-                {{ day }}
+                {{ week.label }}
               </th>
             </tr>
           </thead>
@@ -71,7 +72,7 @@
               </td>
             </tr>
             <tr v-if="Object.keys(months).length === 0">
-              <td class="px-6 py-10 text-center text-gray-500 italic" :colspan="days.length">
+              <td class="px-6 py-10 text-center text-gray-500 italic" :colspan="weeks.length">
                 Brak zapytań w wybranym terminie
               </td>
             </tr>
@@ -113,9 +114,8 @@ export default {
   layout: Layout,
   props: {
     months: Object,
-    days: Array,
+    weeks: Array,
     zapytanias: Array,
-    daysN: Number,
     start: String,
     end: String,
     filters: Object,
@@ -123,7 +123,7 @@ export default {
   data() {
     return {
       colorCache: {},
-      dayWidth: 40,
+      weekWidth: 56,
       colors: [
         '#4f46e5', '#7c3aed', '#2563eb', '#0891b2', '#059669',
         '#16a34a', '#ca8a04', '#d97706', '#dc2626', '#db2777',
@@ -139,7 +139,7 @@ export default {
   },
   computed: {
     tableWidth() {
-      return this.days.length * this.dayWidth
+      return this.weeks.length * this.weekWidth
     },
   },
   watch: {

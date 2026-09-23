@@ -5,77 +5,78 @@ namespace App\Http\Controllers;
 
 use App\Models\Zapytania;
 use Carbon\Carbon;
-use DateTimeImmutable;
-//use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Request;
 
-
 class CalendarController extends Controller
 {
-//    protected $numberDays;
-//
-//    protected \DateTimeImmutable $start;
-//    protected \$end;
-
-//    public function __construct(
-//        public DateTimeImmutable $start,
-//        public DateTimeImmutable $end,
-//    ) {
-//        $this->start = $start;
-//        $this->end = $end;
-//    }
     public function index()
     {
         $now = Carbon::now();
-        $start = $now->format('Y-m-d');
-        $end = $now->addDays(30)->format('Y-m-d');
+        // Domyslny zakres: dzis -> 6 miesiecy do przodu.
+        $defaultStart = $now->copy()->format('Y-m-d');
+        $defaultEnd = $now->copy()->addMonths(6)->format('Y-m-d');
 
-        $start = array_values(Request::all('start'))[0]?array_values(Request::all('start'))[0]:$start;
-        $end = array_values(Request::all('end'))[0]?array_values(Request::all('end'))[0]:$end;
+        $start = array_values(Request::all('start'))[0] ?: $defaultStart;
+        $end = array_values(Request::all('end'))[0] ?: $defaultEnd;
 
-//        $test = $_GET["search"]?$_GET["search"]:null;
+        // Os czasu zawsze w tygodniach (kolumna = 1 tydzien, poniedzialek -> niedziela).
+        $weeks = $this->getWeeks($start, $end);
 
-        $daysN = $this->getNumberDays($start, $end);
-//        $zapytanias = $this->getZapytania($start, $end);
-//        dd($zapytanias);
         return Inertia::render('Calendar/Index', [
             'filters' => Request::all('search', 'start', 'end'),
-            'daysN' => $daysN,
-            'months' => $this->getMonths($daysN, $start),
-            'days' => $this->getDays($daysN, $start),
-            'zapytanias' => $this->getZapytania($start, $end),
+            'weeks' => $weeks,
+            'months' => $this->getMonths($weeks),
+            'zapytanias' => $this->getZapytania($start, $end, $weeks),
             'start' => $start,
             'end' => $end,
         ]);
     }
-    public function getNumberDays($start, $end)
+
+    /**
+     * Kolumny tygodniowe pokrywajace [start, end]. Siatka wyrownana do
+     * poniedzialkow, zeby kolumny odpowiadaly kalendarzowym tygodniom.
+     *
+     * @return array<int, array{start: string, label: string, week: int, month: string}>
+     */
+    public function getWeeks($start, $end): array
     {
-        $start = Carbon::parse($start);
-        $end = Carbon::parse($end);
-        return $numberDays = $start->diffInDays($end);
-    }
-    public function getMonths($daysN, $start)
-    {
-        $start = Carbon::parse($start)->addDays(-1);
-        for ($i= 0; $i<= $daysN; $i++)
-        {
-            $months[] = $start->addDays(1)->format('m-Y');
+        $gridStart = Carbon::parse($start)->startOfWeek(Carbon::MONDAY);
+        $lastWeek = Carbon::parse($end)->startOfWeek(Carbon::MONDAY);
+
+        $weeks = [];
+        for ($day = $gridStart->copy(); $day <= $lastWeek; $day->addWeek()) {
+            // Tydzien przypisujemy do miesiaca swojego czwartku (standard ISO).
+            $thursday = $day->copy()->addDays(3);
+            $weeks[] = [
+                'start' => $day->format('Y-m-d'),
+                'label' => $day->format('d.m'),
+                'week' => (int) $day->isoWeek(),
+                'month' => $thursday->format('m-Y'),
+            ];
         }
 
-        return $months = array_count_values($months);
+        return $weeks;
     }
 
-    public function getDays($daysN, $start)
+    /**
+     * Ilosc kolumn tygodniowych w kazdym miesiacu (kolejnosc chronologiczna) —
+     * uzywane do colspan w wierszu miesiecy.
+     *
+     * @param  array<int, array{month: string}>  $weeks
+     * @return array<string, int>
+     */
+    public function getMonths(array $weeks): array
     {
-        $start = Carbon::parse($start)->addDays(-1);
-        for ($i= 0; $i<= $daysN; $i++)
-        {
-            $days[] = $start->addDays(1)->format('d');
+        $months = [];
+        foreach ($weeks as $week) {
+            $months[$week['month']] = ($months[$week['month']] ?? 0) + 1;
         }
-        return $days;
+
+        return $months;
     }
-    public function getZapytania($start, $end)
+
+    public function getZapytania($start, $end, array $weeks)
     {
         $search = array_values(Request::all('search'))[0];
 
@@ -100,10 +101,13 @@ class CalendarController extends Controller
             ->orderBy('start')
             ->get();
 
+        $gridStart = $weeks[0]['start'] ?? $start;
+        $totalCols = count($weeks);
+
         $data = [];
 
         foreach ($zapytanias as $item) {
-            $colSpan = $this->getColSpan($start, $end, $item->start, $item->end);
+            $colSpan = $this->getColSpan($gridStart, $totalCols, $item->start, $item->end);
             $data[] = [
                 'id' => $item->id,
                 'id_zapyt' => $item->id_zapyt,
@@ -118,41 +122,42 @@ class CalendarController extends Controller
 
         return $data;
     }
-    public function getColSpan($start, $end, $startZap, $endZap)
+
+    /**
+     * Pozycja paska w kolumnach TYGODNIOWYCH: pusta rozbiegowka + wlasciwy pasek.
+     * Zwraca pary [liczba_kolumn, flaga] — flaga 0 = puste, 1 = pasek.
+     *
+     * @return array<int, array{0: int, 1: int}>
+     */
+    public function getColSpan($gridStartYmd, int $totalCols, $startZap, $endZap): array
     {
-        $start = Carbon::parse($start);
-        $end = Carbon::parse($end);
-        $startZap = Carbon::parse($startZap);
-        $endZap = Carbon::parse($endZap);
-
-        $col = [];
-
-        if ($endZap >= $end && $startZap >= $start) {
-            $colStart = $startZap->diffInDays($start);
-            $colCount = $end->diffInDays($startZap) + 1;
-            $col = [
-                [$colStart, 0],
-                [$colCount, 1],
-            ];
-        } elseif ($endZap >= $end && $startZap <= $start) {
-            $colCount = $end->diffInDays($start) + 1;
-            $col = [
-                [$colCount, 1],
-            ];
-        } elseif ($endZap <= $end && $startZap >= $start) {
-            $colStart = $startZap->diffInDays($start);
-            $colCount = $endZap->diffInDays($startZap) + 1;
-            $col = [
-                [$colStart, 0],
-                [$colCount, 1],
-            ];
-        } elseif ($endZap < $end && $startZap < $start) {
-            $colCount = $endZap->diffInDays($start) + 1;
-            $col = [
-                [$colCount, 1],
-            ];
+        if ($totalCols <= 0) {
+            return [];
         }
 
-        return $col;
+        $gridStart = Carbon::parse($gridStartYmd); // poniedzialek pierwszej kolumny
+        $s = Carbon::parse($startZap);
+        $e = Carbon::parse($endZap);
+
+        // Kolumna = ktory tydzien od poczatku siatki (0-indeks).
+        $startCol = intdiv(max(0, $gridStart->diffInDays($s, false)), 7);
+        $endCol = intdiv($gridStart->diffInDays($e, false), 7);
+
+        // Docinamy do widocznej siatki.
+        $startCol = max(0, min($startCol, $totalCols - 1));
+        $endCol = max(0, min($endCol, $totalCols - 1));
+
+        if ($endCol < $startCol) {
+            $endCol = $startCol;
+        }
+
+        $leading = $startCol;
+        $span = $endCol - $startCol + 1;
+
+        if ($leading > 0) {
+            return [[$leading, 0], [$span, 1]];
+        }
+
+        return [[$span, 1]];
     }
 }
