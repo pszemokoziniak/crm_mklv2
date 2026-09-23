@@ -35,7 +35,7 @@
       <!-- Karty statystyk -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <!-- Nowe zapytania -->
-        <div class="bg-white rounded-lg shadow p-5">
+        <Link href="/zapytania" class="block bg-white rounded-lg shadow p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
           <div class="flex items-center">
             <div class="flex-shrink-0 bg-indigo-100 rounded-lg p-3">
               <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -51,10 +51,10 @@
               </div>
             </div>
           </div>
-        </div>
+        </Link>
 
         <!-- Nowe oferty -->
-        <div class="bg-white rounded-lg shadow p-5">
+        <Link href="/oferta" class="block bg-white rounded-lg shadow p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
           <div class="flex items-center">
             <div class="flex-shrink-0 bg-green-100 rounded-lg p-3">
               <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -70,10 +70,10 @@
               </div>
             </div>
           </div>
-        </div>
+        </Link>
 
         <!-- Nowi klienci -->
-        <div class="bg-white rounded-lg shadow p-5">
+        <Link href="/clients" class="block bg-white rounded-lg shadow p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
           <div class="flex items-center">
             <div class="flex-shrink-0 bg-blue-100 rounded-lg p-3">
               <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
@@ -89,10 +89,10 @@
               </div>
             </div>
           </div>
-        </div>
+        </Link>
 
         <!-- Wartość ofert -->
-        <div class="bg-white rounded-lg shadow p-5">
+        <Link href="/oferta" class="block bg-white rounded-lg shadow p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
           <div class="flex items-center">
             <div class="flex-shrink-0 bg-yellow-100 rounded-lg p-3">
               <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -108,7 +108,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
