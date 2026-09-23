@@ -36,8 +36,8 @@ class StatsController extends Controller
             'clientActive' => $this->clientActive($start, $end),
             'increaseClients' => $this->increaseClients($start, $end),
             'clientBranza' => $this->clientBranza($start, $end),
-            'clientZapytaniaSumAmount' => $this->clientZapytaniaSumAmount($start, $end),
             'clientOfertaSumAmount' => $this->clientOfertaSumAmount($start, $end),
+            'clientOfertaWygraneSumAmount' => $this->clientOfertaWygraneSumAmount($start, $end),
             'quantityZapytania' => $this->quantityZapytania($start, $end),
             'zapytaniaOfertySumAmount' => $this->zapytaniaOfertySumAmount($start, $end),
             'zapytaniaBranze' => $this->zapytaniaBranze($start, $end),
@@ -204,13 +204,13 @@ class StatsController extends Controller
         return [$name, $count];
     }
 
-    public function clientZapytaniaSumAmount($start, $end)
+    public function clientOfertaSumAmount($start, $end)
     {
-        $data = Zapytania::withTrashed()
-            ->select(DB::raw('clients.id, clients.nazwa, SUM(zapytanias.kwotaPLN) AS count'))
-            ->join('clients', 'clients.id', '=', 'zapytanias.client_id')
-            ->where('zapytanias.created_at', '>=', $start)
-            ->where('zapytanias.created_at', '<=', $end)
+        $data = Oferta::withTrashed()
+            ->select(DB::raw('clients.id, clients.nazwa, SUM(ofertas.kwotaPLN) AS count'))
+            ->join('clients', 'clients.id', '=', 'ofertas.client_id')
+            ->where('ofertas.created_at', '>=', $start)
+            ->where('ofertas.created_at', '<=', $end)
             ->groupBy('clients.nazwa', 'clients.id')
             ->orderBy('count', 'DESC')
             ->limit(15)
@@ -225,11 +225,14 @@ class StatsController extends Controller
         return [$labels, $amounts];
     }
 
-    public function clientOfertaSumAmount($start, $end)
+    /** Top 15 klientów wg sumy kwot ofert WYGRANYCH (PLN). */
+    public function clientOfertaWygraneSumAmount($start, $end)
     {
         $data = Oferta::withTrashed()
             ->select(DB::raw('clients.id, clients.nazwa, SUM(ofertas.kwotaPLN) AS count'))
             ->join('clients', 'clients.id', '=', 'ofertas.client_id')
+            ->join('oferta_statuses', 'oferta_statuses.id', '=', 'ofertas.oferta_status_id')
+            ->whereRaw('LOWER(TRIM(oferta_statuses.name)) = ?', ['wygrana'])
             ->where('ofertas.created_at', '>=', $start)
             ->where('ofertas.created_at', '<=', $end)
             ->groupBy('clients.nazwa', 'clients.id')

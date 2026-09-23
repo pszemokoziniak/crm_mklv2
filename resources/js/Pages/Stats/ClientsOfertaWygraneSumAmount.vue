@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-xl font-bold text-center text-indigo-700 py-3 mt-8 border-b border-indigo-100">Top 15 klientów / Zapytania (PLN)</h1>
+    <h1 class="text-xl font-bold text-center text-green-700 py-3 mt-8 border-b border-green-100">Top 15 klientów / Oferty wygrane (PLN)</h1>
     <div class="w-full" :style="{ height: chartHeight + 'px' }">
       <Bar :data="data" :options="options" />
     </div>
@@ -22,23 +22,23 @@ import { Bar } from 'vue-chartjs'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export default {
-  name: 'ClientsZapytaniaSumAmount',
+  name: 'ClientsOfertaWygraneSumAmount',
   components: {
     Bar,
   },
   props: {
-    clientZapytaniaSumAmount: Array,
+    clientOfertaWygraneSumAmount: Array,
   },
   data() {
     return {
       data: {
-        labels: this.clientZapytaniaSumAmount[0],
+        labels: this.clientOfertaWygraneSumAmount[0],
         datasets: [
           {
-            label: 'Wartość zapytań (PLN)',
-            backgroundColor: '#6366f1',
+            label: 'Wartość ofert wygranych (PLN)',
+            backgroundColor: '#16a34a',
             borderRadius: 4,
-            data: this.clientZapytaniaSumAmount[1],
+            data: this.clientOfertaWygraneSumAmount[1],
           },
         ],
       },
@@ -71,7 +71,7 @@ export default {
   },
   computed: {
     chartHeight() {
-      const count = this.clientZapytaniaSumAmount[0] ? this.clientZapytaniaSumAmount[0].length : 0
+      const count = this.clientOfertaWygraneSumAmount[0] ? this.clientOfertaWygraneSumAmount[0].length : 0
       return Math.max(300, count * 40)
     },
   },

@@ -17,8 +17,8 @@
       <active-client :key="`ac-${dateKey}`" :client-active="clientActive" />
       <increase-client :key="`ic-${dateKey}`" :increase-clients="increaseClients" />
       <client-branza :key="`cb-${dateKey}`" :client-branza="clientBranza" />
-      <clients-zapytania-sum-amount :key="`czsa-${dateKey}`" :client-zapytania-sum-amount="clientZapytaniaSumAmount" />
       <clients-oferty-sum-amount :key="`cosa-${dateKey}`" :client-oferta-sum-amount="clientOfertaSumAmount" />
+      <clients-oferty-wygrane-sum-amount :key="`cowsa-${dateKey}`" :client-oferta-wygrane-sum-amount="clientOfertaWygraneSumAmount" />
 
       <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm mt-10">Zapytania</h2>
       <div class="p-3">
@@ -74,8 +74,8 @@ import ActiveClient from '@/Pages/Stats/ActiveClient.vue'
 import IncreaseClient from '@/Pages/Stats/IncreaseClient.vue'
 import ZapytaniaOfertaSumAmount from '@/Pages/Stats/ZapytaniaOfertySumAmount.vue'
 import ClientBranza from '@/Pages/Stats/ClientBranza.vue'
-import ClientsZapytaniaSumAmount from '@/Pages/Stats/ClientsZapytaniaSumAmount.vue'
 import ClientsOfertySumAmount from '@/Pages/Stats/ClientsOfertaSumAmount.vue'
+import ClientsOfertyWygraneSumAmount from '@/Pages/Stats/ClientsOfertaWygraneSumAmount.vue'
 import ZapytaniaBranze from '@/Pages/Stats/ZapytaniaBranze.vue'
 import ZapytaniaZakres from '@/Pages/Stats/ZapytaniaZakres.vue'
 import ZapytaniaUsers from '@/Pages/Stats/ZapytaniaUsers.vue'
@@ -92,8 +92,8 @@ export default {
     Head,
     IncreaseClient,
     ClientBranza,
-    ClientsZapytaniaSumAmount,
     ClientsOfertySumAmount,
+    ClientsOfertyWygraneSumAmount,
     ZapytaniaOfertaSumAmount,
     ZapytaniaBranze,
     ZapytaniaZakres,
@@ -109,8 +109,8 @@ export default {
     clientActive: Array,
     increaseClients: Array,
     clientBranza: Array,
-    clientZapytaniaSumAmount: Array,
     clientOfertaSumAmount: Array,
+    clientOfertaWygraneSumAmount: Array,
     zapytaniaOfertySumAmount: Array,
     zapytaniaBranze: Array,
     zapytaniaZakres: Array,
