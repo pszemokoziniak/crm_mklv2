@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ContactStoreRequest extends FormRequest
@@ -24,7 +25,19 @@ class ContactStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nazwa' => ['required', 'max:200'],
+            'nazwa' => ['required', 'max:200', function ($attribute, $value, $fail) {
+                $client = $this->route('client');
+
+                // Sprawdzamy tylko przy zmianie nazwy — edycja innych pol klienta,
+                // ktory juz ma "blizniaka" w bazie, nie powinna byc blokowana.
+                if ($client && Client::normalizeName($value) === Client::normalizeName($client->nazwa)) {
+                    return;
+                }
+
+                if ($duplicate = Client::findDuplicate($value, $client?->id)) {
+                    $fail(Client::duplicateMessage($duplicate));
+                }
+            }],
             'ulica' => ['required', 'max:200'],
             'www' => ['nullable', 'max:200'],
             'linkedIn' => ['nullable', 'max:200'],

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ClientRequest extends FormRequest
@@ -24,7 +25,12 @@ class ClientRequest extends FormRequest
     public function rules()
     {
         return [
-            'nazwa' => ['required'],
+            'nazwa' => ['required', 'max:200', function ($attribute, $value, $fail) {
+                // Blokada duplikatu firmy — sprawdzamy tez Archiwum.
+                if ($duplicate = Client::findDuplicate($value)) {
+                    $fail(Client::duplicateMessage($duplicate));
+                }
+            }],
             'user_id' => ['required'],
             'kraj_id' => ['required'],
             'branza_id' => ['required'],

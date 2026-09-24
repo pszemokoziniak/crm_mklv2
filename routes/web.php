@@ -212,6 +212,7 @@ Route::middleware(['auth', 'menu.access'])->group(function () {
     // Clients
     Route::get('clients', [ClientController::class, 'index'])->name('clients');
     Route::get('clients/create', [ClientController::class, 'create'])->name('clients.create');
+    Route::get('clients/check-name', [ClientController::class, 'checkName'])->name('clients.checkName');
     Route::post('clients', [ClientController::class, 'store'])->name('clients.store');
     Route::get('clients/{client}/edit', [ClientController::class, 'edit'])->name('clients.edit');
     Route::put('clients/{client}', [ClientController::class, 'update'])->name('clients.update');

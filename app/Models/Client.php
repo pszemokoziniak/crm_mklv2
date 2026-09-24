@@ -34,6 +34,39 @@ class Client extends Model
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
     }
 
+    /**
+     * Nazwa firmy do porownan: male litery, tylko litery i cyfry
+     * ("IDOM", "Idom ", "I.D.O.M." => "idom"). Odpowiednik SQL w findDuplicate().
+     */
+    public static function normalizeName(?string $name): string
+    {
+        return preg_replace('/[^\p{L}\p{N}]+/u', '', mb_strtolower((string) $name)) ?? '';
+    }
+
+    /** Klient o tej samej (znormalizowanej) nazwie — takze w archiwum. */
+    public static function findDuplicate(?string $name, ?int $exceptId = null): ?self
+    {
+        $normalized = self::normalizeName($name);
+
+        if ($normalized === '') {
+            return null;
+        }
+
+        return self::withTrashed()
+            ->whereRaw("REGEXP_REPLACE(LOWER(nazwa), '[^[:alnum:]]', '') = ?", [$normalized])
+            ->when($exceptId, fn ($query) => $query->where('id', '!=', $exceptId))
+            ->orderBy('deleted_at') // aktywny przed zarchiwizowanym
+            ->first();
+    }
+
+    /** Komunikat walidacji dla duplikatu. */
+    public static function duplicateMessage(self $duplicate): string
+    {
+        return $duplicate->trashed()
+            ? "Klient „{$duplicate->nazwa}” już istnieje w Archiwum — przywróć go zamiast dodawać nowego."
+            : "Klient „{$duplicate->nazwa}” już istnieje w bazie.";
+    }
+
     public function branza()
     {
         return $this->belongsTo(Branza::class);

@@ -93,6 +93,30 @@ class ClientController extends Controller
         ]);
     }
 
+    /** Podpowiedz w formularzu: podobne firmy juz w bazie (takze w Archiwum). */
+    public function checkName()
+    {
+        $normalized = Client::normalizeName(Request::input('nazwa'));
+
+        if (mb_strlen($normalized) < 3) {
+            return response()->json([]);
+        }
+
+        return response()->json(
+            Client::withTrashed()
+                ->whereRaw("REGEXP_REPLACE(LOWER(nazwa), '[^[:alnum:]]', '') LIKE ?", ['%'.$normalized.'%'])
+                ->orderBy('nazwa')
+                ->limit(6)
+                ->get(['id', 'nazwa', 'deleted_at'])
+                ->map(fn (Client $client) => [
+                    'id' => $client->id,
+                    'nazwa' => $client->nazwa,
+                    'archived' => $client->deleted_at !== null,
+                    'exact' => Client::normalizeName($client->nazwa) === $normalized,
+                ])
+        );
+    }
+
     public function store(ClientRequest $request)
     {
         $data = Client::create(array_merge($request->all(), ['created_by' => Auth::id()]));
