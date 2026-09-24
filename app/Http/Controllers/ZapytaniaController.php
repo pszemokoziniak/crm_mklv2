@@ -54,7 +54,7 @@ class ZapytaniaController extends Controller
         $sortField = Request::input('field');
         $sortDirection = Request::input('direction') === 'asc' ? 'asc' : 'desc';
 
-        $query = Zapytania::with(['client', 'user', 'kraj', 'zakres', 'waluta', 'otrzymal', 'opracowuje'])
+        $query = Zapytania::with(['client', 'user', 'kraj', 'zakres', 'waluta', 'otrzymal', 'opracowuje', 'oferty.status', 'oferty.waluta'])
             ->filter(Request::only('search', 'trashed'));
 
         if ($sortField === 'projekt') {
@@ -97,6 +97,15 @@ class ZapytaniaController extends Controller
                     'opracowuje' => $zapytania->opracowuje ? $zapytania->opracowuje : null,
                     'deleted_at' => $zapytania->deleted_at,
                     'created_at' => date($zapytania->created_at),
+                    // Oferty zapytania (takze z Archiwum) — pokazywane pod wierszem zapytania.
+                    'oferty' => $zapytania->oferty->sortBy('id')->values()->map(fn ($oferta) => [
+                        'id' => $oferta->id,
+                        'numer_oferty' => $oferta->numer_oferty,
+                        'status' => $oferta->status ? $oferta->status->name : null,
+                        'kwota' => $oferta->kwota,
+                        'waluta' => $oferta->waluta ? $oferta->waluta->name : null,
+                        'deleted_at' => $oferta->deleted_at ? $oferta->deleted_at->format('Y-m-d') : null,
+                    ]),
                     'can' => [
                         'edit' => Auth::user()->can('update', $zapytania),
                     ]
@@ -414,9 +423,21 @@ class ZapytaniaController extends Controller
     {
         $this->authorize('update', $zapytania);
 
+        // Przywracamy tez oferty zarchiwizowane RAZEM z zapytaniem (destroy archiwizuje je
+        // chwile wczesniej). Oferty zarchiwizowane osobno, wczesniej, zostaja w Archiwum.
+        $archivedAt = $zapytania->deleted_at;
+
         $zapytania->restore();
 
-        return Redirect::back()->with('success', 'Zapytanie przywrócone');
+        $restoredOferty = 0;
+        if ($archivedAt) {
+            $restoredOferty = Oferta::onlyTrashed()
+                ->where('zapytania_id', $zapytania->id)
+                ->where('deleted_at', '>=', $archivedAt->copy()->subMinute())
+                ->restore();
+        }
+
+        return Redirect::back()->with('success', 'Zapytanie przywrócone'.($restoredOferty ? " razem z ofertami ({$restoredOferty})" : '').'.');
     }
     public function exchangeRate($id)
     {

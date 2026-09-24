@@ -74,6 +74,14 @@
           </span>
           <span v-if="item.kraj">{{ countryFlag(item.kraj.name) }} {{ item.kraj.name }}</span>
         </div>
+        <!-- Oferty zapytania (także z Archiwum); cała karta jest linkiem, więc bez zagnieżdżonych linków -->
+        <div v-if="item.oferty && item.oferty.length" class="mt-2 flex flex-wrap gap-1">
+          <span v-for="oferta in item.oferty" :key="oferta.id" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-gray-200 text-[10px]" :class="{ 'opacity-70': oferta.deleted_at }">
+            <span class="font-semibold text-gray-700">Oferta {{ oferta.numer_oferty || `#${oferta.id}` }}</span>
+            <span v-if="oferta.status" class="px-1 rounded font-semibold uppercase" :class="ofertaStatusClass(oferta.status)">{{ oferta.status }}</span>
+            <span v-if="oferta.deleted_at" class="px-1 rounded font-bold bg-rose-50 text-rose-600">ARCHIWUM</span>
+          </span>
+        </div>
         <div v-if="item.otrzymal" class="mt-2 flex items-center justify-between text-[11px] text-gray-400">
           <span>{{ item.otrzymal.first_name }} {{ item.otrzymal.last_name }}</span>
           <span>{{ item.created_at }}</span>
@@ -137,7 +145,8 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
-          <tr v-for="item in zapytanias.data" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
+          <template v-for="item in zapytanias.data" :key="item.id">
+          <tr class="hover:bg-indigo-50/30 transition-colors group">
             <td class="px-3 py-2.5 overflow-hidden">
               <Link class="block truncate focus:text-indigo-500" :href="`/zapytania/${item.id}/edit`">
                 <div class="flex items-center">
@@ -178,6 +187,27 @@
               </Link>
             </td>
           </tr>
+          <!-- Oferty zapytania (także z Archiwum) — zgrupowane pod swoim zapytaniem -->
+          <tr v-if="item.oferty && item.oferty.length" style="border-top: 0">
+            <td colspan="6" class="px-3 pt-0 pb-2.5">
+              <div class="flex flex-wrap items-center gap-1.5 pl-3 border-l-2 border-indigo-100">
+                <Link
+                  v-for="oferta in item.oferty"
+                  :key="oferta.id"
+                  :href="`/oferta/${oferta.id}/edit`"
+                  class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border text-[10px] bg-white hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
+                  :class="oferta.deleted_at ? 'border-gray-200 opacity-70' : 'border-gray-200'"
+                  :title="oferta.deleted_at ? `Zarchiwizowana ${oferta.deleted_at}` : 'Przejdź do oferty'"
+                >
+                  <span class="font-semibold text-gray-700">Oferta {{ oferta.numer_oferty || `#${oferta.id}` }}</span>
+                  <span v-if="oferta.status" class="px-1 rounded font-semibold uppercase" :class="ofertaStatusClass(oferta.status)">{{ oferta.status }}</span>
+                  <span v-if="oferta.kwota" class="text-gray-500">{{ formatKwota(oferta.kwota) }} {{ oferta.waluta }}</span>
+                  <span v-if="oferta.deleted_at" class="px-1 rounded font-bold bg-rose-50 text-rose-600">ARCHIWUM</span>
+                </Link>
+              </div>
+            </td>
+          </tr>
+          </template>
           <tr v-if="zapytanias.data.length === 0">
             <td class="px-4 py-12 text-center text-gray-400" colspan="6">
               <div class="flex flex-col items-center">
@@ -245,6 +275,20 @@ export default {
     },
   },
   methods: {
+    /** Kolor znacznika statusu oferty (spójny z kolorami kalendarza). */
+    ofertaStatusClass(status) {
+      const name = (status || '').toLowerCase().trim()
+      if (name === 'wygrana') return 'bg-green-100 text-green-700'
+      if (name === 'zrewidowana') return 'bg-yellow-100 text-yellow-800'
+      if (name === 'toczy') return 'bg-orange-100 text-orange-700'
+      if (name.startsWith('zawieszona')) return 'bg-blue-100 text-blue-700'
+      if (name === 'przegrana') return 'bg-red-100 text-red-700'
+      return 'bg-gray-100 text-gray-600'
+    },
+    formatKwota(value) {
+      const number = Number(value)
+      return Number.isFinite(number) ? new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(number) : value
+    },
     reset() {
       this.form = mapValues(this.form, () => null)
     },
