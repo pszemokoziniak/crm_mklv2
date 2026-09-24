@@ -39,9 +39,11 @@
                 v-for="(count, month) in months"
                 :key="month"
                 :colspan="count"
-                class="border-r border-gray-200 p-2 text-center text-xs font-bold text-gray-700 uppercase tracking-wider"
+                class="border-r border-gray-200 py-2 text-center text-xs font-bold text-gray-700 uppercase whitespace-nowrap"
+                :class="count > 1 ? 'px-2 tracking-wider' : 'px-1'"
+                :title="month"
               >
-                {{ month }}
+                {{ monthLabel(month, count) }}
               </th>
             </tr>
             <!-- Wiersz Tygodni (kolumna = 1 tydzień, etykieta = poniedziałek) -->
@@ -169,6 +171,14 @@ export default {
     },
   },
   methods: {
+    /** Miesiąc z jedną kolumną tygodniową nie mieści "09-2026" — skracamy do "09.26". */
+    monthLabel(month, count) {
+      if (count > 1) {
+        return month
+      }
+      const [mm, yyyy] = month.split('-')
+      return `${mm}.${yyyy.slice(-2)}`
+    },
     barStyle(key) {
       const color = this.palette[key] || this.palette.brak
       return { backgroundColor: color.bg, color: color.text }
