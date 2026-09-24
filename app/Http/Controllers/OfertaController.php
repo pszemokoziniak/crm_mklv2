@@ -263,8 +263,15 @@ class OfertaController extends Controller
             'zapytaniaById' => Zapytania::select('id', 'nazwa_projektu')->where('id', $oferta->zapytania_id)->withTrashed()->first(),
             'statuses' => OfertaStatus::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
             'waluta' => Waluta::select('id', 'name')->orderBy(DB::raw('TRIM(name)'))->get(),
+            // Ta sama historia co przy zapytaniu (to ten sam projekt): kontakty oferty
+            // oraz wszystkie kontakty zapytania, z ktorego oferta powstala.
             'kontakty' => Kontakt::with(['user', 'kontaktperson', 'children.user', 'children.kontaktperson'])
-                ->where('oferta_id', $oferta->id)
+                ->where(function ($query) use ($oferta) {
+                    $query->where('oferta_id', $oferta->id);
+                    if ($oferta->zapytania_id) {
+                        $query->orWhere('zapytania_id', $oferta->zapytania_id);
+                    }
+                })
                 ->whereNull('parent_id')
                 ->orderBy('created_at', 'desc')
                 ->get()
