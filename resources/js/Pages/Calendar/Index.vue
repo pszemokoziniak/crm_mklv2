@@ -19,6 +19,15 @@
       </div>
     </div>
 
+    <!-- Legenda kolorów pasków (status oferty przypisanej do zapytania) -->
+    <div class="bg-white rounded-lg shadow-sm px-6 py-3 mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-700">
+      <span class="font-semibold text-gray-800">Legenda:</span>
+      <span v-for="entry in legend" :key="entry.key" class="flex items-center">
+        <span class="inline-block w-4 h-4 rounded mr-2 flex-shrink-0" :style="{ backgroundColor: palette[entry.key].bg }" />
+        {{ entry.label }}
+      </span>
+    </div>
+
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <!-- Kontener z przewijaniem pionowym i poziomym -->
       <div class="overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style="max-height: 70vh;">
@@ -60,9 +69,9 @@
                 <Link
                   v-if="col[1] === 1"
                   :href="`/zapytania/${item.id}/edit`"
-                  class="absolute inset-y-2 left-1 right-1 flex items-center px-3 rounded-md text-xs font-semibold text-white shadow-sm hover:brightness-90 hover:shadow-md transition-all overflow-hidden whitespace-nowrap z-10"
-                  :style="{ backgroundColor: getEventColor(item.id) }"
-                  :title="`${item.id_zapyt} - ${item.nazwa_projektu}${item.client ? ' (' + item.client.nazwa + ')' : ''}`"
+                  class="absolute inset-y-2 left-1 right-1 flex items-center px-3 rounded-md text-xs font-semibold shadow-sm hover:brightness-90 hover:shadow-md transition-all overflow-hidden whitespace-nowrap z-10"
+                  :style="barStyle(item.status_color)"
+                  :title="`${item.id_zapyt} - ${item.nazwa_projektu}${item.client ? ' (' + item.client.nazwa + ')' : ''} — ${legendLabel(item.status_color)}`"
                 >
                   <span class="truncate">
                     <span class="bg-black/10 px-1.5 py-0.5 rounded mr-2 text-[10px]">{{ item.id_zapyt }}</span>
@@ -122,12 +131,21 @@ export default {
   },
   data() {
     return {
-      colorCache: {},
       weekWidth: 56,
-      colors: [
-        '#4f46e5', '#7c3aed', '#2563eb', '#0891b2', '#059669',
-        '#16a34a', '#ca8a04', '#d97706', '#dc2626', '#db2777',
-        '#9333ea', '#4338ca', '#1d4ed8', '#0369a1', '#047857',
+      // Kolor paska wg statusu oferty zapytania. 'brak' = brak oferty / inny status.
+      palette: {
+        wygrana: { bg: '#16a34a', text: '#ffffff' },
+        zrewidowana: { bg: '#facc15', text: '#422006' },
+        toczy: { bg: '#f97316', text: '#ffffff' },
+        zawieszona: { bg: '#2563eb', text: '#ffffff' },
+        brak: { bg: '#6b7280', text: '#ffffff' },
+      },
+      legend: [
+        { key: 'wygrana', label: 'Oferta WYGRANA' },
+        { key: 'zrewidowana', label: 'Oferta ZREWIDOWANA' },
+        { key: 'toczy', label: 'Oferta TOCZY SIĘ' },
+        { key: 'zawieszona', label: 'Oferta ZAWIESZONA PRZEZ INWESTORA' },
+        { key: 'brak', label: 'Brak oferty / inny status' },
       ],
       form: {
         search: this.filters.search,
@@ -151,11 +169,12 @@ export default {
     },
   },
   methods: {
-    getEventColor(id) {
-      if (!this.colorCache[id]) {
-        this.colorCache[id] = this.colors[id % this.colors.length]
-      }
-      return this.colorCache[id]
+    barStyle(key) {
+      const color = this.palette[key] || this.palette.brak
+      return { backgroundColor: color.bg, color: color.text }
+    },
+    legendLabel(key) {
+      return (this.legend.find((entry) => entry.key === key) || this.legend[this.legend.length - 1]).label
     },
     reset() {
       this.form.search = null

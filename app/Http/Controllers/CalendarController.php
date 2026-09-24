@@ -10,6 +10,17 @@ use Illuminate\Support\Facades\Request;
 
 class CalendarController extends Controller
 {
+    /**
+     * Kolor paska zapytania wg statusu jego ofert. Gdy zapytanie ma kilka ofert,
+     * wygrywa status wyzej na liscie. Klucz => nazwa statusu (LOWER/TRIM).
+     */
+    private const STATUS_COLORS = [
+        'wygrana' => 'wygrana',
+        'zrewidowana' => 'zrewidowana',
+        'toczy' => 'toczy',
+        'zawieszona' => 'zawieszona przez inwestora',
+    ];
+
     public function index()
     {
         $now = Carbon::now();
@@ -80,7 +91,7 @@ class CalendarController extends Controller
     {
         $search = array_values(Request::all('search'))[0];
 
-        $zapytanias = Zapytania::with('oferty', 'client')
+        $zapytanias = Zapytania::with('oferty.ofertastatus', 'client')
             ->when($search, function ($query, $search) {
                 $query->where('nazwa_projektu', 'like', '%'.$search.'%');
             })
@@ -117,10 +128,31 @@ class CalendarController extends Controller
                 'start' => $item->start,
                 'end' => $item->end,
                 'colSpan' => $colSpan,
+                'status_color' => $this->statusColor($item),
             ];
         }
 
         return $data;
+    }
+
+    /**
+     * Klucz koloru paska (wygrana|zrewidowana|toczy|zawieszona) albo null,
+     * gdy zapytanie nie ma oferty z jednym z tych statusow. Usuniete oferty pomijamy.
+     */
+    private function statusColor(Zapytania $item): ?string
+    {
+        $names = $item->oferty
+            ->whereNull('deleted_at')
+            ->map(fn ($oferta) => mb_strtolower(trim((string) optional($oferta->ofertastatus)->name)))
+            ->all();
+
+        foreach (self::STATUS_COLORS as $key => $statusName) {
+            if (in_array($statusName, $names, true)) {
+                return $key;
+            }
+        }
+
+        return null;
     }
 
     /**
