@@ -30,14 +30,15 @@ class ClientController extends Controller
             'filters' => Request::all('search', 'trashed', 'status', 'field', 'direction'),
             'clients' => Client::with(['branza', 'user', 'kraj', 'creator'])
                 ->withCount(['zapytania', 'oferty', 'kontakty'])
+                // Znacznik "aktywny": zapytania/oferty z Archiwum tez sie licza (jak w Client::scopeFilter).
                 ->withCount(['zapytania as recent_zapytania_count' => function ($query) use ($sixMonthsAgo) {
-                    $query->where('created_at', '>=', $sixMonthsAgo);
+                    $query->withTrashed()->where('created_at', '>=', $sixMonthsAgo);
                 }])
                 ->withCount(['kontakty as recent_kontakty_count' => function ($query) use ($sixMonthsAgo) {
                     $query->where('created_at', '>=', $sixMonthsAgo);
                 }])
                 ->withCount(['oferty as recent_oferty_count' => function ($query) use ($sixMonthsAgo) {
-                    $query->where('created_at', '>=', $sixMonthsAgo);
+                    $query->withTrashed()->where('created_at', '>=', $sixMonthsAgo);
                 }])
                 ->filter(Request::only('search', 'trashed', 'status'))
                 ->when(Request::get('field'), function ($query, $field) {

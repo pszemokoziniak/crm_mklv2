@@ -131,29 +131,31 @@ class Client extends Model
                 $query->onlyTrashed();
             }
         })->when($filters['status'] ?? null, function ($query, $status) {
+            // Aktywnosc liczymy takze z zapytan/ofert w Archiwum: klient przyslal
+            // zapytanie, nawet jesli nie skonczylo sie kontraktem (Kontakt nie ma archiwum).
             if ($status === 'aktywni') {
                 $sixMonthsAgo = Carbon::now()->subMonths(6);
                 $query->where(function ($query) use ($sixMonthsAgo) {
                     $query->whereHas('zapytania', function ($query) use ($sixMonthsAgo) {
-                        $query->where('created_at', '>=', $sixMonthsAgo);
+                        $query->withTrashed()->where('created_at', '>=', $sixMonthsAgo);
                     })->orWhereHas('kontakty', function ($query) use ($sixMonthsAgo) {
                         $query->where('created_at', '>=', $sixMonthsAgo);
                     })->orWhereHas('oferty', function ($query) use ($sixMonthsAgo) {
-                        $query->where('created_at', '>=', $sixMonthsAgo);
+                        $query->withTrashed()->where('created_at', '>=', $sixMonthsAgo);
                     });
                 });
             } elseif ($status === 'nieaktywni') {
                 $sixMonthsAgo = Carbon::now()->subMonths(6);
                 $query->whereDoesntHave('zapytania', function ($query) use ($sixMonthsAgo) {
-                    $query->where('created_at', '>=', $sixMonthsAgo);
+                    $query->withTrashed()->where('created_at', '>=', $sixMonthsAgo);
                 })->whereDoesntHave('kontakty', function ($query) use ($sixMonthsAgo) {
                     $query->where('created_at', '>=', $sixMonthsAgo);
                 })->whereDoesntHave('oferty', function ($query) use ($sixMonthsAgo) {
-                    $query->where('created_at', '>=', $sixMonthsAgo);
+                    $query->withTrashed()->where('created_at', '>=', $sixMonthsAgo);
                 });
             } elseif ($status === 'zapytania') {
                 $query->whereHas('zapytania', function ($query) {
-                    $query->whereYear('created_at', Carbon::now()->year);
+                    $query->withTrashed()->whereYear('created_at', Carbon::now()->year);
                 });
             }
         });
