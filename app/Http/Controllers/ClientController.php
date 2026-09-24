@@ -29,7 +29,12 @@ class ClientController extends Controller
         return Inertia::render('Clients/Index', [
             'filters' => Request::all('search', 'trashed', 'status', 'field', 'direction'),
             'clients' => Client::with(['branza', 'user', 'kraj', 'creator'])
-                ->withCount(['zapytania', 'oferty', 'kontakty'])
+                // Liczniki zapytan/ofert wliczaja Archiwum (tak jak karta klienta).
+                ->withCount([
+                    'zapytania' => fn ($query) => $query->withTrashed(),
+                    'oferty' => fn ($query) => $query->withTrashed(),
+                    'kontakty',
+                ])
                 // Znacznik "aktywny": zapytania/oferty z Archiwum tez sie licza (jak w Client::scopeFilter).
                 ->withCount(['zapytania as recent_zapytania_count' => function ($query) use ($sixMonthsAgo) {
                     $query->withTrashed()->where('created_at', '>=', $sixMonthsAgo);
