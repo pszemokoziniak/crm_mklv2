@@ -9,7 +9,8 @@
 # crm_user zmienia własne hasło.
 #
 # Kolejność: kopia .env → ALTER USER → nowe hasło w .env → odtworzenie
-# kontenerów (app i db czytają hasło z .env) → config:cache → sprawdzenie.
+# kontenerów (app i db czytają hasło z .env) → restart web → config:cache →
+# sprawdzenie.
 # Między ALTER USER a config:cache CRM przez kilka sekund nie łączy się z bazą.
 #
 set -euo pipefail
@@ -50,6 +51,9 @@ echo "Hasło w .env zmienione."
 # Wymuszone odtworzenie: crm-app ma hasło w zmiennych środowiska (env_file),
 # a te zmieniają się tylko przy nowym kontenerze.
 docker compose up -d --force-recreate app db
+# nginx w crm-web zapamiętuje adres IP crm-app z chwili startu; nowy kontener
+# app ma nowy adres, więc bez restartu web strona zwraca 502.
+docker restart crm-web >/dev/null
 sleep 5
 docker exec -u www-data crm-app php artisan config:cache 2>&1 | grep -v thecodingmachine || true
 
