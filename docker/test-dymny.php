@@ -16,11 +16,11 @@ $admin = App\Models\User::role(['super-admin', 'Administrator'])->get()
     ->first(fn ($u) => $u->first_name && $u->last_name
         && strtoupper(trim($u->first_name)) !== 'N/A' && strtoupper(trim($u->last_name)) !== 'N/A');
 
-$uris = ['/', 'activity', 'branza', 'branza/create', 'calendar', 'clients', 'clients/create', 'contacts',
-    'contacts/create', 'faza', 'faza/create', 'futureproject', 'futureproject/create', 'kontakt', 'kontakt/create',
+$uris = ['/', 'activity', 'branza', 'branza/create', 'calendar', 'clients', 'clients/create',
+    'faza', 'faza/create', 'futureproject', 'futureproject/create', 'kontakt', 'kontakt/create',
     'kraj', 'kraj/create', 'kursy', 'kursy/create', 'linkedin', 'linkedin/create', 'menu', 'menu/create',
     'notifications/count', 'objekt', 'objekt/create', 'oferta', 'oferta/create', 'ofertastatus',
-    'ofertastatus/create', 'organizations', 'organizations/create', 'reminder-rules', 'reminder-rules/create',
+    'ofertastatus/create', 'reminder-rules', 'reminder-rules/create',
     'reports', 'search?q=a', 'stats', 'stronywww', 'stronywww/create', 'terminy', 'uprawnienia',
     'uprawnienia/create', 'users', 'users/create', 'waluta', 'waluta/create', 'zadania', 'zadania/create',
     'zakres', 'zakres/create', 'zapytania', 'zapytania/create', 'zgloszenia', 'zgloszenia/create'];
