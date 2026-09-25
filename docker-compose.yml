@@ -40,16 +40,19 @@ services:
     image: mysql:8.0
     container_name: crm-db
     restart: unless-stopped
+    # Poświadczenia z .env aplikacji (te same, którymi łączy się Laravel).
+    # Działają tylko przy zakładaniu pustej bazy; w istniejącej hasło zmienia
+    # się przez ALTER USER. Root dostaje losowe hasło — aplikacja i backup
+    # używają wyłącznie crm_user. Kontener bazy nie dostaje reszty .env.
     environment:
-      MYSQL_DATABASE: crm_database
-      MYSQL_ROOT_PASSWORD: Mkl_Crm_2026_!_Secure
-      MYSQL_PASSWORD: Mkl_Crm_2026_!_Secure
-      MYSQL_USER: crm_user
+      MYSQL_DATABASE: ${DB_DATABASE:?brak DB_DATABASE w .env}
+      MYSQL_USER: ${DB_USERNAME:?brak DB_USERNAME w .env}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?brak DB_PASSWORD w .env}
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
     ports:
       - "127.0.0.1:3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
-    env_file: .env
     networks:
       - crm-v2-net
 
