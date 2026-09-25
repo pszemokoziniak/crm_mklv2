@@ -1,0 +1,25 @@
+# Kontekst budowania obrazu crm-app. W czasie działania cały katalog i tak
+# jest podpinany z serwera (./:/var/www), więc do obrazu trafia tylko to, co
+# potrzebne do zbudowania frontu. Bez tego pliku przy każdym budowaniu do
+# Dockera leciało ~500 MB, a do warstw obrazu trafiał .env z hasłami.
+
+# Zależności — obraz instaluje własne node_modules (RUN npm install), a kopia
+# z hosta by je nadpisała.
+node_modules
+vendor
+
+# Dane i sekrety
+.env
+.env.*
+!.env.example
+storage
+bootstrap/cache/*.php
+*.sql
+*.sql.gz
+mkl_backup_*
+
+# Git i śmieci systemowe
+.git
+.DS_Store
+public/hot
+public/storage
