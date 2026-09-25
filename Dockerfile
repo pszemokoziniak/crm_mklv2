@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 # Set frontend to noninteractive to prevent debconf issues
 ENV DEBIAN_FRONTEND=noninteractive
