@@ -24,6 +24,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
+# Błędy PHP tylko do logu, nie na stronę (obraz nie ma produkcyjnego php.ini)
+COPY docker/php/zz-crm.ini /usr/local/etc/php/conf.d/zz-crm.ini
+
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
