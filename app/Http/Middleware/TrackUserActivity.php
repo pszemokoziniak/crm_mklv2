@@ -19,7 +19,8 @@ class TrackUserActivity
             $user = Auth::user();
             $lastSeen = $user->last_seen_at;
 
-            if (!$lastSeen || now()->diffInSeconds($lastSeen) > 60) {
+            // Carbon 3 zwraca różnicę ze znakiem (last_seen w przeszłości = ujemna), stąd abs.
+            if (!$lastSeen || (int) now()->diffInSeconds($lastSeen, true) > 60) {
                 // update bez triggerowania eventow zeby uniknac szumu w activity log
                 DB::table('users')->where('id', $user->id)->update(['last_seen_at' => now()]);
             }

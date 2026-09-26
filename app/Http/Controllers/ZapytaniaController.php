@@ -475,7 +475,9 @@ class ZapytaniaController extends Controller
         $pdf = app('dompdf.wrapper');
         $pdf->getDomPDF()->set_option("enable_php", true);
         $pdf->loadView('zapytaniaPdf', compact('data'));
-        return $pdf->stream('zapytanie'.$zapytania->id_zapyt.'.pdf');
+        // Numer zapytania bywa z ukośnikiem („2903/2026”), a dompdf 3 buduje
+        // nagłówek przez Symfony, które ukośnika w nazwie pliku nie przyjmuje.
+        return $pdf->stream('zapytanie'.str_replace(['/', '\\'], '-', (string) $zapytania->id_zapyt).'.pdf');
     }
     public function zapytaniaById($id)
     {
