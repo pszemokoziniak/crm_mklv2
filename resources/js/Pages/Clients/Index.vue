@@ -14,7 +14,7 @@
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
-          <select v-model="form.status" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+          <select v-model="form.status" class="form-select w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
             <option :value="null">Wszystko</option>
             <option value="aktywni">Aktywni</option>
             <option value="nieaktywni">Nieaktywni</option>
@@ -28,7 +28,7 @@
           </ul>
         </div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Wyświetlaj:</label>
-        <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
           <option :value="null">Aktualne</option>
           <option value="only">Archiwum</option>
           <option value="with">Wszystko</option>
@@ -36,7 +36,7 @@
       </search-filter>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <div>
         <table class="w-full table-fixed">
           <colgroup>
@@ -87,9 +87,9 @@
             <tr v-for="item in clients.data" :key="item.id" class="hover:bg-indigo-50/30 transition-colors group">
               <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center focus:text-indigo-500" :href="`/clients/${item.id}/edit`">
-                  <div :class="item.is_active ? 'bg-green-500' : 'bg-red-500'" class="flex-shrink-0 w-2 h-2 rounded-full mr-2 shadow-sm" :title="item.is_active ? 'Aktywny (ostatnie 6 m-cy)' : 'Nieaktywny'" />
+                  <div :class="item.is_active ? 'bg-green-500' : 'bg-red-500'" class="shrink-0 w-2 h-2 rounded-full mr-2 shadow-xs" :title="item.is_active ? 'Aktywny (ostatnie 6 m-cy)' : 'Nieaktywny'" />
                   <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors text-sm truncate" :title="item.nazwa">{{ item.nazwa }}</span>
-                  <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
+                  <icon v-if="item.deleted_at" name="trash" class="shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                 </Link>
               </td>
               <td class="px-3 py-3 overflow-hidden">
@@ -104,13 +104,13 @@
               </td>
               <td class="px-3 py-3">
                 <Link class="flex items-center gap-1" :href="`/clients/${item.id}/edit`" tabindex="-1">
-                  <div class="flex items-center justify-center w-6 h-6 rounded bg-indigo-50 text-indigo-600 text-xs font-bold" title="Zapytania">
+                  <div class="flex items-center justify-center w-6 h-6 rounded-sm bg-indigo-50 text-indigo-600 text-xs font-bold" title="Zapytania">
                     {{ item.zapytania_count }}
                   </div>
-                  <div class="flex items-center justify-center w-6 h-6 rounded bg-blue-50 text-blue-600 text-xs font-bold" title="Oferty">
+                  <div class="flex items-center justify-center w-6 h-6 rounded-sm bg-blue-50 text-blue-600 text-xs font-bold" title="Oferty">
                     {{ item.oferty_count }}
                   </div>
-                  <div class="flex items-center justify-center w-6 h-6 rounded bg-emerald-50 text-emerald-600 text-xs font-bold" title="Kontakty">
+                  <div class="flex items-center justify-center w-6 h-6 rounded-sm bg-emerald-50 text-emerald-600 text-xs font-bold" title="Kontakty">
                     {{ item.kontakty_count }}
                   </div>
                 </Link>
@@ -121,7 +121,7 @@
                 </Link>
               </td>
               <td class="px-1 py-3 text-center">
-                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/clients/${item.id}/edit`" tabindex="-1">
+                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xs" :href="`/clients/${item.id}/edit`" tabindex="-1">
                   <icon name="cheveron-right" class="w-3 h-3" />
                 </Link>
               </td>

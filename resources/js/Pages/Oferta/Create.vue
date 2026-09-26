@@ -11,7 +11,7 @@
       <p>Zapytanie: <strong>{{ wznowienieInfo.zapytania_nazwa }}</strong> (ID: {{ wznowienieInfo.zapytania_id }})</p>
     </div>
 
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div class="max-w-3xl bg-white rounded-md shadow-sm overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <select-input v-model="form.zapytania_id" :error="form.errors.zapytania_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Zapytanie">

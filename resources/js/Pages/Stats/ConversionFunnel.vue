@@ -33,7 +33,7 @@
         <!-- Stage 1: Zapytania -->
         <div class="relative">
           <div class="flex items-center gap-3">
-            <div class="w-44 flex-shrink-0 text-right">
+            <div class="w-44 shrink-0 text-right">
               <div class="text-xs font-bold uppercase text-gray-500">Zapytania</div>
               <div class="text-[10px] text-gray-400">utworzone w okresie</div>
             </div>
@@ -55,7 +55,7 @@
         <!-- Stage 2: Zapytania z oferta -->
         <div class="relative">
           <div class="flex items-center gap-3">
-            <div class="w-44 flex-shrink-0 text-right">
+            <div class="w-44 shrink-0 text-right">
               <div class="text-xs font-bold uppercase text-gray-500">Zapytania z ofertą</div>
               <div class="text-[10px] text-gray-400">≥1 oferta wystawiona</div>
             </div>
@@ -77,7 +77,7 @@
         <!-- Stage 3: Zapytania z wygrana -->
         <div class="relative">
           <div class="flex items-center gap-3">
-            <div class="w-44 flex-shrink-0 text-right">
+            <div class="w-44 shrink-0 text-right">
               <div class="text-xs font-bold uppercase text-gray-500">Zapytania z wygraną</div>
               <div class="text-[10px] text-gray-400">≥1 wygrana oferta</div>
             </div>

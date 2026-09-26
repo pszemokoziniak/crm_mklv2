@@ -10,10 +10,10 @@
       </h1>
     </div>
 
-    <trashed-message v-if="futureproject.deleted_at" class="mb-6 shadow-sm" @restore="restore"> Projekt został usunięty </trashed-message>
+    <trashed-message v-if="futureproject.deleted_at" class="mb-6 shadow-xs" @restore="restore"> Projekt został usunięty </trashed-message>
 
     <div class="w-full mb-8">
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500 ring-opacity-50 shadow-lg': isActive }">
+      <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500/50 shadow-lg': isActive }">
         <form @submit.prevent="update">
           <div class="flex flex-wrap -mb-8 -mr-6 p-8">
             <text-input v-model="form.nazwa" :error="form.errors.nazwa" class="pb-8 pr-6 w-full lg:w-1/1" label="Nazwa projektu" />
@@ -55,7 +55,7 @@
 
     <!-- Kontakty Section -->
     <div class="mt-12">
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
           <div class="flex items-center">
             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
@@ -71,7 +71,7 @@
 
         <div class="p-8">
           <div v-if="kontakty && kontakty.length > 0" class="space-y-6">
-            <div v-for="kontakt in kontakty" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+            <div v-for="kontakt in kontakty" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-xs">
               <!-- Główny wpis w wątku -->
               <div class="bg-gray-50/50 p-4 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-3">
@@ -131,7 +131,7 @@
 
     <!-- Activity Log Section -->
     <div class="mt-12 mb-12">
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100 bg-gray-50/30 cursor-pointer hover:bg-gray-100/50 transition-colors" @click="isHistoryVisible = !isHistoryVisible">
           <div class="flex items-center">
             <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">

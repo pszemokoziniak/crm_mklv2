@@ -5,7 +5,7 @@
       <Link class="text-indigo-400 hover:text-indigo-600" href="/zadania">Zadania</Link>
       <span class="text-indigo-400 font-medium">/</span> Utwórz
     </h1>
-    <div class="max-w-5xl bg-white rounded-md shadow overflow-hidden">
+    <div class="max-w-5xl bg-white rounded-md shadow-sm overflow-hidden">
       <form @submit.prevent="store">
         <div class="p-8">
           <div class="flex flex-wrap -mb-8 -mr-6">
@@ -47,7 +47,7 @@
                   <button type="button" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium" @click="addStage(mIndex)">+ Dodaj etap</button>
                 </div>
 
-                <div v-for="(stage, sIndex) in milestone.stages" :key="sIndex" class="flex items-center space-x-4 mb-3 bg-white p-3 rounded shadow-sm">
+                <div v-for="(stage, sIndex) in milestone.stages" :key="sIndex" class="flex items-center space-x-4 mb-3 bg-white p-3 rounded-sm shadow-xs">
                   <div class="flex-1">
                     <text-input v-model="stage.name" placeholder="Nazwa etapu (np. Projekt graficzny)" />
                   </div>

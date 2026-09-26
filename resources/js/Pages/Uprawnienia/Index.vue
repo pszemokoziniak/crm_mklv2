@@ -7,7 +7,7 @@
         <span class="hidden md:inline">&nbsp;Uprawnienie</span>
       </Link>
     </div>
-    <div class="bg-white rounded-md shadow overflow-x-auto">
+    <div class="bg-white rounded-md shadow-sm overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
           <th class="pb-4 pt-6 px-6">Nazwa</th>

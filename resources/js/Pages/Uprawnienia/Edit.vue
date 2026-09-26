@@ -6,7 +6,7 @@
       <span class="text-indigo-400 font-medium">/</span>
       {{ form.name }}
     </h1>
-    <div class="bg-white rounded-md shadow overflow-hidden max-w-3xl">
+    <div class="bg-white rounded-md shadow-sm overflow-hidden max-w-3xl">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.name" :error="form.errors.name" class="pb-8 pr-6 w-full lg:w-1/2" label="Nazwa" />

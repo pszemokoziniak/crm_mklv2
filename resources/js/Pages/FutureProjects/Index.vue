@@ -14,13 +14,13 @@
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <div class="mb-4">
           <label class="block mb-1 text-gray-700 text-sm font-medium">Faza projektu:</label>
-          <select v-model="form.faza_id" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-sm focus:ring-indigo-500">
+          <select v-model="form.faza_id" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-xs focus:ring-indigo-500">
             <option :value="null">Wszystkie</option>
             <option v-for="item in faza" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select>
         </div>
         <label class="block mb-1 text-gray-700 text-sm font-medium">Wyświetlaj:</label>
-        <select v-model="form.trashed" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-sm focus:ring-indigo-500">
+        <select v-model="form.trashed" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-xs focus:ring-indigo-500">
           <option :value="null">Aktualne</option>
           <option value="only">Archiwum</option>
           <option value="with">Wszystko</option>
@@ -28,7 +28,7 @@
       </search-filter>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <div>
         <table class="w-full table-fixed">
           <colgroup>
@@ -84,7 +84,7 @@
               <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center focus:text-indigo-500" :href="`/futureproject/${item.id}/edit`">
                   <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors text-sm truncate" :title="item.nazwa">{{ item.nazwa }}</span>
-                  <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
+                  <icon v-if="item.deleted_at" name="trash" class="shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                 </Link>
               </td>
               <td class="px-3 py-3 overflow-hidden">
@@ -102,20 +102,20 @@
               </td>
               <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
-                  <span v-if="item.objekt" class="inline-block max-w-full truncate px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold" :title="item.objekt.name">
+                  <span v-if="item.objekt" class="inline-block max-w-full truncate px-2 py-1 bg-blue-100 text-blue-800 rounded-sm text-xs font-semibold" :title="item.objekt.name">
                     {{ item.objekt.name }}
                   </span>
                 </Link>
               </td>
               <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
-                  <span v-if="item.faza" class="inline-block max-w-full truncate px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold" :title="item.faza.name">
+                  <span v-if="item.faza" class="inline-block max-w-full truncate px-2 py-1 bg-green-100 text-green-800 rounded-sm text-xs font-semibold" :title="item.faza.name">
                     {{ item.faza.name }}
                   </span>
                 </Link>
               </td>
               <td class="px-1 py-3 text-center">
-                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
+                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xs" :href="`/futureproject/${item.id}/edit`" tabindex="-1">
                   <icon name="cheveron-right" class="w-3 h-3" />
                 </Link>
               </td>

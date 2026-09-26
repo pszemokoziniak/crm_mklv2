@@ -5,7 +5,7 @@
       <h1 class="text-3xl font-bold text-gray-800">Kalendarz Projektów</h1>
     </div>
 
-    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+    <div class="bg-white rounded-lg shadow-xs p-6 mb-6">
       <div class="flex flex-wrap items-end -mx-3">
         <div class="w-full lg:w-1/3 px-3 mb-4 lg:mb-0">
           <search-filter-simple v-model="form.search" class="w-full" placeholder="Szukaj projektu..." @reset="reset" />
@@ -20,15 +20,15 @@
     </div>
 
     <!-- Legenda kolorów pasków (status oferty przypisanej do zapytania) -->
-    <div class="bg-white rounded-lg shadow-sm px-6 py-3 mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-700">
+    <div class="bg-white rounded-lg shadow-xs px-6 py-3 mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-700">
       <span class="font-semibold text-gray-800">Legenda:</span>
       <span v-for="entry in legend" :key="entry.key" class="flex items-center">
-        <span class="inline-block w-4 h-4 rounded mr-2 flex-shrink-0" :style="{ backgroundColor: palette[entry.key].bg }" />
+        <span class="inline-block w-4 h-4 rounded-sm mr-2 shrink-0" :style="{ backgroundColor: palette[entry.key].bg }" />
         {{ entry.label }}
       </span>
     </div>
 
-    <div class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
       <!-- Kontener z przewijaniem pionowym i poziomym -->
       <div class="overflow-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style="max-height: 70vh;">
         <table class="border-collapse table-fixed" :style="{ width: tableWidth + 'px' }">
@@ -47,7 +47,7 @@
               </th>
             </tr>
             <!-- Wiersz Tygodni (kolumna = 1 tydzień, etykieta = poniedziałek) -->
-            <tr class="bg-white border-b border-gray-300 shadow-sm">
+            <tr class="bg-white border-b border-gray-300 shadow-xs">
               <th
                 v-for="(week, index) in weeks"
                 :key="index"
@@ -71,12 +71,12 @@
                 <Link
                   v-if="col[1] === 1"
                   :href="`/zapytania/${item.id}/edit`"
-                  class="absolute inset-y-2 left-1 right-1 flex items-center px-3 rounded-md text-xs font-semibold shadow-sm hover:brightness-90 hover:shadow-md transition-all overflow-hidden whitespace-nowrap z-10"
+                  class="absolute inset-y-2 left-1 right-1 flex items-center px-3 rounded-md text-xs font-semibold shadow-xs hover:brightness-90 hover:shadow-md transition-all overflow-hidden whitespace-nowrap z-10"
                   :style="barStyle(item.status_color)"
                   :title="`${item.id_zapyt} - ${item.nazwa_projektu}${item.client ? ' (' + item.client.nazwa + ')' : ''} — ${legendLabel(item.status_color)}`"
                 >
                   <span class="truncate">
-                    <span class="bg-black/10 px-1.5 py-0.5 rounded mr-2 text-[10px]">{{ item.id_zapyt }}</span>
+                    <span class="bg-black/10 px-1.5 py-0.5 rounded-sm mr-2 text-[10px]">{{ item.id_zapyt }}</span>
                     {{ item.nazwa_projektu }}<template v-if="item.client"> | {{ item.client.nazwa }}</template>
                   </span>
                 </Link>

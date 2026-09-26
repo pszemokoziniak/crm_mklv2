@@ -5,8 +5,8 @@
       <h1 class="text-3xl font-bold text-gray-800">Ustawienia systemowe</h1>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <Link v-for="item in menuItems" :key="item.href" :href="item.href" class="flex items-center p-5 bg-white rounded-xl shadow-sm border border-gray-200 hover:border-indigo-500 hover:shadow-md transition-all duration-200 group">
-        <div class="flex-shrink-0 p-3 rounded-lg bg-indigo-50 group-hover:bg-indigo-600 transition-colors duration-200">
+      <Link v-for="item in menuItems" :key="item.href" :href="item.href" class="flex items-center p-5 bg-white rounded-xl shadow-xs border border-gray-200 hover:border-indigo-500 hover:shadow-md transition-all duration-200 group">
+        <div class="shrink-0 p-3 rounded-lg bg-indigo-50 group-hover:bg-indigo-600 transition-colors duration-200">
           <icon :name="item.icon" class="w-6 h-6 fill-indigo-600 group-hover:fill-white" />
         </div>
         <div class="ml-4">

@@ -10,7 +10,7 @@
       </Link>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
         <table class="w-full whitespace-nowrap">
           <thead>
@@ -39,7 +39,7 @@
               </td>
               <td class="px-6 py-4">
                 <Link class="text-xs text-gray-600 font-medium" :href="`/menu/${menuItem.id}/edit`" tabindex="-1">
-                  <code class="px-1.5 py-0.5 bg-gray-100 rounded text-[11px]">{{ menuItem.route }}</code>
+                  <code class="px-1.5 py-0.5 bg-gray-100 rounded-sm text-[11px]">{{ menuItem.route }}</code>
                 </Link>
               </td>
               <td class="px-6 py-4">
@@ -49,13 +49,13 @@
               </td>
               <td class="px-6 py-4">
                 <Link :href="`/menu/${menuItem.id}/edit`" tabindex="-1">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-600 shadow-sm">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-600 shadow-xs">
                     {{ menuItem.order }}
                   </span>
                 </Link>
               </td>
               <td class="px-6 py-4 text-right">
-                <Link class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/menu/${menuItem.id}/edit`" tabindex="-1">
+                <Link class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xs" :href="`/menu/${menuItem.id}/edit`" tabindex="-1">
                   <icon name="cheveron-right" class="w-4 h-4" />
                 </Link>
               </td>

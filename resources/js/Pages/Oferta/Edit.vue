@@ -22,12 +22,12 @@
       </div>
     </div>
 
-    <trashed-message v-if="oferta.deleted_at" class="mb-6 shadow-sm" @restore="restore">
+    <trashed-message v-if="oferta.deleted_at" class="mb-6 shadow-xs" @restore="restore">
       Oferta została usunięta.
     </trashed-message>
 
     <div class="max-w-5xl space-y-8">
-      <div id="form-container" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500 ring-opacity-50 shadow-lg': isActive }">
+      <div id="form-container" class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500/50 shadow-lg': isActive }">
         <!-- Nagłówek z linkami do relacji -->
         <div class="bg-gray-50 px-8 py-4 border-b border-gray-100 flex flex-wrap gap-2 items-center text-lg font-semibold">
           <Link v-if="zapytaniaById" class="text-indigo-600 hover:underline" :href="`/zapytania/${oferta.zapytania_id}/edit`">
@@ -104,7 +104,7 @@
       <notes-section type="oferta" :notable-id="oferta.id" :notes="notes" :mentionable-users="mentionableUsers" />
 
       <!-- Kontakty Section -->
-      <div id="historia-kontaktow" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div id="historia-kontaktow" class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
           <div class="flex items-center">
             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
@@ -120,7 +120,7 @@
 
         <div class="p-8">
           <div v-if="kontakty.length > 0" class="space-y-6">
-            <div v-for="kontakt in kontakty" :id="`kontakt-${kontakt.id}`" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm target:ring-2 target:ring-indigo-500 transition-all">
+            <div v-for="kontakt in kontakty" :id="`kontakt-${kontakt.id}`" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-xs target:ring-2 target:ring-indigo-500 transition-all">
               <!-- Główny wpis w wątku -->
               <div class="bg-gray-50/50 p-4 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-3">
@@ -187,7 +187,7 @@
 
       <!-- Historia zmian (Activity Log) -->
       <div class="mt-12 mb-12">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
           <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100 bg-gray-50/30 cursor-pointer hover:bg-gray-100/50 transition-colors" @click="isHistoryVisible = !isHistoryVisible">
             <div class="flex items-center">
               <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">

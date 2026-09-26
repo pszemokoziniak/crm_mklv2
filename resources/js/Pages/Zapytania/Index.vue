@@ -12,11 +12,11 @@
 
     <!-- Statystyki -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+      <div class="bg-white rounded-lg shadow-xs border border-gray-100 p-4">
         <p class="text-xs font-medium text-gray-500 mb-1">Wszystkie</p>
         <p class="text-xl font-bold text-gray-900">{{ stats.total }}</p>
       </div>
-      <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+      <div class="bg-white rounded-lg shadow-xs border border-gray-100 p-4">
         <p class="text-xs font-medium text-gray-500 mb-1">Ten miesiąc</p>
         <div class="flex items-baseline gap-2">
           <p class="text-xl font-bold text-gray-900">{{ stats.this_month }}</p>
@@ -25,11 +25,11 @@
           </span>
         </div>
       </div>
-      <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+      <div class="bg-white rounded-lg shadow-xs border border-gray-100 p-4">
         <p class="text-xs font-medium text-gray-500 mb-1">Z ofertą</p>
         <p class="text-xl font-bold text-green-600">{{ stats.with_oferta }}</p>
       </div>
-      <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+      <div class="bg-white rounded-lg shadow-xs border border-gray-100 p-4">
         <p class="text-xs font-medium text-gray-500 mb-1">Bez oferty</p>
         <p class="text-xl font-bold text-amber-600">{{ stats.without_oferta }}</p>
       </div>
@@ -39,7 +39,7 @@
     <div class="flex items-center justify-between mb-4">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block text-sm font-medium text-gray-700 mb-1">Wyświetlaj:</label>
-        <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
           <option :value="null">Aktualne</option>
           <option value="only">Archiwum</option>
           <option value="with">Wszystko</option>
@@ -53,33 +53,33 @@
         v-for="item in zapytanias.data"
         :key="item.id"
         :href="`/zapytania/${item.id}/edit`"
-        class="block bg-white rounded-lg shadow-sm border border-gray-100 p-4 hover:border-indigo-200 hover:shadow transition-all active:scale-[0.99]"
+        class="block bg-white rounded-lg shadow-xs border border-gray-100 p-4 hover:border-indigo-200 hover:shadow-sm transition-all active:scale-[0.99]"
       >
         <div class="flex items-start justify-between gap-2 mb-2">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-1.5">
               <span class="font-bold text-sm text-gray-900 line-clamp-2">{{ item.nazwa_projektu }}</span>
-              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-rose-400" />
+              <icon v-if="item.deleted_at" name="trash" class="shrink-0 w-3 h-3 fill-rose-400" />
             </div>
             <span class="text-[10px] text-gray-400 font-medium">{{ item.id_zapyt }}</span>
           </div>
-          <icon name="cheveron-right" class="flex-shrink-0 w-5 h-5 text-gray-300" />
+          <icon name="cheveron-right" class="shrink-0 w-5 h-5 text-gray-300" />
         </div>
         <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
           <span v-if="item.client" class="truncate max-w-[50%]">
             <span class="text-gray-400">Klient:</span> {{ item.client.nazwa }}
           </span>
           <span v-if="item.zakres">
-            <span class="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-semibold rounded uppercase">{{ item.zakres.name }}</span>
+            <span class="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-semibold rounded-sm uppercase">{{ item.zakres.name }}</span>
           </span>
           <span v-if="item.kraj">{{ countryFlag(item.kraj.name) }} {{ item.kraj.name }}</span>
         </div>
         <!-- Oferty zapytania (także z Archiwum); cała karta jest linkiem, więc bez zagnieżdżonych linków -->
         <div v-if="item.oferty && item.oferty.length" class="mt-2 flex flex-wrap gap-1">
-          <span v-for="oferta in item.oferty" :key="oferta.id" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-gray-200 text-[10px]" :class="{ 'opacity-70': oferta.deleted_at }">
+          <span v-for="oferta in item.oferty" :key="oferta.id" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm border border-gray-200 text-[10px]" :class="{ 'opacity-70': oferta.deleted_at }">
             <span class="font-semibold text-gray-700">Oferta {{ oferta.numer_oferty || `#${oferta.id}` }}</span>
-            <span v-if="oferta.status" class="px-1 rounded font-semibold uppercase" :class="ofertaStatusClass(oferta.status)">{{ oferta.status }}</span>
-            <span v-if="oferta.deleted_at" class="px-1 rounded font-bold bg-rose-50 text-rose-600">ARCHIWUM</span>
+            <span v-if="oferta.status" class="px-1 rounded-sm font-semibold uppercase" :class="ofertaStatusClass(oferta.status)">{{ oferta.status }}</span>
+            <span v-if="oferta.deleted_at" class="px-1 rounded-sm font-bold bg-rose-50 text-rose-600">ARCHIWUM</span>
           </span>
         </div>
         <div v-if="item.otrzymal" class="mt-2 flex items-center justify-between text-[11px] text-gray-400">
@@ -87,14 +87,14 @@
           <span>{{ item.created_at }}</span>
         </div>
       </Link>
-      <div v-if="zapytanias.data.length === 0" class="bg-white rounded-lg shadow-sm border border-gray-100 p-12 text-center text-gray-400">
+      <div v-if="zapytanias.data.length === 0" class="bg-white rounded-lg shadow-xs border border-gray-100 p-12 text-center text-gray-400">
         <icon name="zapytania" class="w-12 h-12 mb-2 opacity-20 mx-auto" />
         <p class="text-xs">Brak zapytań spełniających kryteria.</p>
       </div>
     </div>
 
     <!-- Desktop: widok tabeli -->
-    <div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="hidden md:block bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <table class="w-full table-fixed">
         <colgroup>
           <col style="width:22%" /><!-- Projekt -->
@@ -151,7 +151,7 @@
               <Link class="block truncate focus:text-indigo-500" :href="`/zapytania/${item.id}/edit`">
                 <div class="flex items-center">
                   <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors text-xs truncate" :title="item.nazwa_projektu">{{ item.nazwa_projektu }}</span>
-                  <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
+                  <icon v-if="item.deleted_at" name="trash" class="shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                 </div>
                 <span class="text-[10px] text-gray-400 font-medium mt-0.5 block truncate">{{ item.id_zapyt }}</span>
               </Link>
@@ -168,7 +168,7 @@
             </td>
             <td class="px-3 py-2.5 overflow-hidden">
               <Link class="block" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
-                <span v-if="item.zakres" class="inline-block max-w-full truncate align-middle px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[8px] font-bold rounded uppercase tracking-tight leading-tight" :title="item.zakres.name">
+                <span v-if="item.zakres" class="inline-block max-w-full truncate align-middle px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[8px] font-bold rounded-sm uppercase tracking-tight leading-tight" :title="item.zakres.name">
                   {{ item.zakres.name }}
                 </span>
               </Link>
@@ -182,7 +182,7 @@
               </Link>
             </td>
             <td class="px-1 py-2.5 text-center">
-              <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
+              <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xs" :href="`/zapytania/${item.id}/edit`" tabindex="-1">
                 <icon name="cheveron-right" class="w-3 h-3" />
               </Link>
             </td>
@@ -195,14 +195,14 @@
                   v-for="oferta in item.oferty"
                   :key="oferta.id"
                   :href="`/oferta/${oferta.id}/edit`"
-                  class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border text-[10px] bg-white hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
+                  class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm border text-[10px] bg-white hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
                   :class="oferta.deleted_at ? 'border-gray-200 opacity-70' : 'border-gray-200'"
                   :title="oferta.deleted_at ? `Zarchiwizowana ${oferta.deleted_at}` : 'Przejdź do oferty'"
                 >
                   <span class="font-semibold text-gray-700">Oferta {{ oferta.numer_oferty || `#${oferta.id}` }}</span>
-                  <span v-if="oferta.status" class="px-1 rounded font-semibold uppercase" :class="ofertaStatusClass(oferta.status)">{{ oferta.status }}</span>
+                  <span v-if="oferta.status" class="px-1 rounded-sm font-semibold uppercase" :class="ofertaStatusClass(oferta.status)">{{ oferta.status }}</span>
                   <span v-if="oferta.kwota" class="text-gray-500">{{ formatKwota(oferta.kwota) }} {{ oferta.waluta }}</span>
-                  <span v-if="oferta.deleted_at" class="px-1 rounded font-bold bg-rose-50 text-rose-600">ARCHIWUM</span>
+                  <span v-if="oferta.deleted_at" class="px-1 rounded-sm font-bold bg-rose-50 text-rose-600">ARCHIWUM</span>
                 </Link>
               </div>
             </td>

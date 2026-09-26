@@ -6,7 +6,7 @@
       <span class="text-gray-300 font-light mx-2">/</span>
       <span class="text-gray-600">Utwórz</span>
     </h1>
-    <div class="max-w-3xl bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="max-w-3xl bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.nazwa" :error="form.errors.nazwa" class="pb-8 pr-6 w-full lg:w-1/1" label="Nazwa projektu" />

@@ -5,15 +5,15 @@
         ⚠️ Jesteś zalogowany jako <strong>{{ auth.user.first_name }} {{ auth.user.last_name }}</strong>
         (impersonacja przez <strong>{{ impersonating.first_name }} {{ impersonating.last_name }}</strong>)
       </span>
-      <button type="button" class="bg-white text-amber-700 font-bold px-3 py-1 rounded hover:bg-amber-50 transition-colors text-xs uppercase tracking-wide" @click="stopImpersonating">
+      <button type="button" class="bg-white text-amber-700 font-bold px-3 py-1 rounded-sm hover:bg-amber-50 transition-colors text-xs uppercase tracking-wide" @click="stopImpersonating">
         Wróć do swojego konta →
       </button>
     </div>
     <div id="dropdown" />
     <div class="md:flex md:flex-col">
       <div class="md:flex md:flex-col md:h-screen">
-        <div class="md:flex md:flex-shrink-0">
-          <div class="flex items-center justify-between px-6 py-4 bg-white md:flex-shrink-0 md:justify-center md:w-64 transition-all duration-300">
+        <div class="md:flex md:shrink-0">
+          <div class="flex items-center justify-between px-6 py-4 bg-white md:shrink-0 md:justify-center md:w-64 transition-all duration-300">
             <Link class="mt-1" href="/">
               <logo class="fill-white" />
             </Link>
@@ -22,13 +22,13 @@
                 <svg class="w-6 h-6 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg>
               </template>
               <template #dropdown>
-                <div class="mt-2 px-8 py-4 bg-indigo-800 rounded shadow-lg">
+                <div class="mt-2 px-8 py-4 bg-indigo-800 rounded-sm shadow-lg">
                   <main-menu :main-menus="mainMenus" />
                 </div>
               </template>
             </dropdown>
           </div>
-          <div class="md:text-md flex items-center justify-between p-4 w-full text-sm bg-white border-b md:px-12 md:py-0 shadow-sm">
+          <div class="md:text-md flex items-center justify-between p-4 w-full text-sm bg-white border-b md:px-12 md:py-0 shadow-xs">
             <div class="mr-4 mt-1 flex items-center gap-4">
               <div class="font-bold text-indigo-600 uppercase tracking-wider">
                 {{ auth.user.roles[0] || 'Użytkownik' }}
@@ -51,7 +51,7 @@
               <button type="button" class="hidden md:flex items-center gap-2 px-3 py-1.5 text-xs text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors" title="Szybkie wyszukiwanie (Ctrl+K)" @click="$refs.globalSearch && $refs.globalSearch.openModal()">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" /></svg>
                 <span>Szukaj</span>
-                <kbd class="text-[9px] px-1 py-0.5 bg-white rounded border border-gray-200">Ctrl K</kbd>
+                <kbd class="text-[9px] px-1 py-0.5 bg-white rounded-sm border border-gray-200">Ctrl K</kbd>
               </button>
               <dropdown v-if="myTodo && myTodo.total > 0" class="mt-1" placement="bottom-end">
                 <template #default>
@@ -111,7 +111,7 @@
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
                       <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
                     </span>
-                    <span v-else class="flex-shrink-0 w-2 h-2 rounded-full bg-gray-300" />
+                    <span v-else class="shrink-0 w-2 h-2 rounded-full bg-gray-300" />
                     <span class="text-xs font-semibold" :class="onlineCount > 0 ? 'text-gray-700 group-hover:text-indigo-600' : 'text-gray-500'">
                       {{ onlineCount }} online
                     </span>
@@ -121,11 +121,11 @@
                   <div class="mt-2 py-2 text-sm bg-white rounded-lg shadow-xl border border-gray-100 min-w-[260px] max-h-96 overflow-y-auto">
                     <div class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100">Aktywność (ostatnie 7 dni)</div>
                     <div v-for="u in onlineUsers" :key="u.id" class="flex items-center px-4 py-2 hover:bg-indigo-50 transition-colors">
-                      <span class="flex-shrink-0 w-2 h-2 rounded-full mr-3" :class="u.is_logged_in ? 'bg-green-500' : 'bg-gray-300'" />
+                      <span class="shrink-0 w-2 h-2 rounded-full mr-3" :class="u.is_logged_in ? 'bg-green-500' : 'bg-gray-300'" />
                       <div class="flex-1 min-w-0">
                         <div class="text-xs font-semibold text-gray-800 truncate flex items-center gap-1.5">
                           <span class="truncate">{{ u.first_name }} {{ u.last_name }}</span>
-                          <span v-if="u.is_logged_in" class="flex-shrink-0 text-[8px] font-bold uppercase tracking-wide text-green-700 bg-green-50 px-1.5 py-0.5 rounded">online</span>
+                          <span v-if="u.is_logged_in" class="shrink-0 text-[8px] font-bold uppercase tracking-wide text-green-700 bg-green-50 px-1.5 py-0.5 rounded-sm">online</span>
                         </div>
                         <div class="text-[10px] text-gray-400 truncate">{{ u.email }}</div>
                       </div>
@@ -163,8 +163,8 @@
             </div>
           </div>
         </div>
-        <div class="md:flex md:flex-grow md:overflow-hidden">
-          <main-menu :main-menus="mainMenus" class="hidden flex-shrink-0 px-4 py-8 w-64 bg-indigo-800 overflow-y-auto md:block border-r border-indigo-900" />
+        <div class="md:flex md:grow md:overflow-hidden">
+          <main-menu :main-menus="mainMenus" class="hidden shrink-0 px-4 py-8 w-64 bg-indigo-800 overflow-y-auto md:block border-r border-indigo-900" />
           <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto bg-gray-50">
             <flash-messages />
             <slot />
@@ -177,7 +177,7 @@
     <global-search ref="globalSearch" />
 
     <!-- Modal: podglad "do zrobienia" per kategoria -->
-    <div v-if="todoModal && myTodo && myTodo.items" class="fixed inset-0 flex items-start justify-center p-4 md:p-8 bg-black bg-opacity-50" style="z-index:100000" @click="todoModal = null">
+    <div v-if="todoModal && myTodo && myTodo.items" class="fixed inset-0 flex items-start justify-center p-4 md:p-8 bg-black/50" style="z-index:100000" @click="todoModal = null">
       <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[85vh] flex flex-col overflow-hidden" @click.stop>
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
           <div class="flex items-center gap-3">
@@ -195,10 +195,10 @@
           <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             <!-- ZAPYTANIA -->
             <template v-if="todoModal === 'zapytania'">
-              <Link v-for="it in myTodo.items.zapytania" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-indigo-300 transition-all p-4" @click="todoModal = null">
+              <Link v-for="it in myTodo.items.zapytania" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-xs hover:shadow-md hover:border-indigo-300 transition-all p-4" @click="todoModal = null">
                 <div class="flex items-start justify-between mb-2">
                   <span class="text-[10px] font-mono text-gray-400">{{ it.id_zapyt || '—' }}</span>
-                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Zaległe</span>
+                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded-sm">Zaległe</span>
                 </div>
                 <div class="font-bold text-sm text-gray-900 mb-1 truncate" :title="it.nazwa_projektu">{{ it.nazwa_projektu || 'Brak nazwy' }}</div>
                 <div class="text-xs text-gray-600 mb-3 truncate" :title="it.client">{{ it.client || 'Brak klienta' }}</div>
@@ -212,10 +212,10 @@
 
             <!-- OFERTY -->
             <template v-else-if="todoModal === 'oferty'">
-              <Link v-for="it in myTodo.items.oferty" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-green-300 transition-all p-4" @click="todoModal = null">
+              <Link v-for="it in myTodo.items.oferty" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-xs hover:shadow-md hover:border-green-300 transition-all p-4" @click="todoModal = null">
                 <div class="flex items-start justify-between mb-2">
                   <span class="text-[10px] font-mono text-gray-400">#{{ it.id }}</span>
-                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Zaległe</span>
+                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded-sm">Zaległe</span>
                 </div>
                 <div class="font-bold text-sm text-gray-900 mb-1 truncate" :title="it.nazwa_projektu">{{ it.nazwa_projektu || 'Brak projektu' }}</div>
                 <div class="text-xs text-gray-600 mb-2 truncate" :title="it.client">{{ it.client || 'Brak klienta' }}</div>
@@ -229,10 +229,10 @@
 
             <!-- KONTAKTY -->
             <template v-else-if="todoModal === 'kontakty'">
-              <Link v-for="it in myTodo.items.kontakty" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-blue-300 transition-all p-4" @click="todoModal = null">
+              <Link v-for="it in myTodo.items.kontakty" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-xs hover:shadow-md hover:border-blue-300 transition-all p-4" @click="todoModal = null">
                 <div class="flex items-start justify-between mb-2">
                   <span class="text-[10px] font-mono text-gray-400">#{{ it.id }}</span>
-                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Zaległe</span>
+                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded-sm">Zaległe</span>
                 </div>
                 <div class="font-bold text-sm text-gray-900 mb-1 truncate" :title="it.client">{{ it.client || 'Brak klienta' }}</div>
                 <div class="text-xs text-gray-600 italic mb-3 line-clamp-2" :title="it.subject">"{{ it.subject || 'brak tematu' }}"</div>
@@ -248,10 +248,10 @@
 
             <!-- ZADANIA -->
             <template v-else-if="todoModal === 'zadania'">
-              <Link v-for="it in myTodo.items.zadania" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-orange-300 transition-all p-4" @click="todoModal = null">
+              <Link v-for="it in myTodo.items.zadania" :key="it.id" :href="it.link" class="block bg-white border border-gray-200 rounded-lg shadow-xs hover:shadow-md hover:border-orange-300 transition-all p-4" @click="todoModal = null">
                 <div class="flex items-start justify-between mb-2">
                   <span class="text-[10px] font-mono text-gray-400">#{{ it.id }}</span>
-                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Zaległe</span>
+                  <span v-if="it.overdue" class="text-[9px] font-bold uppercase text-red-600 bg-red-50 px-1.5 py-0.5 rounded-sm">Zaległe</span>
                 </div>
                 <div class="font-bold text-sm text-gray-900 mb-1" :title="it.subject">{{ it.subject || 'Brak tematu' }}</div>
                 <div v-if="it.client" class="text-xs text-gray-600 mb-2 truncate">{{ it.client }}</div>

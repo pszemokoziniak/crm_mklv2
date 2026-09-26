@@ -8,7 +8,7 @@
       <span v-else>Nowy kontakt</span>
     </h1>
 
-    <div class="max-w-4xl bg-white rounded-md shadow overflow-hidden">
+    <div class="max-w-4xl bg-white rounded-md shadow-sm overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <!-- 1. Wybór Klienta -->
@@ -59,7 +59,7 @@
           <!-- 6. Osoba kontaktowa, Zapytanie, Oferta, Projekt Przyszłości -->
           <div v-if="!form.client_id" class="pb-8 pr-6 w-full">
             <div class="flex items-start bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-md p-3">
-              <svg class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 mr-2 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
               </svg>
               <span class="text-sm font-medium">Najpierw wybierz <strong>Klienta</strong> u góry — dopiero wtedy będzie można uzupełnić osobę kontaktową, zapytanie, ofertę i projekt przyszłości.</span>

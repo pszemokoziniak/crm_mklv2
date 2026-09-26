@@ -32,29 +32,29 @@
       </div>
 
       <div class="grid grid-cols-4 gap-2 flex-1 max-w-2xl lg:ml-auto">
-        <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-sm">
-          <span class="w-3 h-3 rounded-full bg-indigo-500 flex-shrink-0" />
+        <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-xs">
+          <span class="w-3 h-3 rounded-full bg-indigo-500 shrink-0" />
           <div class="min-w-0">
             <div class="text-[10px] uppercase font-bold text-gray-500 truncate">Zapytania</div>
             <div class="text-lg font-bold text-indigo-600">{{ stats.zapytania }}</div>
           </div>
         </div>
-        <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-sm">
-          <span class="w-3 h-3 rounded-full bg-green-500 flex-shrink-0" />
+        <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-xs">
+          <span class="w-3 h-3 rounded-full bg-green-500 shrink-0" />
           <div class="min-w-0">
             <div class="text-[10px] uppercase font-bold text-gray-500 truncate">Oferty</div>
             <div class="text-lg font-bold text-green-600">{{ stats.oferty }}</div>
           </div>
         </div>
-        <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-sm">
-          <span class="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0" />
+        <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-xs">
+          <span class="w-3 h-3 rounded-full bg-blue-500 shrink-0" />
           <div class="min-w-0">
             <div class="text-[10px] uppercase font-bold text-gray-500 truncate">Kontakty</div>
             <div class="text-lg font-bold text-blue-600">{{ stats.kontakty }}</div>
           </div>
         </div>
-        <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-sm">
-          <span class="w-3 h-3 rounded-full bg-orange-500 flex-shrink-0" />
+        <div class="flex items-center gap-2 bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-xs">
+          <span class="w-3 h-3 rounded-full bg-orange-500 shrink-0" />
           <div class="min-w-0">
             <div class="text-[10px] uppercase font-bold text-gray-500 truncate">Zadania</div>
             <div class="text-lg font-bold text-orange-600">{{ stats.zadania }}</div>
@@ -64,7 +64,7 @@
     </div>
 
     <!-- Kalendarz -->
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="bg-white rounded-xl border border-gray-100 shadow-xs overflow-hidden">
       <!-- Naglowki dni tygodnia -->
       <div class="grid grid-cols-7 border-b border-gray-100 bg-gray-50/50">
         <div v-for="d in ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb', 'Nd']" :key="d" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-gray-500 text-center">{{ d }}</div>
@@ -87,7 +87,7 @@
               class="text-xs font-semibold"
               :class="[
                 !day.inCurrentMonth ? 'text-gray-300' : 'text-gray-700',
-                day.isToday ? 'bg-indigo-600 text-white px-1.5 py-0.5 rounded' : '',
+                day.isToday ? 'bg-indigo-600 text-white px-1.5 py-0.5 rounded-sm' : '',
               ]"
             >{{ day.day }}</span>
             <span v-if="day.events.length" class="text-[9px] text-gray-400">{{ day.events.length }}</span>
@@ -97,7 +97,7 @@
               v-for="(ev, i) in day.events.slice(0, 3)"
               :key="i"
               :href="ev.link"
-              class="block px-1.5 py-1 rounded text-[10px] leading-tight truncate transition-colors border-l-2"
+              class="block px-1.5 py-1 rounded-sm text-[10px] leading-tight truncate transition-colors border-l-2"
               :class="colorClasses(ev.color)"
               :title="`${ev.label}: ${ev.title}\n${ev.subtitle || ''}\n${ev.assignee ? 'Opiekun: ' + ev.assignee : ''}`"
             >
@@ -119,7 +119,7 @@
     </div>
 
     <!-- Modal: wszystkie zdarzenia z dnia -->
-    <div v-if="showDay" class="fixed inset-0 flex items-start justify-center p-4 md:pt-24 bg-black bg-opacity-50" style="z-index:100000" @click="showDay = null">
+    <div v-if="showDay" class="fixed inset-0 flex items-start justify-center p-4 md:pt-24 bg-black/50" style="z-index:100000" @click="showDay = null">
       <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col" @click.stop>
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
           <div>

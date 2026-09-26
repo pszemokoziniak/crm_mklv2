@@ -9,7 +9,7 @@
         <span>Dodaj link</span>
       </Link>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
         <table class="w-full table-auto">
           <thead>
@@ -34,7 +34,7 @@
               <td class="px-6 py-4">
                 <Link class="flex items-center focus:text-indigo-500" :href="`/linkedin/${item.id}/edit`">
                   <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{{ item.client?.nazwa || 'Brak klienta' }}</span>
-                  <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
+                  <icon v-if="item.deleted_at" name="trash" class="shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                 </Link>
               </td>
               <td class="px-6 py-4">
@@ -56,10 +56,10 @@
               </td>
               <td class="px-6 py-4 text-right">
                 <div class="flex items-center justify-end gap-3">
-                  <a class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-bold rounded hover:bg-indigo-100 transition-colors whitespace-nowrap uppercase tracking-wider shadow-sm" target="_blank" :href="`/linkedin/${item.id}/click`">
+                  <a class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-bold rounded-sm hover:bg-indigo-100 transition-colors whitespace-nowrap uppercase tracking-wider shadow-xs" target="_blank" :href="`/linkedin/${item.id}/click`">
                     Odwiedź
                   </a>
-                  <Link class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/linkedin/${item.id}/edit`" tabindex="-1">
+                  <Link class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xs" :href="`/linkedin/${item.id}/edit`" tabindex="-1">
                     <icon name="cheveron-right" class="w-4 h-4" />
                   </Link>
                 </div>

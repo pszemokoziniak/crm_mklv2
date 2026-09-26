@@ -35,9 +35,9 @@
       <!-- Karty statystyk -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <!-- Nowe zapytania -->
-        <Link href="/zapytania" class="block bg-white rounded-lg shadow p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
+        <Link href="/zapytania" class="block bg-white rounded-lg shadow-sm p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
           <div class="flex items-center">
-            <div class="flex-shrink-0 bg-indigo-100 rounded-lg p-3">
+            <div class="shrink-0 bg-indigo-100 rounded-lg p-3">
               <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
             <div class="ml-4 flex-1">
@@ -54,9 +54,9 @@
         </Link>
 
         <!-- Nowe oferty -->
-        <Link href="/oferta" class="block bg-white rounded-lg shadow p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
+        <Link href="/oferta" class="block bg-white rounded-lg shadow-sm p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
           <div class="flex items-center">
-            <div class="flex-shrink-0 bg-green-100 rounded-lg p-3">
+            <div class="shrink-0 bg-green-100 rounded-lg p-3">
               <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
             </div>
             <div class="ml-4 flex-1">
@@ -73,9 +73,9 @@
         </Link>
 
         <!-- Nowi klienci -->
-        <Link href="/clients" class="block bg-white rounded-lg shadow p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
+        <Link href="/clients" class="block bg-white rounded-lg shadow-sm p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
           <div class="flex items-center">
-            <div class="flex-shrink-0 bg-blue-100 rounded-lg p-3">
+            <div class="shrink-0 bg-blue-100 rounded-lg p-3">
               <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </div>
             <div class="ml-4 flex-1">
@@ -92,9 +92,9 @@
         </Link>
 
         <!-- Wartość ofert -->
-        <Link href="/oferta" class="block bg-white rounded-lg shadow p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
+        <Link href="/oferta" class="block bg-white rounded-lg shadow-sm p-5 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer">
           <div class="flex items-center">
-            <div class="flex-shrink-0 bg-yellow-100 rounded-lg p-3">
+            <div class="shrink-0 bg-yellow-100 rounded-lg p-3">
               <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
             <div class="ml-4 flex-1 min-w-0">
@@ -114,8 +114,8 @@
       <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
         <h1 class="text-3xl font-extrabold text-gray-900">Do zrobienia</h1>
         <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full max-w-2xl">
-          <div v-if="users && users.length > 0" class="flex w-full sm:w-64 bg-white rounded shadow">
-            <select v-model="form.user_id" class="relative w-full px-4 py-3 rounded focus:shadow-outline border-none text-sm">
+          <div v-if="users && users.length > 0" class="flex w-full sm:w-64 bg-white rounded-sm shadow-sm">
+            <select v-model="form.user_id" class="relative w-full px-4 py-3 rounded-sm focus:shadow-outline border-none text-sm">
               <option :value="null">Wszyscy użytkownicy</option>
               <option v-for="user in users" :key="user.id" :value="user.id">
                 {{ user.last_name }} {{ user.first_name }}
@@ -134,17 +134,17 @@
             <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{{ zapytanias.length }}</span>
           </div>
           <div class="space-y-3">
-            <div v-for="item in zapytanias" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <div v-for="item in zapytanias" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-xs hover:shadow-md transition-shadow duration-200 overflow-hidden">
               <Link :href="item.link || `/zapytania/${item.id}/edit`" class="block p-4">
                 <div v-if="item.wznowienie===2" class="mb-2 flex items-center">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Wznowienie</span>
-                  <Link :href="`/oferta/create?zapytania_id=${item.original_zapytanie_id || item.id}&wznowienie_id=${item.wznowienie_id || ''}&wznowienie=true`" class="ml-2 inline-flex items-center px-2.5 py-0.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-red-100 text-red-800">Wznowienie</span>
+                  <Link :href="`/oferta/create?zapytania_id=${item.original_zapytanie_id || item.id}&wznowienie_id=${item.wznowienie_id || ''}&wznowienie=true`" class="ml-2 inline-flex items-center px-2.5 py-0.5 border border-transparent text-xs font-medium rounded-full shadow-xs text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Stwórz ofertę
                   </Link>
                 </div>
                 <div class="flex items-start justify-between">
                   <div class="text-xs font-mono text-gray-500 mb-1">{{ item.id_zapyt }}</div>
-                  <div v-if="item.zlozenia_blisko || item.zlozenia_przeterminowany" class="ml-2 flex-shrink-0" :title="item.zlozenia_przeterminowany ? 'Termin złożenia przeterminowany!' : 'Termin złożenia w ciągu 2 dni'">
+                  <div v-if="item.zlozenia_blisko || item.zlozenia_przeterminowany" class="ml-2 shrink-0" :title="item.zlozenia_przeterminowany ? 'Termin złożenia przeterminowany!' : 'Termin złożenia w ciągu 2 dni'">
                     <svg class="w-5 h-5" :class="item.zlozenia_przeterminowany ? 'text-red-500 animate-bell-ring' : 'text-orange-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
@@ -159,7 +159,7 @@
                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     {{ item.data_zlozenia || 'Brak daty złożenia' }}
                   </div>
-                  <div v-if="item.opracowuje" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
+                  <div v-if="item.opracowuje" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-sm self-start">
                     {{ item.opracowuje.first_name }} {{ item.opracowuje.last_name }}
                   </div>
                   <div v-else class="text-xs text-gray-400 italic">Nieprzypisane</div>
@@ -176,11 +176,11 @@
             <span class="bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{{ ofertas.length }}</span>
           </div>
           <div class="space-y-3">
-            <div v-for="item in ofertas" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <div v-for="item in ofertas" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-xs hover:shadow-md transition-shadow duration-200 overflow-hidden">
               <Link :href="`/oferta/${item.id}/edit`" class="block p-4">
                 <div class="flex items-center justify-between mb-1">
                   <div class="font-bold text-gray-900 truncate pb-0.5">{{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak projektu' }}</div>
-                  <div v-if="item.kontakt_blisko || item.kontakt_przeterminowany" class="ml-2 flex-shrink-0" :title="item.kontakt_przeterminowany ? 'Kontakt przeterminowany!' : 'Kontakt w ciągu 10 dni'">
+                  <div v-if="item.kontakt_blisko || item.kontakt_przeterminowany" class="ml-2 shrink-0" :title="item.kontakt_przeterminowany ? 'Kontakt przeterminowany!' : 'Kontakt w ciągu 10 dni'">
                     <svg class="w-5 h-5" :class="item.kontakt_przeterminowany ? 'text-red-500 animate-bell-ring' : 'text-orange-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
@@ -193,7 +193,7 @@
                 <div v-if="item.status" class="mb-3 relative inline-block">
                   <select
                     :value="item.status.id"
-                    class="px-2 py-0.5 pr-6 rounded text-xs font-medium border-0 cursor-pointer appearance-none focus:ring-2 focus:ring-indigo-300"
+                    class="px-2 py-0.5 pr-6 rounded-sm text-xs font-medium border-0 cursor-pointer appearance-none focus:ring-2 focus:ring-indigo-300"
                     :class="statusClasses(item.status.name)"
                     @click.stop.prevent
                     @change.stop="changeStatus(item, $event.target.value)"
@@ -223,7 +223,7 @@
                       {{ item.data_wyslania || 'Brak daty' }}
                     </div>
                   </div>
-                  <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
+                  <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-sm self-start">
                     {{ item.user.first_name }} {{ item.user.last_name }}
                   </div>
                 </div>
@@ -239,11 +239,11 @@
             <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{{ kontakts.length }}</span>
           </div>
           <div class="space-y-3">
-            <div v-for="item in kontakts" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <div v-for="item in kontakts" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-xs hover:shadow-md transition-shadow duration-200 overflow-hidden">
               <Link :href="`/kontakt/${item.thread_root_id || item.id}/edit`" class="block p-4">
                 <div class="flex items-center justify-between mb-1">
                   <div class="font-bold text-gray-900 truncate pb-0.5">{{ item.client ? item.client.nazwa : 'Brak klienta' }}</div>
-                  <div v-if="item.kontakt_blisko || item.kontakt_przeterminowany" class="ml-2 flex-shrink-0" :title="item.kontakt_przeterminowany ? 'Kontakt przeterminowany!' : 'Kontakt w ciągu 3 dni'">
+                  <div v-if="item.kontakt_blisko || item.kontakt_przeterminowany" class="ml-2 shrink-0" :title="item.kontakt_przeterminowany ? 'Kontakt przeterminowany!' : 'Kontakt w ciągu 3 dni'">
                     <svg class="w-5 h-5" :class="item.kontakt_przeterminowany ? 'text-red-500 animate-bell-ring' : 'text-orange-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
@@ -274,7 +274,7 @@
                       <span class="uppercase text-gray-400 font-bold leading-none mb-1" style="font-size: 9px;">Ostatni kontakt</span>
                       <span class="text-xs whitespace-nowrap text-gray-500">{{ item.call_date }}</span>
                     </div>
-                    <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
+                    <div v-if="item.user" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-sm self-start">
                       {{ item.user.first_name }} {{ item.user.last_name }}
                     </div>
                     <div v-else class="text-xs text-gray-400 italic">Nieprzypisane</div>
@@ -292,11 +292,11 @@
             <span class="bg-orange-100 text-orange-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">{{ zadania.length }}</span>
           </div>
           <div class="space-y-3">
-            <div v-for="item in zadania" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+            <div v-for="item in zadania" :key="item.id" class="bg-white border border-gray-200 rounded-lg shadow-xs hover:shadow-md transition-shadow duration-200 overflow-hidden">
               <Link :href="`/zadania/${item.id}/edit`" class="block p-4">
                 <div class="flex items-center justify-between mb-1">
                   <div class="font-bold text-gray-900 truncate pb-0.5">{{ item.subject }}</div>
-                  <div v-if="item.deadline_blisko || item.deadline_przeterminowany" class="ml-2 flex-shrink-0" :title="item.deadline_przeterminowany ? 'Termin przeterminowany!' : 'Termin w ciągu 2 dni'">
+                  <div v-if="item.deadline_blisko || item.deadline_przeterminowany" class="ml-2 shrink-0" :title="item.deadline_przeterminowany ? 'Termin przeterminowany!' : 'Termin w ciągu 2 dni'">
                     <svg class="w-5 h-5" :class="item.deadline_przeterminowany ? 'text-red-500 animate-bell-ring' : 'text-orange-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
@@ -304,7 +304,7 @@
                 </div>
                 <div v-if="item.description" class="text-sm text-gray-600 mb-1 line-clamp-2 italic">"{{ item.description }}"</div>
                 <div v-if="item.status === 'do_akceptacji'" class="mb-3">
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-yellow-100 text-yellow-800">
                     Do akceptacji
                   </span>
                 </div>
@@ -317,7 +317,7 @@
                       {{ item.deadline || 'Brak terminu' }}
                     </div>
                   </div>
-                  <div v-if="item.users" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded self-start">
+                  <div v-if="item.users" class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-sm self-start">
                     {{ item.users.first_name }} {{ item.users.last_name }}
                   </div>
                   <div v-else class="text-xs text-gray-400 italic">Nieprzypisane</div>

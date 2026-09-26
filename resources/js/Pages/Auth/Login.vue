@@ -1,6 +1,6 @@
 <template>
   <Head title="Login" />
-  <div class="flex items-center justify-center p-6 min-h-screen bg-gradient-to-br from-indigo-600 to-indigo-900 overflow-hidden">
+  <div class="flex items-center justify-center p-6 min-h-screen bg-linear-to-br from-indigo-600 to-indigo-900 overflow-hidden">
     <div class="w-full max-w-md transition-all duration-1000 transform" :class="{'translate-y-0 opacity-100': loaded, 'translate-y-12 opacity-0': !loaded}">
       <logo class="block mx-auto w-full max-w-xs fill-white drop-shadow-2xl animate-pulse" height="60" />
 
@@ -21,7 +21,7 @@
 
           <div class="flex items-center justify-between mt-8">
             <label class="flex items-center group cursor-pointer select-none" for="remember">
-              <input id="remember" v-model="form.remember" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 transition-transform group-active:scale-90" type="checkbox" />
+              <input id="remember" v-model="form.remember" class="w-4 h-4 text-indigo-600 border-gray-300 rounded-sm focus:ring-indigo-500 transition-transform group-active:scale-90" type="checkbox" />
               <span class="ml-2 text-sm text-gray-600 group-hover:text-gray-900 transition-colors">Zapamiętaj mnie</span>
             </label>
             <Link href="/forgot-password" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors hover:underline">
