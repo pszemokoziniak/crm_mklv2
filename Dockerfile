@@ -13,9 +13,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libjpeg-dev \
-    libfreetype6-dev \
-    nodejs \
-    npm # Added nodejs and npm
+    libfreetype6-dev
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -30,14 +28,20 @@ COPY docker/php/zz-crm.ini /usr/local/etc/php/conf.d/zz-crm.ini
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Node 24 LTS z oficjalnego obrazu. Debian daje Node 20, bez wsparcia od 04.2026.
+COPY --from=node:24-slim /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:24-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
 # Set working directory
 WORKDIR /var/www
 
 # Copy package.json and package-lock.json for caching npm install
 COPY package.json package-lock.json ./
 
-# Install Node.js dependencies
-RUN npm install
+# Install Node.js dependencies (dokładnie wg package-lock.json)
+RUN npm ci --no-audit --no-fund
 
 # Copy the rest of the application files
 COPY . .
