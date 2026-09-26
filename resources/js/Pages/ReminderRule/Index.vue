@@ -68,8 +68,8 @@
 </template>
 
 <script>
-import { Head, Link } from '@inertiajs/inertia-vue3'
-import { Inertia } from '@inertiajs/inertia'
+import { Head, Link } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
 import Icon from '@/Shared/Icon'
 import Layout from '@/Shared/Layout'
 
@@ -106,7 +106,7 @@ export default {
       return 'bg-gray-100 text-gray-800'
     },
     toggle(rule) {
-      Inertia.put(`/reminder-rules/${rule.id}/toggle`)
+      router.put(`/reminder-rules/${rule.id}/toggle`)
     },
   },
 }

@@ -162,8 +162,8 @@
 </template>
 
 <script>
-import { Head, Link } from '@inertiajs/inertia-vue3'
-import { Inertia } from '@inertiajs/inertia'
+import { Head, Link } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
 import Layout from '@/Shared/Layout'
 import TextInput from '@/Shared/TextInput'
 import SelectInput from '@/Shared/SelectInput'
@@ -307,7 +307,7 @@ export default {
     },
     destroy() {
       if (!confirm('Na pewno usunąć tę regułę?')) return
-      Inertia.delete(`/reminder-rules/${this.rule.id}`)
+      router.delete(`/reminder-rules/${this.rule.id}`)
     },
   },
 }

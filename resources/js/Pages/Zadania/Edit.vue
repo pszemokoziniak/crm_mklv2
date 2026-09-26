@@ -169,7 +169,7 @@
 </template>
 
 <script>
-import { Head, Link, usePage } from '@inertiajs/inertia-vue3'
+import { Head, Link, usePage } from '@inertiajs/vue3'
 import Layout from '@/Shared/Layout'
 import TextInput from '@/Shared/TextInput'
 import TextArea from '@/Shared/TextareaInput.vue'
@@ -216,7 +216,7 @@ export default {
   },
   computed: {
     authUser() {
-      return usePage().props.value.auth.user
+      return usePage().props.auth.user
     },
     isAdmin() {
       return this.authUser && (this.authUser.is_super_admin || (this.authUser.roles && this.authUser.roles.includes('administrator')))
