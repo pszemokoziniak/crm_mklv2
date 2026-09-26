@@ -1,16 +1,15 @@
 import { createApp, h } from 'vue'
-import { InertiaProgress } from '@inertiajs/progress'
-import { createInertiaApp } from '@inertiajs/inertia-vue3'
+import { createInertiaApp } from '@inertiajs/vue3'
 import DateFilter from './Filters/DateFilter' // Import the DateFilter
 // Usunięto import ZiggyVue, ponieważ pakiet nie może być zainstalowany
-
-InertiaProgress.init()
 
 createInertiaApp({
   resolve: name => {
     const page = require(`./Pages/${name}.vue`)
     return page.default || page
   },
+  // Wbudowany wskaźnik postępu (dawniej osobny @inertiajs/progress) — te same ustawienia.
+  progress: { color: '#29d', delay: 250 },
   title: title => {
     const baseTitle = 'CRM'
     return title ? `${title} - ${baseTitle}` : baseTitle

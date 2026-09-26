@@ -61,7 +61,7 @@
 
 <script>
 import axios from 'axios'
-import { Inertia } from '@inertiajs/inertia'
+import { router } from '@inertiajs/vue3'
 
 export default {
   props: {
@@ -132,7 +132,7 @@ export default {
       }
       this.open = false
       if (n.data.url) {
-        Inertia.visit(n.data.url)
+        router.visit(n.data.url)
       }
     },
     async markAllRead() {

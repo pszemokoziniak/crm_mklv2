@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { Head, Link } from '@inertiajs/inertia-vue3' // Changed from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3' // Changed from '@inertiajs/vue3'
 import Layout from '@/Shared/Layout.vue'
 import TextInput from '@/Shared/TextInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'

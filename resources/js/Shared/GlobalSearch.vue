@@ -66,7 +66,7 @@
 
 <script>
 import axios from 'axios'
-import { Inertia } from '@inertiajs/inertia'
+import { router } from '@inertiajs/vue3'
 
 export default {
   name: 'GlobalSearch',
@@ -160,7 +160,7 @@ export default {
     },
     go(item) {
       this.close()
-      Inertia.visit(item.link)
+      router.visit(item.link)
     },
   },
 }

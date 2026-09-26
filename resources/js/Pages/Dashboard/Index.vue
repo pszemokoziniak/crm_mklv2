@@ -336,7 +336,7 @@
 </template>
 
 <script>
-import { Head, Link } from '@inertiajs/inertia-vue3'
+import { Head, Link } from '@inertiajs/vue3'
 import Layout from '@/Shared/Layout'
 import Historia from '@/Pages/ActivityLog/Index.vue'
 import SearchFilterSimple from '@/Shared/SearchFilterSimple.vue'
