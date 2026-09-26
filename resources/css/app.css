@@ -1,4 +1,9 @@
-@import 'tailwindcss';
+/*
+ * Klasy szukane tylko w resources/ (jak `purge` w Tailwindzie 2). Bez tego
+ * Tailwind 4 przegląda cały katalog aplikacji — na serwerze także pliki
+ * spoza gita (zrzuty baz w storage/backup), więc build zależałby od serwera.
+ */
+@import 'tailwindcss' source('..');
 @import './reset.css' layer(base);
 
 @import './buttons.css' layer(components);
