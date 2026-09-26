@@ -5,14 +5,14 @@
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
-        <select v-model="form.status" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mb-2">
+        <select v-model="form.status" class="form-select w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 mb-2">
           <option :value="null">Wszystkie</option>
           <option value="aktywne">Aktywne</option>
           <option value="do_akceptacji">Do akceptacji</option>
           <option value="zamkniete">Zamknięte</option>
         </select>
         <label class="block text-sm font-medium text-gray-700 mb-1">Wyświetlaj:</label>
-        <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
           <option :value="null">Aktualne</option>
           <option value="only">Archiwum</option>
           <option value="with">Wszystko</option>
@@ -23,7 +23,7 @@
         <span>Dodaj zadanie</span>
       </Link>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <div>
         <table class="w-full table-fixed">
           <colgroup>
@@ -81,7 +81,7 @@
                   <span v-if="item.subject" class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors text-sm truncate" :title="item.subject">
                     {{ item.subject }}
                   </span>
-                  <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
+                  <icon v-if="item.deleted_at" name="trash" class="shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                 </Link>
               </td>
               <td class="px-3 py-3 overflow-hidden">
@@ -92,14 +92,14 @@
               </td>
               <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center" :href="`/zadania/${item.id}/edit`" tabindex="-1">
-                  <span :class="getStatusClass(item.status)" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap">
+                  <span :class="getStatusClass(item.status)" class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium whitespace-nowrap">
                     {{ getStatusLabel(item.status) }}
                   </span>
                 </Link>
               </td>
               <td class="px-3 py-3 overflow-hidden">
                 <Link class="flex items-center" :href="`/zadania/${item.id}/edit`" tabindex="-1">
-                  <div v-if="item.deadline" :class="getDeadlineClass(item.deadline)" class="px-2 py-0.5 rounded text-xs font-bold shadow-sm whitespace-nowrap">
+                  <div v-if="item.deadline" :class="getDeadlineClass(item.deadline)" class="px-2 py-0.5 rounded-sm text-xs font-bold shadow-xs whitespace-nowrap">
                     {{ item.deadline ? item.deadline.split('T')[0] : '-' }}
                   </div>
                 </Link>
@@ -113,7 +113,7 @@
                 </Link>
               </td>
               <td class="px-1 py-3 text-center">
-                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/zadania/${item.id}/edit`" tabindex="-1">
+                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xs" :href="`/zadania/${item.id}/edit`" tabindex="-1">
                   <icon name="cheveron-right" class="w-3 h-3" />
                 </Link>
               </td>

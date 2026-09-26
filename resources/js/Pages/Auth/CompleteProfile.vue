@@ -7,13 +7,13 @@
       <form @submit.prevent="submit">
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700">Imię</label>
-          <input v-model="form.first_name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" :class="{ 'border-red-500': form.errors.first_name }" />
+          <input v-model="form.first_name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-xs focus:ring-indigo-500 focus:border-indigo-500" :class="{ 'border-red-500': form.errors.first_name }" />
           <div v-if="form.errors.first_name" class="text-red-500 text-xs mt-1">{{ form.errors.first_name }}</div>
         </div>
 
         <div class="mb-6">
           <label class="block text-sm font-medium text-gray-700">Nazwisko</label>
-          <input v-model="form.last_name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" :class="{ 'border-red-500': form.errors.last_name }" />
+          <input v-model="form.last_name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-xs focus:ring-indigo-500 focus:border-indigo-500" :class="{ 'border-red-500': form.errors.last_name }" />
           <div v-if="form.errors.last_name" class="text-red-500 text-xs mt-1">{{ form.errors.last_name }}</div>
         </div>
 

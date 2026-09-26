@@ -15,14 +15,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Rola:</label>
-            <select v-model="form.role" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <select v-model="form.role" class="form-select w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
               <option :value="null">Wszystkie role</option>
               <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
             </select>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
-            <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <select v-model="form.trashed" class="form-select w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
               <option :value="null">Aktywni</option>
               <option value="with">Wszystko</option>
               <option value="only">Tylko zarchiwizowane</option>
@@ -32,7 +32,7 @@
       </search-filter>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <div>
         <table class="w-full table-fixed">
           <colgroup>
@@ -66,9 +66,9 @@
           <tbody class="divide-y divide-gray-50">
             <tr v-for="user in users.data" :key="user.id" class="hover:bg-indigo-50/30 transition-colors group">
               <td class="px-3 py-3 overflow-hidden">
-                <Link class="flex items-center focus:outline-none" :href="`/users/${user.id}/edit`">
-                  <div class="relative flex-shrink-0">
-                    <img v-if="user.photo" class="block w-8 h-8 rounded-full border border-gray-200 shadow-sm" :src="user.photo" alt="photo" />
+                <Link class="flex items-center focus:outline-hidden" :href="`/users/${user.id}/edit`">
+                  <div class="relative shrink-0">
+                    <img v-if="user.photo" class="block w-8 h-8 rounded-full border border-gray-200 shadow-xs" :src="user.photo" alt="photo" />
                     <div v-else class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-xs border border-indigo-200">
                       {{ user.name.split(' ').map(n => n[0]).join('') }}
                     </div>
@@ -89,13 +89,13 @@
               </td>
               <td class="px-3 py-3 overflow-hidden">
                 <Link :href="`/users/${user.id}/edit`" tabindex="-1">
-                  <span class="inline-flex max-w-full truncate items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-600 uppercase tracking-wider shadow-sm" :title="user.roles.join(', ')">
+                  <span class="inline-flex max-w-full truncate items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-600 uppercase tracking-wider shadow-xs" :title="user.roles.join(', ')">
                     {{ user.roles.join(', ') }}
                   </span>
                 </Link>
               </td>
               <td class="px-1 py-3 text-center">
-                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/users/${user.id}/edit`" tabindex="-1">
+                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xs" :href="`/users/${user.id}/edit`" tabindex="-1">
                   <icon name="cheveron-right" class="w-3 h-3" />
                 </Link>
               </td>

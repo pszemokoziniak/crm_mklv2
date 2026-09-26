@@ -12,7 +12,7 @@
         <span>Dodaj</span>
       </Link>
     </div>
-    <div class="bg-white rounded-md shadow overflow-x-auto">
+    <div class="bg-white rounded-md shadow-sm overflow-x-auto">
       <table class="w-full table-auto">
         <thead>
           <tr class="text-left font-bold bg-gray-50">
@@ -30,7 +30,7 @@
             <td class="border-t">
               <Link class="flex items-center px-6 py-4 focus:text-indigo-500 font-medium text-indigo-700" :href="`/kontaktperson/${contact.id}/edit`">
                 {{ contact.last_name }} {{ contact.first_name }}
-                <icon v-if="contact.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
+                <icon v-if="contact.deleted_at" name="trash" class="shrink-0 ml-2 w-3 h-3 fill-gray-400" />
               </Link>
             </td>
             <td class="border-t hidden md:table-cell">

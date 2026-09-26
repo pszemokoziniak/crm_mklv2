@@ -1,6 +1,6 @@
 <template>
   <div class="mt-8">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <div class="flex items-center justify-between px-6 py-4 border-b border-gray-50 bg-gray-50/30">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
@@ -8,7 +8,7 @@
           </div>
           <div>
             <h2 class="text-xl font-bold text-gray-800">Notatki wewnętrzne</h2>
-            <p class="text-[10px] text-gray-500">Widoczne tylko dla pracowników. Wpisz <code class="bg-gray-100 px-1 rounded">@Imię Nazwisko</code> żeby zawiadomić kolegę.</p>
+            <p class="text-[10px] text-gray-500">Widoczne tylko dla pracowników. Wpisz <code class="bg-gray-100 px-1 rounded-sm">@Imię Nazwisko</code> żeby zawiadomić kolegę.</p>
           </div>
         </div>
         <span class="text-xs text-gray-400 font-medium">{{ notes.length }} {{ notes.length === 1 ? 'wpis' : 'wpisów' }}</span>
@@ -50,7 +50,7 @@
           <button
             type="button"
             :disabled="!newBody.trim() || processing"
-            class="btn-indigo text-sm px-5 py-2 rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            class="btn-indigo text-sm px-5 py-2 rounded-lg shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
             @click="save"
           >
             {{ processing ? 'Zapisywanie...' : 'Dodaj notatkę' }}
@@ -65,7 +65,7 @@
         </div>
         <div v-for="n in notes" :key="n.id" class="p-6 hover:bg-gray-50/30 transition-colors">
           <div class="flex items-start gap-3">
-            <span class="flex-shrink-0 w-8 h-8 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold text-xs">
+            <span class="shrink-0 w-8 h-8 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold text-xs">
               {{ initials(n.author ? `${n.author.first_name} ${n.author.last_name}` : '?') }}
             </span>
             <div class="flex-1 min-w-0">
@@ -79,7 +79,7 @@
                 <textarea v-model="editBody" rows="3" class="w-full text-sm border-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 resize-none" />
                 <div class="flex items-center justify-end gap-2 mt-2">
                   <button type="button" class="text-xs text-gray-500 hover:text-gray-700 px-3 py-1" @click="cancelEdit">Anuluj</button>
-                  <button type="button" class="btn-indigo text-xs px-3 py-1 rounded" @click="saveEdit(n)">Zapisz</button>
+                  <button type="button" class="btn-indigo text-xs px-3 py-1 rounded-sm" @click="saveEdit(n)">Zapisz</button>
                 </div>
               </div>
               <div v-if="editingId !== n.id && (n.can_edit || n.can_delete)" class="flex items-center gap-3 mt-2">
@@ -183,7 +183,7 @@ export default {
     renderMentions(body) {
       // Zamien @[Imie Nazwisko](user:X) na wyroznione spany. Escape reszty.
       const esc = (s) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
-      return esc(body).replace(/@\[([^\]]+)\]\(user:(\d+)\)/g, '<span class="bg-indigo-50 text-indigo-700 font-semibold px-1 rounded">@$1</span>')
+      return esc(body).replace(/@\[([^\]]+)\]\(user:(\d+)\)/g, '<span class="bg-indigo-50 text-indigo-700 font-semibold px-1 rounded-sm">@$1</span>')
     },
     save() {
       if (!this.newBody.trim()) return

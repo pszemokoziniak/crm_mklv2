@@ -1,9 +1,9 @@
 <template>
-  <div v-if="show" class="fixed inset-0 flex items-start justify-center p-4 md:pt-20 bg-gray-900/60 backdrop-blur-sm overflow-y-auto" style="z-index:100001" @click="skip">
+  <div v-if="show" class="fixed inset-0 flex items-start justify-center p-4 md:pt-20 bg-gray-900/60 backdrop-blur-xs overflow-y-auto" style="z-index:100001" @click="skip">
     <div class="utrata-modal bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" @click.stop>
       <!-- Header -->
       <div class="flex items-start gap-3 px-6 py-5 border-b border-gray-100">
-        <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center">
+        <div class="shrink-0 w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center">
           <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
           </svg>
@@ -45,7 +45,7 @@
         </div>
 
         <label class="flex items-center gap-2.5 py-1 text-sm font-medium text-gray-700 cursor-pointer select-none">
-          <input v-model="form.szansa_na_renegocjacje" type="checkbox" class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+          <input v-model="form.szansa_na_renegocjacje" type="checkbox" class="w-4 h-4 rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500">
           Była szansa na renegocjację
         </label>
 
@@ -57,7 +57,7 @@
         <button type="button" class="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors" @click="skip">
           Pomiń na razie
         </button>
-        <loading-button :loading="form.processing" class="btn-indigo shadow-sm px-6" type="button" @click="save">
+        <loading-button :loading="form.processing" class="btn-indigo shadow-xs px-6" type="button" @click="save">
           Zapisz
         </loading-button>
       </div>

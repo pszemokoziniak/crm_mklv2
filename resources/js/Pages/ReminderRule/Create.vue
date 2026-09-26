@@ -8,7 +8,7 @@
 
     <form class="max-w-4xl space-y-6" @submit.prevent="store">
       <!-- Sekcja: Podstawowe -->
-      <section class="bg-white rounded-lg shadow overflow-hidden">
+      <section class="bg-white rounded-lg shadow-sm overflow-hidden">
         <header class="px-8 pt-6 pb-2">
           <h2 class="text-lg font-semibold text-gray-800">Podstawowe</h2>
           <p class="text-sm text-gray-500">Nazwa reguły, zdarzenie, kiedy wysyłać.</p>
@@ -44,7 +44,7 @@
             <label class="form-label">Status</label>
             <button type="button" class="flex items-center gap-3 mt-1" @click="form.active = !form.active">
               <span class="relative inline-flex h-6 w-11 rounded-full transition" :class="form.active ? 'bg-indigo-500' : 'bg-gray-300'">
-                <span class="inline-block h-5 w-5 bg-white rounded-full shadow transform transition" :class="form.active ? 'translate-x-5' : 'translate-x-0.5'" style="margin-top: 2px" />
+                <span class="inline-block h-5 w-5 bg-white rounded-full shadow-sm transform transition" :class="form.active ? 'translate-x-5' : 'translate-x-0.5'" style="margin-top: 2px" />
               </span>
               <span class="text-sm" :class="form.active ? 'text-gray-800 font-medium' : 'text-gray-500'">{{ form.active ? 'Aktywna' : 'Wyłączona' }}</span>
             </button>
@@ -53,7 +53,7 @@
       </section>
 
       <!-- Sekcja: Kanały -->
-      <section class="bg-white rounded-lg shadow overflow-hidden">
+      <section class="bg-white rounded-lg shadow-sm overflow-hidden">
         <header class="px-8 pt-6 pb-2">
           <h2 class="text-lg font-semibold text-gray-800">Kanały powiadomień</h2>
           <p class="text-sm text-gray-500">Możesz wybrać kilka. Push działa tylko, jeśli użytkownik wcześniej zezwolił przeglądarce na powiadomienia.</p>
@@ -81,7 +81,7 @@
       </section>
 
       <!-- Sekcja: Odbiorcy -->
-      <section class="bg-white rounded-lg shadow overflow-hidden">
+      <section class="bg-white rounded-lg shadow-sm overflow-hidden">
         <header class="px-8 pt-6 pb-2">
           <h2 class="text-lg font-semibold text-gray-800">Odbiorcy</h2>
           <p class="text-sm text-gray-500">Kto otrzyma powiadomienie.</p>
@@ -122,7 +122,7 @@
       </section>
 
       <!-- Sekcja: Treść -->
-      <section class="bg-white rounded-lg shadow overflow-hidden">
+      <section class="bg-white rounded-lg shadow-sm overflow-hidden">
         <header class="px-8 pt-6 pb-2">
           <h2 class="text-lg font-semibold text-gray-800">Treść</h2>
           <p class="text-sm text-gray-500">Tytuł jest używany jako temat maila i tytuł powiadomienia push. Treść tylko w mailu.</p>
@@ -139,7 +139,7 @@
                 v-for="p in currentPlaceholders"
                 :key="p"
                 type="button"
-                class="bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700 px-2 py-1 rounded text-sm font-mono"
+                class="bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700 px-2 py-1 rounded-sm text-sm font-mono"
                 @click="insertPlaceholder(p)"
               >
                 {{ p }}

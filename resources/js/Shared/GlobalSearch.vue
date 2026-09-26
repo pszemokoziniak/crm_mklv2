@@ -1,8 +1,8 @@
 <template>
-  <div v-if="open" class="fixed inset-0 flex items-start justify-center p-4 md:pt-24 bg-black bg-opacity-50" style="z-index:100001" @click="close">
+  <div v-if="open" class="fixed inset-0 flex items-start justify-center p-4 md:pt-24 bg-black/50" style="z-index:100001" @click="close">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden" @click.stop>
       <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-        <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
         </svg>
         <input
@@ -10,19 +10,19 @@
           v-model="query"
           type="text"
           placeholder="Szukaj klienta, zapytania, oferty, kontaktu..."
-          class="flex-1 border-0 focus:ring-0 focus:outline-none text-sm text-gray-800 placeholder-gray-400 bg-transparent"
+          class="flex-1 border-0 focus:ring-0 focus:outline-hidden text-sm text-gray-800 placeholder-gray-400 bg-transparent"
           @keydown.esc="close"
           @keydown.down.prevent="moveSelection(1)"
           @keydown.up.prevent="moveSelection(-1)"
           @keydown.enter.prevent="openSelected"
         />
         <span v-if="loading" class="text-xs text-gray-400">Szukam...</span>
-        <kbd class="hidden md:inline-block text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded border border-gray-200">Esc</kbd>
+        <kbd class="hidden md:inline-block text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded-sm border border-gray-200">Esc</kbd>
       </div>
 
       <div class="max-h-[60vh] overflow-y-auto">
         <div v-if="query.length < 2" class="p-8 text-center text-sm text-gray-400">
-          Wpisz przynajmniej 2 znaki. Użyj <kbd class="text-[10px] px-1 py-0.5 bg-gray-100 rounded border border-gray-200 mx-1">↑</kbd><kbd class="text-[10px] px-1 py-0.5 bg-gray-100 rounded border border-gray-200 mr-1">↓</kbd> do nawigacji, <kbd class="text-[10px] px-1 py-0.5 bg-gray-100 rounded border border-gray-200">Enter</kbd> aby wejść.
+          Wpisz przynajmniej 2 znaki. Użyj <kbd class="text-[10px] px-1 py-0.5 bg-gray-100 rounded-sm border border-gray-200 mx-1">↑</kbd><kbd class="text-[10px] px-1 py-0.5 bg-gray-100 rounded-sm border border-gray-200 mr-1">↓</kbd> do nawigacji, <kbd class="text-[10px] px-1 py-0.5 bg-gray-100 rounded-sm border border-gray-200">Enter</kbd> aby wejść.
         </div>
         <div v-else-if="!loading && groups.length === 0" class="p-8 text-center text-sm text-gray-400">
           Brak wyników dla "{{ query }}".
@@ -45,11 +45,11 @@
             <div class="flex-1 min-w-0">
               <div class="text-sm font-semibold text-gray-800 truncate flex items-center gap-2">
                 <span class="truncate">{{ item.title }}</span>
-                <span v-if="item.archived" class="flex-shrink-0 text-[9px] font-bold uppercase text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">Archiwum</span>
+                <span v-if="item.archived" class="shrink-0 text-[9px] font-bold uppercase text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-sm">Archiwum</span>
               </div>
               <div v-if="item.subtitle" class="text-xs text-gray-500 truncate">{{ item.subtitle }}</div>
             </div>
-            <svg class="flex-shrink-0 w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="shrink-0 w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
@@ -57,7 +57,7 @@
       </div>
 
       <div class="px-4 py-2 bg-gray-50 border-t border-gray-100 text-[10px] text-gray-400 flex items-center justify-between">
-        <span>Skrót: <kbd class="text-[10px] px-1 py-0.5 bg-white rounded border border-gray-200">Ctrl</kbd> + <kbd class="text-[10px] px-1 py-0.5 bg-white rounded border border-gray-200">K</kbd></span>
+        <span>Skrót: <kbd class="text-[10px] px-1 py-0.5 bg-white rounded-sm border border-gray-200">Ctrl</kbd> + <kbd class="text-[10px] px-1 py-0.5 bg-white rounded-sm border border-gray-200">K</kbd></span>
         <span>MKL CRM · szybkie wyszukiwanie</span>
       </div>
     </div>

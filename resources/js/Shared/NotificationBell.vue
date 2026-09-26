@@ -2,7 +2,7 @@
   <div class="relative">
     <button
       type="button"
-      class="relative p-2 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-gray-50 transition-colors focus:outline-none"
+      class="relative p-2 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-gray-50 transition-colors focus:outline-hidden"
       @click="toggleDropdown"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

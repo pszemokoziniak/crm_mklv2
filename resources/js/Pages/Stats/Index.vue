@@ -7,11 +7,11 @@
       <text-input v-model="form.end" type="date" class="pb-8 pr-6 w-full lg:w-1/4" label="Do" />
     </div>
 
-    <div class="bg-white rounded-md shadow overflow-x-auto p-4 space-y-6">
-      <h2 class="text-3xl font-extrabold text-white text-center bg-emerald-600 py-4 rounded-lg shadow-sm">Sprzedaż</h2>
+    <div class="bg-white rounded-md shadow-sm overflow-x-auto p-4 space-y-6">
+      <h2 class="text-3xl font-extrabold text-white text-center bg-emerald-600 py-4 rounded-lg shadow-xs">Sprzedaż</h2>
       <conversion-funnel :key="`cf-${dateKey}`" :funnel="conversionFunnel" />
 
-      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm mt-10">Klienci</h2>
+      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-xs mt-10">Klienci</h2>
       <p class="text-2xl font-medium text-gray-700 text-center">Ilość klientów: <span class="text-indigo-600 font-bold">{{ clientNumber }}</span></p>
       <users-add-clients :key="`uac-${dateKey}`" :client-number="clientNumber" :client-number-by-user="clientNumberByUser" />
       <active-client :key="`ac-${dateKey}`" :client-active="clientActive" />
@@ -20,7 +20,7 @@
       <clients-oferty-sum-amount :key="`cosa-${dateKey}`" :client-oferta-sum-amount="clientOfertaSumAmount" />
       <clients-oferty-wygrane-sum-amount :key="`cowsa-${dateKey}`" :client-oferta-wygrane-sum-amount="clientOfertaWygraneSumAmount" />
 
-      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm mt-10">Zapytania</h2>
+      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-xs mt-10">Zapytania</h2>
       <div class="p-3">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
           <div class="bg-gray-50 rounded-lg p-3 border">
@@ -40,7 +40,7 @@
       <zapytania-zakres :key="`zz-${dateKey}`" :zapytania-zakres="zapytaniaZakres" />
       <zapytania-users :key="`zu-${dateKey}`" :zapytania-users="zapytaniaUsers" />
 
-      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-sm mt-10">Oferty</h2>
+      <h2 class="text-3xl font-extrabold text-white text-center bg-indigo-600 py-4 rounded-lg shadow-xs mt-10">Oferty</h2>
       <div class="p-3">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
           <div class="bg-gray-50 rounded-lg p-3 border">

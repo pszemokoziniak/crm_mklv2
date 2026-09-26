@@ -4,7 +4,7 @@
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania.id}/edit`">{{zapytania.nazwa_projektu}} {{ zapytania.id_zapyt }}</Link>
     </h1>
-    <div id="form" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div id="form" class="max-w-3xl bg-white rounded-md shadow-sm overflow-hidden">
       <form @submit.prevent="storeWznowienie">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-area v-model="form.description" :error="form.errors.description" class="pb-8 pr-6 w-full lg:w-1/1" label="Opisz powód wznowienia" />

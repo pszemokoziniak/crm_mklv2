@@ -16,10 +16,10 @@
         <span class="text-sm font-medium text-yellow-800">Zadanie oczekuje na akceptację zamknięcia</span>
       </div>
       <div v-if="isAdmin" class="mt-3 flex space-x-3">
-        <button type="button" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-green-600 hover:bg-green-700" @click="approveClosure">
+        <button type="button" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-sm shadow-xs text-white bg-green-600 hover:bg-green-700" @click="approveClosure">
           Zatwierdź zamknięcie
         </button>
-        <button type="button" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded shadow-sm text-gray-700 bg-white hover:bg-gray-50" @click="rejectClosure">
+        <button type="button" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-sm shadow-xs text-gray-700 bg-white hover:bg-gray-50" @click="rejectClosure">
           Odrzuć
         </button>
       </div>
@@ -44,7 +44,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-2">
-        <div id="form" class="bg-white rounded-md shadow overflow-hidden">
+        <div id="form" class="bg-white rounded-md shadow-sm overflow-hidden">
           <fieldset :disabled="zadanie.status === 'zamkniete'">
             <form @submit.prevent="update">
               <div class="p-8">
@@ -84,7 +84,7 @@
                         <button type="button" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium" @click="addStage(mIndex)">+ Dodaj etap</button>
                       </div>
 
-                      <div v-for="(stage, sIndex) in milestone.stages" :key="sIndex" class="flex items-center space-x-4 mb-3 bg-white p-3 rounded shadow-sm">
+                      <div v-for="(stage, sIndex) in milestone.stages" :key="sIndex" class="flex items-center space-x-4 mb-3 bg-white p-3 rounded-sm shadow-xs">
                         <div class="flex-1">
                           <text-input v-model="stage.name" placeholder="Nazwa etapu" />
                         </div>
@@ -109,7 +109,7 @@
                 <button
                   v-if="canRequestClosure"
                   type="button"
-                  class="ml-4 inline-flex items-center px-3 py-1.5 border border-orange-300 text-xs font-medium rounded shadow-sm text-orange-700 bg-orange-50 hover:bg-orange-100"
+                  class="ml-4 inline-flex items-center px-3 py-1.5 border border-orange-300 text-xs font-medium rounded-sm shadow-xs text-orange-700 bg-orange-50 hover:bg-orange-100"
                   @click="requestClosure"
                 >
                   Zgłoś do zamknięcia
@@ -122,7 +122,7 @@
       </div>
 
       <div class="lg:col-span-1">
-        <div class="bg-white rounded-md shadow overflow-hidden">
+        <div class="bg-white rounded-md shadow-sm overflow-hidden">
           <div class="p-6 border-b border-gray-100 bg-gray-50">
             <h2 class="text-lg font-bold">Historia opiekunów</h2>
           </div>

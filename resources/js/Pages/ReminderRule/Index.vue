@@ -7,7 +7,7 @@
         <span>Dodaj regułę</span>
       </Link>
     </div>
-    <div class="bg-white rounded-md shadow overflow-x-auto">
+    <div class="bg-white rounded-md shadow-sm overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
           <th class="pb-4 pt-6 px-6">Nazwa</th>
@@ -41,12 +41,12 @@
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/reminder-rules/${rule.id}/edit`">
-              <span v-for="ch in rule.channels" :key="ch" class="inline-block mr-1 px-2 py-1 rounded text-xs" :class="channelClass(ch)">{{ channelShortLabel(ch) }}</span>
+              <span v-for="ch in rule.channels" :key="ch" class="inline-block mr-1 px-2 py-1 rounded-sm text-xs" :class="channelClass(ch)">{{ channelShortLabel(ch) }}</span>
             </Link>
           </td>
           <td class="border-t">
             <button
-              class="px-3 py-1 rounded text-sm"
+              class="px-3 py-1 rounded-sm text-sm"
               :class="rule.active ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'"
               @click="toggle(rule)"
             >

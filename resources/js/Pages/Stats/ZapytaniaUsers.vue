@@ -7,7 +7,7 @@
       </div>
       <div class="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-1.5 text-xs flex-1">
         <div v-for="(label, i) in chartLabels" :key="i" class="flex items-center gap-1.5 min-w-0">
-          <span class="w-3 h-3 rounded-full inline-block flex-shrink-0" :style="{ backgroundColor: colors[i % colors.length] }" />
+          <span class="w-3 h-3 rounded-full inline-block shrink-0" :style="{ backgroundColor: colors[i % colors.length] }" />
           <span class="truncate" :title="label">{{ label }}</span>
         </div>
       </div>

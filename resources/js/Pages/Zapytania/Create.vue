@@ -5,7 +5,7 @@
       <Link class="text-indigo-400 hover:text-indigo-600" href="/zapytania">Zapytania</Link>
       <span class="text-gray-400 font-medium"> /</span> Nowe zapytanie
     </h1>
-    <div class="max-w-5xl bg-white rounded-md shadow overflow-hidden">
+    <div class="max-w-5xl bg-white rounded-md shadow-sm overflow-hidden">
       <div class="px-8 py-6 border-b border-gray-100 bg-gray-50/50">
         <div class="text-xl font-bold text-gray-800">
           Formularz nowego zapytania

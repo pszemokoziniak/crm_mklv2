@@ -11,7 +11,7 @@
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset" />
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <div>
         <table class="w-full table-fixed">
           <colgroup>
@@ -69,7 +69,7 @@
                 <Link class="flex flex-col text-indigo-600 font-semibold text-xs" :href="`/kontakt/${item.id}/edit`">
                   <div class="flex items-center truncate" :title="item.subject">
                     <span class="truncate">{{ item.subject }}</span>
-                    <span v-if="item.replies_count > 0" class="ml-2 flex-shrink-0 text-[10px] text-gray-500">({{ item.replies_count }})</span>
+                    <span v-if="item.replies_count > 0" class="ml-2 shrink-0 text-[10px] text-gray-500">({{ item.replies_count }})</span>
                   </div>
                   <span v-if="item.contact_type" class="text-[9px] text-indigo-400 uppercase mt-0.5 truncate">{{ item.contact_type }}</span>
                 </Link>
@@ -91,7 +91,7 @@
                 </Link>
               </td>
               <td class="px-1 py-3 text-center">
-                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
+                <Link class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xs" :href="`/kontakt/${item.id}/edit`" tabindex="-1">
                   <icon name="cheveron-right" class="w-3 h-3" />
                 </Link>
               </td>

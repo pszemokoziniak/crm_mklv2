@@ -5,7 +5,7 @@
       <Link class="text-indigo-400 hover:text-indigo-600" href="/clients">Klienci</Link>
       <span class="text-indigo-400 font-medium">/</span> Utwórz
     </h1>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div class="max-w-3xl bg-white rounded-md shadow-sm overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.nazwa" :error="form.errors.nazwa" class="pb-8 pr-6 w-full lg:w-1/2" label="Firma" />
@@ -18,7 +18,7 @@
               <ul class="space-y-1">
                 <li v-for="item in similar" :key="item.id" class="flex items-center">
                   <a :href="`/clients/${item.id}/edit`" target="_blank" class="text-indigo-600 hover:underline">{{ item.nazwa }}</a>
-                  <span v-if="item.archived" class="ml-2 px-1.5 py-0.5 text-xs text-gray-700 bg-gray-200 rounded">Archiwum</span>
+                  <span v-if="item.archived" class="ml-2 px-1.5 py-0.5 text-xs text-gray-700 bg-gray-200 rounded-sm">Archiwum</span>
                 </li>
               </ul>
             </div>

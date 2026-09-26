@@ -8,11 +8,11 @@
 
     <!-- Statystyki -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+      <div class="bg-white rounded-lg shadow-xs border border-gray-100 p-4">
         <p class="text-xs font-medium text-gray-500 mb-1">Wszystkie</p>
         <p class="text-xl font-bold text-gray-900">{{ stats.total }}</p>
       </div>
-      <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+      <div class="bg-white rounded-lg shadow-xs border border-gray-100 p-4">
         <p class="text-xs font-medium text-gray-500 mb-1">Ten miesiąc</p>
         <div class="flex items-baseline gap-2">
           <p class="text-xl font-bold text-gray-900">{{ stats.this_month }}</p>
@@ -21,7 +21,7 @@
           </span>
         </div>
       </div>
-      <div v-for="s in topStatuses" :key="s.name" class="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+      <div v-for="s in topStatuses" :key="s.name" class="bg-white rounded-lg shadow-xs border border-gray-100 p-4">
         <p class="text-xs font-medium text-gray-500 mb-1 truncate">{{ s.name }}</p>
         <p class="text-xl font-bold text-indigo-600">{{ s.count }}</p>
       </div>
@@ -32,7 +32,7 @@
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <div class="mb-4">
           <label class="block mb-1 text-gray-700 text-sm font-medium">Status:</label>
-          <select v-model="form.status" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-sm focus:ring-indigo-500">
+          <select v-model="form.status" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-xs focus:ring-indigo-500">
             <option :value="null">Wszystkie</option>
             <option value="wygrana">Wygrana</option>
             <option value="toczy">Toczy</option>
@@ -40,7 +40,7 @@
           </select>
         </div>
         <label class="block mb-1 text-gray-700 text-sm font-medium">Wyświetlaj:</label>
-        <select v-model="form.trashed" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-sm focus:ring-indigo-500">
+        <select v-model="form.trashed" class="form-select mt-1 w-full border-gray-300 focus:border-indigo-500 rounded-md shadow-xs focus:ring-indigo-500">
           <option :value="null">Aktualne</option>
           <option value="only">Archiwum</option>
           <option value="with">Wszystko</option>
@@ -54,17 +54,17 @@
         v-for="item in ofertas.data"
         :key="item.id"
         :href="`/oferta/${item.id}/edit`"
-        class="block bg-white rounded-lg shadow-sm border border-gray-100 p-4 hover:border-indigo-200 hover:shadow transition-all active:scale-[0.99]"
+        class="block bg-white rounded-lg shadow-xs border border-gray-100 p-4 hover:border-indigo-200 hover:shadow-sm transition-all active:scale-[0.99]"
       >
         <div class="flex items-start justify-between gap-2 mb-2">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-1.5">
               <span class="font-bold text-sm text-gray-900 line-clamp-2">{{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak zapytania' }}</span>
-              <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-rose-400" />
+              <icon v-if="item.deleted_at" name="trash" class="shrink-0 w-3 h-3 fill-rose-400" />
             </div>
             <span class="text-[10px] text-gray-400 font-medium">{{ item.zapytania ? item.zapytania.id_zapyt : '-' }}</span>
           </div>
-          <icon name="cheveron-right" class="flex-shrink-0 w-5 h-5 text-gray-300" />
+          <icon name="cheveron-right" class="shrink-0 w-5 h-5 text-gray-300" />
         </div>
         <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-gray-500 mb-2">
           <span v-if="item.client" class="truncate max-w-[60%]">
@@ -78,7 +78,7 @@
             :value="item.status.id"
             @click.stop.prevent
             @change.stop="changeStatus(item, $event.target.value)"
-            class="px-2 py-0.5 text-[10px] font-bold text-white bg-indigo-500 rounded uppercase border-0 cursor-pointer focus:ring-2 focus:ring-indigo-300 appearance-none"
+            class="px-2 py-0.5 text-[10px] font-bold text-white bg-indigo-500 rounded-sm uppercase border-0 cursor-pointer focus:ring-2 focus:ring-indigo-300 appearance-none"
           >
             <option v-for="opt in statusOptions" :key="opt.id" :value="opt.id" class="text-gray-900 bg-white normal-case font-normal">{{ opt.name }}</option>
           </select>
@@ -89,14 +89,14 @@
           <span>{{ item.created_at }}</span>
         </div>
       </Link>
-      <div v-if="ofertas.data.length === 0" class="bg-white rounded-lg shadow-sm border border-gray-100 p-12 text-center text-gray-400">
+      <div v-if="ofertas.data.length === 0" class="bg-white rounded-lg shadow-xs border border-gray-100 p-12 text-center text-gray-400">
         <icon name="zapytania" class="w-12 h-12 mb-2 opacity-20 mx-auto" />
         <p class="text-xs">Brak ofert spełniających kryteria.</p>
       </div>
     </div>
 
     <!-- Desktop: widok tabeli -->
-    <div class="hidden md:block bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+    <div class="hidden md:block bg-white border border-gray-100 rounded-xl shadow-xs overflow-hidden">
       <table class="w-full table-fixed">
         <colgroup>
           <col style="width:22%" /><!-- Zapytanie -->
@@ -162,7 +162,7 @@
                   <span class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors text-xs truncate" :title="item.zapytania ? item.zapytania.nazwa_projektu : ''">
                     {{ item.zapytania ? item.zapytania.nazwa_projektu : 'Brak zapytania' }}
                   </span>
-                  <icon v-if="item.deleted_at" name="trash" class="fill-rose-400 flex-shrink-0 ml-2 w-3 h-3" />
+                  <icon v-if="item.deleted_at" name="trash" class="fill-rose-400 shrink-0 ml-2 w-3 h-3" />
                 </div>
                 <div v-if="item.zapytania && item.zapytania.id_zapyt" class="text-[10px] mt-0.5 text-gray-400 font-medium truncate">
                   {{ item.zapytania.id_zapyt }}
@@ -184,7 +184,7 @@
                 v-if="item.status"
                 :value="item.status.id"
                 @change="changeStatus(item, $event.target.value)"
-                class="px-1.5 py-0.5 text-[8px] text-white font-bold tracking-tight leading-tight bg-indigo-500 rounded shadow-sm uppercase border-0 max-w-full cursor-pointer focus:ring-2 focus:ring-indigo-300 appearance-none"
+                class="px-1.5 py-0.5 text-[8px] text-white font-bold tracking-tight leading-tight bg-indigo-500 rounded-sm shadow-xs uppercase border-0 max-w-full cursor-pointer focus:ring-2 focus:ring-indigo-300 appearance-none"
                 :title="item.status.name"
               >
                 <option v-for="opt in statusOptions" :key="opt.id" :value="opt.id" class="text-gray-900 bg-white normal-case font-normal text-xs">{{ opt.name }}</option>
@@ -202,7 +202,7 @@
               </Link>
             </td>
             <td class="px-1 py-2.5 text-center">
-              <Link class="inline-flex items-center justify-center w-6 h-6 text-gray-400 group-hover:text-white bg-gray-50 group-hover:bg-indigo-600 rounded-full shadow-sm transition-all" :href="`/oferta/${item.id}/edit`" tabindex="-1">
+              <Link class="inline-flex items-center justify-center w-6 h-6 text-gray-400 group-hover:text-white bg-gray-50 group-hover:bg-indigo-600 rounded-full shadow-xs transition-all" :href="`/oferta/${item.id}/edit`" tabindex="-1">
                 <icon name="cheveron-right" class="w-3 h-3" />
               </Link>
             </td>

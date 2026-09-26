@@ -10,7 +10,7 @@
           <span class="text-gray-300 font-light mx-2">/</span>
           <span class="text-gray-600">{{ form.id_zapyt }}</span>
         </h1>
-        <span v-if="zapytania.wznowienie === 2" class="ml-4 px-3 py-1 bg-rose-100 text-rose-700 text-xs font-bold uppercase tracking-wider rounded-full shadow-sm border border-rose-200">
+        <span v-if="zapytania.wznowienie === 2" class="ml-4 px-3 py-1 bg-rose-100 text-rose-700 text-xs font-bold uppercase tracking-wider rounded-full shadow-xs border border-rose-200">
           Wznowiony
         </span>
       </div>
@@ -23,15 +23,15 @@
       </div>
     </div>
 
-    <trashed-message v-if="zapytania.deleted_at" class="mb-6 shadow-sm" @restore="restore">
+    <trashed-message v-if="zapytania.deleted_at" class="mb-6 shadow-xs" @restore="restore">
       To zapytanie znajduje się w archiwum.
     </trashed-message>
 
     <div class="max-w-5xl space-y-8">
       <!-- Main Form Card -->
-      <div id="form-container" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500 ring-opacity-50 shadow-lg': isActive }">
+      <div id="form-container" class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500/50 shadow-lg': isActive }">
         <!-- Project Info Header -->
-        <div class="px-8 py-6 border-b border-gray-50 bg-gradient-to-r from-gray-50 to-white">
+        <div class="px-8 py-6 border-b border-gray-50 bg-linear-to-r from-gray-50 to-white">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 class="text-xl font-extrabold text-gray-800 tracking-tight">{{ zapytania.nazwa_projektu }}</h2>
@@ -45,7 +45,7 @@
           <!-- Archive Reason -->
           <div v-if="archiwumOpis[0]" class="mt-6 p-4 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg text-sm text-amber-900">
             <div class="flex items-start">
-              <icon name="info" class="w-5 h-5 mr-3 fill-amber-500 flex-shrink-0 mt-0.5" />
+              <icon name="info" class="w-5 h-5 mr-3 fill-amber-500 shrink-0 mt-0.5" />
               <div>
                 <p class="font-bold text-amber-900 mb-1 uppercase text-xs tracking-widest">Powód archiwizacji</p>
                 <p class="leading-relaxed">{{ archiwumOpis[0].description }}</p>
@@ -58,7 +58,7 @@
 
           <!-- No Permission Alert -->
           <div v-if="!zapytania.can.edit" class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg text-sm text-blue-900 flex items-center">
-            <icon name="info" class="w-5 h-5 mr-3 fill-blue-500 flex-shrink-0" />
+            <icon name="info" class="w-5 h-5 mr-3 fill-blue-500 shrink-0" />
             <span class="font-medium">Tryb tylko do odczytu.</span>
             <span class="ml-1 opacity-80">Nie masz uprawnień do edycji lub nie jesteś przypisany do tego projektu.</span>
           </div>
@@ -166,7 +166,7 @@
       <notes-section type="zapytania" :notable-id="zapytania.id" :notes="notes" :mentionable-users="mentionableUsers" />
 
       <!-- Kontakty Section -->
-      <div id="historia-kontaktow" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div id="historia-kontaktow" class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
           <div class="flex items-center">
             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
@@ -182,12 +182,12 @@
 
         <div class="p-8">
           <div v-if="kontakty.length > 0" class="space-y-6">
-            <div v-for="kontakt in kontakty" :id="`kontakt-${kontakt.id}`" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm target:ring-2 target:ring-indigo-500 transition-all">
+            <div v-for="kontakt in kontakty" :id="`kontakt-${kontakt.id}`" :key="kontakt.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-xs target:ring-2 target:ring-indigo-500 transition-all">
               <!-- Główny wpis w wątku -->
               <div class="bg-gray-50/50 p-4 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                   <span class="font-bold text-indigo-900">{{ kontakt.subject }}</span>
-                  <span v-if="kontakt.contact_type" class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded text-xs uppercase font-bold flex items-center">
+                  <span v-if="kontakt.contact_type" class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-sm text-xs uppercase font-bold flex items-center">
                     <template v-if="kontakt.contact_type === 'telefon'">
                       <icon name="phone" class="w-3 h-3 mr-1" />
                     </template>
@@ -228,7 +228,7 @@
                   <div class="flex justify-between items-center mb-2">
                     <div class="flex items-center">
                       <span class="text-xs font-bold text-gray-600">{{ reply.user.first_name }} {{ reply.user.last_name }}</span>
-                      <span v-if="reply.contact_type" class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded text-xs uppercase font-bold flex items-center">
+                      <span v-if="reply.contact_type" class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-sm text-xs uppercase font-bold flex items-center">
                         <template v-if="reply.contact_type === 'telefon'">
                           <icon name="phone" class="w-3 h-3 mr-1" />
                         </template>
@@ -272,7 +272,7 @@
       </div>
 
       <!-- Offers Section -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
           <div class="flex items-center">
             <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
@@ -307,7 +307,7 @@
                 <td class="px-8 py-5">
                   <Link class="flex items-center text-gray-600" :href="`/oferta/${item.id}/edit`">
                     {{ $filters.formatDate(item.data_kontakt) }}
-                    <icon v-if="item.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-rose-400" />
+                    <icon v-if="item.deleted_at" name="trash" class="shrink-0 ml-2 w-3 h-3 fill-rose-400" />
                   </Link>
                 </td>
                 <td class="px-8 py-5">
@@ -348,7 +348,7 @@
       </div>
 
       <!-- Wznowienia Section -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/30">
           <div class="flex items-center">
             <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
@@ -364,7 +364,7 @@
 
         <div class="p-8">
           <div v-if="wznowienia && wznowienia.length > 0" class="space-y-6">
-            <div v-for="wznowienie in wznowienia" :key="wznowienie.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+            <div v-for="wznowienie in wznowienia" :key="wznowienie.id" class="border border-gray-100 rounded-xl overflow-hidden shadow-xs">
               <div class="bg-gray-50/50 p-4 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                   <span class="font-bold text-gray-900">{{ wznowienie.user.first_name }} {{ wznowienie.user.last_name }}</span>
@@ -373,12 +373,12 @@
                 <div class="flex items-center gap-2">
                   <Link :href="`/zapytania/${zapytania.id}/wznowienia/${wznowienie.id}/edit`" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold uppercase tracking-wider">Edytuj</Link>
                   <template v-if="wznowienie.oferta_id">
-                    <Link :href="`/oferta/${wznowienie.oferta_id}/edit`" class="ml-4 text-xs font-bold text-green-600 hover:text-green-800 px-3 py-1.5 rounded shadow-sm transition-colors">
+                    <Link :href="`/oferta/${wznowienie.oferta_id}/edit`" class="ml-4 text-xs font-bold text-green-600 hover:text-green-800 px-3 py-1.5 rounded-sm shadow-xs transition-colors">
                       Oferta ({{ $filters.formatDate(wznowienie.oferta_created_at) }})
                     </Link>
                   </template>
                   <template v-else>
-                    <Link :href="`/oferta/create?wznowienie_id=${wznowienie.id}&zapytania_id=${zapytania.id}`" class="ml-4 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded shadow-sm transition-colors">Stwórz ofertę</Link>
+                    <Link :href="`/oferta/create?wznowienie_id=${wznowienie.id}&zapytania_id=${zapytania.id}`" class="ml-4 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-sm shadow-xs transition-colors">Stwórz ofertę</Link>
                   </template>
                 </div>
               </div>
@@ -422,7 +422,7 @@
 
       <!-- Historia zmian (Activity Log) -->
       <div class="mt-12 mb-12">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
           <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100 bg-gray-50/30 cursor-pointer hover:bg-gray-100/50 transition-colors" @click="isHistoryVisible = !isHistoryVisible">
             <div class="flex items-center">
               <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">

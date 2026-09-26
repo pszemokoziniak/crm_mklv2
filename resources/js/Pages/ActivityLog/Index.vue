@@ -2,7 +2,7 @@
   <div>
     <Head title="Aktywność systemowa" />
     <h1 class="mb-8 text-3xl font-bold">Aktywność systemowa</h1>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
       <table class="w-full table-fixed">
         <colgroup>
           <col style="width:22%" /><!-- Uzytkownik -->

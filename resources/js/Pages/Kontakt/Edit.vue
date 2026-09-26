@@ -24,7 +24,7 @@
           <div
             v-for="entry in entries"
             :key="entry.id"
-            class="bg-white p-6 rounded-lg shadow-sm border-l-4"
+            class="bg-white p-6 rounded-lg shadow-xs border-l-4"
             :class="entry.id === kontakt.id ? 'border-indigo-500' : 'border-indigo-300'"
           >
             <template v-if="editingId !== entry.id">
@@ -38,13 +38,13 @@
                   </span>
                   <span class="mx-2">•</span>
                   <span>{{ entry.call_date }} {{ entry.call_time }}</span>
-                  <span v-if="entry.contact_type" class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded text-xs uppercase font-bold flex items-center">
+                  <span v-if="entry.contact_type" class="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-sm text-xs uppercase font-bold flex items-center">
                     <template v-if="entry.contact_type === 'telefon'"><icon name="phone" class="w-3 h-3 mr-1" /></template>
                     <template v-else-if="entry.contact_type === 'email'"><icon name="mail" class="w-3 h-3 mr-1" /></template>
                     <template v-else-if="entry.contact_type === 'osobisty'"><icon name="contact" class="w-3 h-3 mr-1" /></template>
                     {{ entry.contact_type }}
                   </span>
-                  <span v-if="entry.id === kontakt.id" class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs uppercase font-bold">
+                  <span v-if="entry.id === kontakt.id" class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 rounded-sm text-xs uppercase font-bold">
                     Wątek główny
                   </span>
                 </div>
@@ -108,7 +108,7 @@
       </div>
 
       <div class="lg:col-span-1">
-        <div v-if="client" class="bg-white rounded-md shadow p-6 mb-8">
+        <div v-if="client" class="bg-white rounded-md shadow-sm p-6 mb-8">
           <h3 class="text-lg font-bold mb-4 border-b pb-2">Informacje o kliencie</h3>
           <div class="space-y-3">
             <div>
@@ -128,7 +128,7 @@
           </div>
         </div>
 
-        <div class="bg-indigo-50 rounded-md shadow p-6">
+        <div class="bg-indigo-50 rounded-md shadow-sm p-6">
           <h3 class="text-indigo-900 font-bold mb-2">Szybkie akcje</h3>
           <div class="space-y-2">
             <Link v-if="client" :href="`/kontakt/create?client=${client.id}`" class="block text-sm text-indigo-700 hover:underline">Nowy kontakt dla tego klienta</Link>

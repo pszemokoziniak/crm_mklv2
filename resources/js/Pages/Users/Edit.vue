@@ -6,8 +6,8 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
       <div class="flex items-center">
         <div class="relative">
-          <img v-if="user.photo" class="block w-16 h-16 rounded-full border-2 border-white shadow-sm" :src="user.photo" alt="phot" />
-          <div v-else class="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 font-bold text-xl border-2 border-white shadow-sm">
+          <img v-if="user.photo" class="block w-16 h-16 rounded-full border-2 border-white shadow-xs" :src="user.photo" alt="phot" />
+          <div v-else class="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 font-bold text-xl border-2 border-white shadow-xs">
             {{ user.first_name[0] }}{{ user.last_name[0] }}
           </div>
           <div :class="user.active ? 'bg-green-500' : 'bg-gray-400'" class="absolute bottom-0 right-0 w-4 h-4 border-2 border-white rounded-full" />
@@ -30,12 +30,12 @@
       </div>
     </div>
 
-    <trashed-message v-if="user.deleted_at" class="mb-6 shadow-sm" @restore="restore">
+    <trashed-message v-if="user.deleted_at" class="mb-6 shadow-xs" @restore="restore">
       Ten użytkownik został zarchiwizowany.
     </trashed-message>
 
     <div class="max-w-3xl">
-      <div id="form-container" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500 ring-opacity-50 shadow-lg': isActive }">
+      <div id="form-container" class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden transition-all" :class="{ 'ring-2 ring-green-500/50 shadow-lg': isActive }">
         <form @submit.prevent="update">
           <div class="p-8 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -101,7 +101,7 @@
 
     <!-- Historia zmian (Activity Log) - NA SAMYM DOLE -->
     <div class="mt-12 mb-12 max-w-3xl">
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="bg-white rounded-xl shadow-xs border border-gray-100 overflow-hidden">
         <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100 bg-gray-50/30 cursor-pointer hover:bg-gray-100/50 transition-colors" @click="isHistoryVisible = !isHistoryVisible">
           <div class="flex items-center">
             <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">

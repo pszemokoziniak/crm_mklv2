@@ -5,7 +5,7 @@
       <Link class="text-indigo-400 hover:text-indigo-600" :href="`/zapytania/${zapytania.id}/edit`">Zapytania</Link>
       <span class="text-indigo-400 font-medium">/</span> Dodaj wznowienie
     </h1>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div class="max-w-3xl bg-white rounded-md shadow-sm overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-area v-model="form.text" :error="form.errors.text" class="pb-8 pr-6 w-full" label="Opis wznowienia" />
