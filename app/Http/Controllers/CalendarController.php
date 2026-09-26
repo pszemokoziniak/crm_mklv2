@@ -172,8 +172,9 @@ class CalendarController extends Controller
         $e = Carbon::parse($endZap);
 
         // Kolumna = ktory tydzien od poczatku siatki (0-indeks).
-        $startCol = intdiv(max(0, $gridStart->diffInDays($s, false)), 7);
-        $endCol = intdiv($gridStart->diffInDays($e, false), 7);
+        // (int): Carbon 3 zwraca float, a intdiv przy strict_types przyjmuje tylko int.
+        $startCol = intdiv(max(0, (int) $gridStart->diffInDays($s, false)), 7);
+        $endCol = intdiv((int) $gridStart->diffInDays($e, false), 7);
 
         // Docinamy do widocznej siatki.
         $startCol = max(0, min($startCol, $totalCols - 1));
