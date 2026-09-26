@@ -1,13 +1,12 @@
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import DateFilter from './Filters/DateFilter' // Import the DateFilter
 // Usunięto import ZiggyVue, ponieważ pakiet nie może być zainstalowany
 
 createInertiaApp({
-  resolve: name => {
-    const page = require(`./Pages/${name}.vue`)
-    return page.default || page
-  },
+  // Każda strona to osobny plik, doładowywany przy pierwszym wejściu.
+  resolve: name => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
   // Wbudowany wskaźnik postępu (dawniej osobny @inertiajs/progress) — te same ustawienia.
   progress: { color: '#29d', delay: 250 },
   title: title => {

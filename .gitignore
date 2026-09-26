@@ -29,3 +29,5 @@ CLAUDE.md
 composer.phar
 /legacy_old_crm/
 .rnd
+/public/build
+/bootstrap/ssr

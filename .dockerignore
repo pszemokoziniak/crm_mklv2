@@ -22,4 +22,6 @@ mkl_backup_*
 .git
 .DS_Store
 public/hot
+public/build
+bootstrap/ssr
 public/storage
