@@ -26,6 +26,13 @@ if [ "$PRZED" != "$PO" ] && git diff --name-only "$PRZED" "$PO" -- composer.lock
 fi
 
 docker exec -u www-data crm-app php artisan migrate --force
+
+# Pakiety npm tylko wtedy, gdy zmienił się package-lock.json — inaczej front
+# budowałby się ze starych node_modules (podpiętych z hosta), niezgodnych z lockiem.
+if [ "$PRZED" != "$PO" ] && git diff --name-only "$PRZED" "$PO" -- package-lock.json | grep -q .; then
+    echo "Zmienił się package-lock.json — npm ci."
+    docker exec -u www-data -e npm_config_cache=/tmp/npm-cache crm-app npm ci --no-audit --no-fund
+fi
 docker exec -u www-data crm-app npm run production
 
 # NIE route:cache i NIE optimize: trasy z domknięciami (Closure) zapisane
